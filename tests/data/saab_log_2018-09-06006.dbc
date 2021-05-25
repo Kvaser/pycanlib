@@ -1,0 +1,141 @@
+VERSION "HIPBNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY/4/%%%/4/'%**4YYY///"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+
+
+BO_ 193 msg_193: 8 Vector__XXX
+ SG_ sig_193 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 197 msg_197: 8 Vector__XXX
+ SG_ sig_197 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 272 msg_272: 8 Vector__XXX
+ SG_ sig_272 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 288 msg_288: 8 Vector__XXX
+ SG_ sig_288 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 320 msg_320: 8 Vector__XXX
+ SG_ sig_320 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 384 msg_384: 5 Vector__XXX
+ SG_ sig_384 : 0|5@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 392 msg_392: 7 Vector__XXX
+ SG_ sig_392 : 0|7@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 501 msg_501: 6 Vector__XXX
+ SG_ sig_501 : 0|6@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 640 msg_640: 8 Vector__XXX
+ SG_ sig_640 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 648 msg_648: 8 Vector__XXX
+ SG_ sig_648 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 656 msg_656: 8 Vector__XXX
+ SG_ sig_656 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 752 msg_752: 4 Vector__XXX
+ SG_ sig_752 : 0|4@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 768 msg_768: 8 Vector__XXX
+ SG_ sig_768 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 769 msg_769: 8 Vector__XXX
+ SG_ sig_769 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 840 msg_840: 8 Vector__XXX
+ SG_ sig_840 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 896 msg_896: 8 Vector__XXX
+ SG_ sig_896 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 897 msg_897: 7 Vector__XXX
+ SG_ sig_897 : 0|7@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1040 msg_1040: 8 Vector__XXX
+ SG_ sig_1040 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1152 msg_1152: 8 Vector__XXX
+ SG_ sig_1152 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1160 msg_1160: 8 Vector__XXX
+ SG_ sig_1160 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1296 msg_1296: 8 Vector__XXX
+ SG_ sig_1296 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1320 msg_1320: 3 Vector__XXX
+ SG_ sig_1320 : 0|3@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1824 msg_1824: 8 Vector__XXX
+ SG_ sig_1824 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1846 msg_1846: 8 Vector__XXX
+ SG_ sig_1846 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1847 msg_1847: 8 Vector__XXX
+ SG_ sig_1847 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1888 msg_1888: 8 Vector__XXX
+ SG_ sig_1888 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2015 msg_2015: 8 Vector__XXX
+ SG_ sig_2015 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2016 msg_2016: 8 Vector__XXX
+ SG_ sig_2016 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2017 msg_2017: 8 Vector__XXX
+ SG_ sig_2017 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2018 msg_2018: 8 Vector__XXX
+ SG_ sig_2018 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2019 msg_2019: 8 Vector__XXX
+ SG_ sig_2019 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2020 msg_2020: 8 Vector__XXX
+ SG_ sig_2020 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 2024 msg_2024: 8 Vector__XXX
+ SG_ sig_2024 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "";
+BA_ "BusType" "CAN";

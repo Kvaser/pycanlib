@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<KVASER>
+<VERSION>4.3</VERSION>
+<PRODUCTFAMILY>blackbird</PRODUCTFAMILY>
+<DEVICE_ACCESS
+level="PUBLIC"
+password=""
+/>
+<CONFIG_PROTECTION
+protected="NO"
+password=""
+/>
+<NETWORK
+ssid="ASUS"
+operation_mode="INFRASTRUCTURE"
+channel="1"
+search_all_channels="YES"
+host_name="kv-06713-010545"
+device_name="Kvaser Testing BBv2 "
+address_type="DHCP"
+port="11416"
+mtu="1492"
+/>
+<PROFILE_INFO
+name="Unnamed Profile"
+/>
+<ROAMING_SETTINGS 
+ threshold="125"
+ channels="0"/>
+<NETWORK_SECURITY
+encryption_mode="WPA2">
+<WPA_WPA2
+group_encryption="AES"
+pairwise_encryption="AES"
+/>
+</NETWORK_SECURITY>
+<TRAFFIC_ENCRYPTION
+type="NONE"
+key=""
+/>
+<WEBSERVER
+enabled="NO"
+change_log_settings="NO"
+user_data_download="NO"
+debug_commands="NO"
+/>
+<REGION_SETTINGS
+regulatory_domain="WORLD"
+/>
+</KVASER>

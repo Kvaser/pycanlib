@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KVASER>
+	<VERSION>2.0</VERSION>
+  <BINARY_VERSION>6.0</BINARY_VERSION>
+	<SETTINGS>
+		<MODE log_all="NO" fifo_mode="YES"/>
+		<CANPOWER timeout="2000"/>
+		<TARGET_EAN>73-30130-00778-9</TARGET_EAN>
+	</SETTINGS>
+	<CAN_BUS>
+		<PARAMETERS channel="0" bitrate="500000" tseg1="5" tseg2="2" sjw="1" bitrate_brs="1000000" tseg1_brs="31" tseg2_brs="8" sjw_brs="8" silent="NO" iso="YES"/>
+		<PARAMETERS channel="1" bitrate="1000000" tseg1="5" tseg2="2" sjw="2" bitrate_brs="1000000" tseg1_brs="31" tseg2_brs="8" sjw_brs="8" silent="NO" iso="YES"/>
+	</CAN_BUS>
+	<TRIGGERBLOCK>
+  <TRIGGERS>
+    <!-- msgid and other (specify) will normally be looked up by a tool. -->
+    <!-- Describe this in document -->
+    <TRIGGER_MSG_ID_WRONG_NAME
+        channel="1"
+        name="My_first_id_trigger"
+        timeout="0"
+        msgid="6"
+        msgid_min="2"
+        can_ext="YES"
+        protocol="NONE"
+        />
+
+    <TRIGGER_MSG_DLC
+        channel="1"
+        name="My_first_dlc_trigger"
+        timeout="100"
+        dlc="7"
+        dlc_min="5"
+        />
+
+    <TRIGGER_MSG_ERROR_FRAME
+        channel="1"
+        name="My_first_flag_trigger"
+        timeout="100"
+        />
+		</TRIGGERS>
+  <STATEMENTS>
+    <!-- What does param actually stand for? -->
+    <STATEMENT
+        pretrigger ="0"
+        posttrigger="500">
+      <EXPRESSION>"(My_first_id_trigger AND My_first_dlc_trigger) OR My_first_id_trigger" </EXPRESSION>
+      <ACTIONS>
+        <ACTION_START_LOG/>
+        <ACTION_EXTERNAL_PULSE
+            duration="1"
+            />
+        <ACTION_ACTIVATE_AUTO_TRANSMIT_LIST
+            name="TransmitList1"
+            />
+        <ACTION_STOP_LOG/>
+      </ACTIONS>
+    </STATEMENT>
+    <STATEMENT
+        pretrigger ="0"
+        posttrigger="500">
+      <EXPRESSION>"My_first_id_trigger OR My_first_dlc_trigger"</EXPRESSION>
+      <ACTIONS>
+        <ACTION_STOP_LOG_COMPLETELY/>
+        <ACTION_DEACTIVATE_AUTO_TRANSMIT_LIST
+            name="SecondList"
+            />
+      </ACTIONS>
+    </STATEMENT>
+  </STATEMENTS>
+	</TRIGGERBLOCK>
+<TRANSMIT_LISTS>
+  <TRANSMIT_LIST
+      name="TransmitList1"
+      msg_delay="1500"
+      cycle_delay="0"
+      cyclic="NO"
+      autostart="NO"
+      >
+    <TRANSMIT_MESSAGE
+        name="Message1"
+        channel="0"
+        />
+    <TRANSMIT_MESSAGE
+        name="Message2"
+        channel="0"
+        />
+  </TRANSMIT_LIST>
+  <TRANSMIT_LIST
+      name="SecondList"
+      msg_delay="666"
+      cycle_delay="555"
+      cyclic="YES"
+      autostart="YES"
+      >
+    <TRANSMIT_MESSAGE
+        name="Message2"
+        channel="1"
+        />
+    <TRANSMIT_MESSAGE
+        name="Message2"
+        channel="1"
+        />
+  </TRANSMIT_LIST>
+</TRANSMIT_LISTS>
+<MESSAGES>
+  <MESSAGE
+        name="Message1"
+        msgid="0x6f"
+        flags="0x5x"
+        dlc="8"
+        b0="0x33"
+        b1="0x33"
+        b2="0x33"
+        b3="0x33"
+        b4="0x0"
+        b5="0x0"
+        b6="0x0"
+        b7="0x0"
+        />
+  <MESSAGE
+        name="Message2"
+        msgid="0x6e"
+        dlc="8"
+        can_ext="YES"
+        error_frame="NO"
+        remote_frame="NO"
+        b0="0x33"
+        b1="0x33"
+        b2="0x33"
+        b3="0x33"
+        b4="0x10"
+        b5="0x0"
+        b6="0x0"
+        b7="0x0"
+        />
+</MESSAGES>
+
+<FILTERS>
+  <FLAG_PASS
+      flag_std="YES"
+      flag_ext="NO"
+      flag_errorframe="NO"
+      >
+    <CHANNEL>3</CHANNEL>
+    <CHANNEL>4</CHANNEL>
+  </FLAG_PASS>
+
+  <FLAG_STOP
+      flag_std="NO"
+      flag_ext="NO"
+      flag_errorframe="YES"
+      >
+    <CHANNEL>3</CHANNEL>
+    <CHANNEL>4</CHANNEL>
+  </FLAG_STOP>
+
+  <FLAG_COUNTING_PASS
+      flag_std="NO"
+      flag_ext="NO"
+      flag_errorframe="YES"
+      counter_threshold="5"
+      counter_max="555"
+      >
+    <CHANNEL>3</CHANNEL>
+    <CHANNEL>4</CHANNEL>
+  </FLAG_COUNTING_PASS>
+
+  <MESSAGE_PASS
+      protocol="NONE"
+      msgid="34"
+      msgid_min="34"
+      can_ext="NO"
+      dlc="8"
+      >
+    <CHANNEL>0</CHANNEL>
+  </MESSAGE_PASS>
+
+  <MESSAGE_STOP
+      protocol="J1939"
+      msg_field="PGN"
+      msgid="34"
+      msgid_min="34"
+      can_ext="NO"
+      >
+    <CHANNEL>0</CHANNEL>
+    <CHANNEL>1</CHANNEL>
+  </MESSAGE_STOP>
+  <SIGNAL_PASS
+      protocol="J1939"
+      msgid="34"
+      can_ext="NO"
+      dlc="8"
+      startbit="2"
+      length="5"
+      data_type="UNSIGNED"
+      byteorder="BIG_ENDIAN"
+      data="0x2D"
+      >
+    <CHANNEL>0</CHANNEL>
+    <CHANNEL>4</CHANNEL>
+  </SIGNAL_PASS>
+  <SIGNAL_STOP
+      protocol="J1939"
+      msgid="0x6"
+      can_ext="NO"
+      startbit="0"
+      length="8"
+      data_type="SIGNED"
+      byteorder="LITTLE_ENDIAN"
+      data="0x2D"
+      >
+    <CHANNEL>0</CHANNEL>
+    <CHANNEL>1</CHANNEL>
+  </SIGNAL_STOP>
+  <MESSAGE_COUNTING_PASS
+      protocol="J1939"
+      msgid="0x667"
+      can_ext="NO"
+      counter_threshold="7"
+      counter_max="16"
+      >
+    <CHANNEL>0</CHANNEL>
+    <CHANNEL>2</CHANNEL>
+  </MESSAGE_COUNTING_PASS>
+  <SIGNAL_COUNTING_PASS
+      protocol="J1939"
+      msgid="34"
+      can_ext="NO"
+      dlc="8"
+      startbit="2"
+      length="5"
+      data_type="UNSIGNED"
+      byteorder="BIG_ENDIAN"
+      data="0x2D"
+      counter_threshold="2"
+      counter_max="31"
+      >
+    <CHANNEL>1</CHANNEL>
+    <CHANNEL>2</CHANNEL>
+  </SIGNAL_COUNTING_PASS>
+
+</FILTERS>
+
+<MESSAGES>
+  <MESSAGE
+        name="Message1"
+        msgid="0x6f"
+        flags="0x5x"
+        dlc="8"
+        b0="0x33"
+        b1="0x33"
+        b2="0x33"
+        b3="0x33"
+        b4="0x0"
+        b5="0x0"
+        b6="0x0"
+        b7="0x0"
+        />
+  <MESSAGE
+        name="Message2"
+        msgid="0x6e"
+        dlc="8"
+        can_ext="YES"
+        error_frame="NO"
+        remote_frame="NO"
+        b0="0x33"
+        b1="0x33"
+        b2="0x33"
+        b3="0x33"
+        b4="0x10"
+        b5="0x0"
+        b6="0x0"
+        b7="0x0"
+        />
+</MESSAGES>
+
+</KVASER>

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<!DOCTYPE KVASER>
+<KVASER>
+  <VERSION>2.0</VERSION>
+  <BINARY_VERSION>6.0</BINARY_VERSION>
+  <SETTINGS>
+    <MODE fifo_mode="NO" log_all="YES"/>
+  </SETTINGS>
+  <CAN_BUS>
+    <PARAMETERS bitrate="1000000" channel="0" silent="YES" sjw="1" tseg1="5" tseg2="2"/>
+    <PARAMETERS bitrate="1000000" channel="1" silent="YES" sjw="1" tseg1="5" tseg2="2"/>
+  </CAN_BUS>
+  <TRIGGERBLOCK/>
+  <SCRIPTS/>
+</KVASER>

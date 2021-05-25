@@ -1,0 +1,58 @@
+VERSION "HIPBNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY/4/%%%/4/'%**4YYY///"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+
+
+BO_ 100 EngineData: 8 Vector__XXX
+ SG_ PetrolLevel : 24|8@1+ (1,0) [0|255] "l" Vector__XXX
+ SG_ EngPower : 48|16@1+ (0.01,0) [0|150] "kW" Vector__XXX
+ SG_ EngForce : 32|16@1+ (1,0) [0|0] "N" Vector__XXX
+ SG_ IdleRunning : 23|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ EngTemp : 16|7@1+ (2,-50) [-50|150] "°C" Vector__XXX
+ SG_ EngSpeed : 0|16@1+ (1,0) [0|8000] "rpm" Vector__XXX
+
+BO_ 1020 GearBoxInfo: 1 Vector__XXX
+ SG_ EcoMode : 6|2@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ShiftRequest : 3|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Gear : 0|3@1+ (1,0) [0|5] "" Vector__XXX
+
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "";
+BA_ "BusType" "CAN";
+VAL_ 100 IdleRunning 0 "Running" 1 "Idle" ;
+VAL_ 1020 ShiftRequest 1 "Shift_Request_On" 0 "Shift_Request_Off" ;
+VAL_ 1020 Gear 0 "Idle" 2 "Gear_2" 1 "Gear_1" 5 "Gear_5" 3 "Gear_3" 4 "Gear_4" ;

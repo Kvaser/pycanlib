@@ -71,6 +71,13 @@ KvdOnlyOneAllowed
    :undoc-members:
    :show-inheritance:
 
+KvdInUse
+~~~~~~~~~~~~~~~~~
+.. autoexception:: canlib.kvadblib.KvdInUse
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 SignalNotFound
 ~~~~~~~~~~~~~~
 .. autoexception:: canlib.kvadblib.SignalNotFound

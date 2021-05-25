@@ -16,4 +16,3 @@ Reference
    kvmlib/index
    kvrlib/index
    linlib/index
-   j1939/index

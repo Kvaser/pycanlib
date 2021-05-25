@@ -3,7 +3,7 @@ class BoundSignal(object):
         self.frame = frame
         self.signal = signal
 
-    def __str__(self):
+    def __repr__(self):
         txt = "<{}: name={!r}, phys={!r}>".format(self.__class__.__name__, self.name, self.phys)
         if self.unit:
             txt += ", unit:{}".format(self.unit)

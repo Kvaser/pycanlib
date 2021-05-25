@@ -61,7 +61,7 @@ _ChannelInfo.__new__.__defaults__ = tuple(None for _ in _ChannelInfo._fields)
 
 
 def connected_devices():
-    """Get all currently connected devices as `Device`
+    """Get all currently connected devices as `Device`\s
 
     Returns an iterator of `Device` object, one object for every physical
     device currently connected.

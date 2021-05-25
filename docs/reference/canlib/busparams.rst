@@ -43,6 +43,20 @@ BusParamsTq
     :undoc-members:
 
 
+BusParamHelper
+--------------
+.. autoclass:: canlib.canlib.channel.BusParamHelper
+    :members:
+    :undoc-members:
+
+
+BusParamHelperLegacy
+--------------------
+.. autoclass:: canlib.canlib.channel.BusParamHelperLegacy
+    :members:
+    :undoc-members:
+
+
 BitrateSetting
 ~~~~~~~~~~~~~~
 .. autoclass:: canlib.canlib.busparams.BitrateSetting

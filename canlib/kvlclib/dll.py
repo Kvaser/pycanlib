@@ -13,10 +13,15 @@ class KvlclibDll(dllLoader.MyDll):
         'kvlcDeleteConverter': [[ct.c_void_p]],
         'kvlcEventCount': [[ct.c_void_p, ct.POINTER(ct.c_uint)]],
         'kvlcEventCountEx': [[ct.c_void_p, ct.POINTER(ct.c_int64)]],
-        'kvlcFeedSelectFormat': [[ct.c_void_p, ct.c_int]],
-        'kvlcFeedLogEvent': [[ct.c_void_p, ct.c_void_p]],
-        'kvlcFeedNextFile': [[ct.c_void_p]],
-        'kvlcGetDlcMismatchList': [[ct.c_void_p, ct.POINTER(ct.c_uint), ct.POINTER(ct.c_uint), ct.POINTER(ct.c_uint), ct.POINTER(ct.c_uint)]],
+        'kvlcGetDlcMismatchList': [
+            [
+                ct.c_void_p,
+                ct.POINTER(ct.c_uint),
+                ct.POINTER(ct.c_uint),
+                ct.POINTER(ct.c_uint),
+                ct.POINTER(ct.c_uint),
+            ]
+        ],
         'kvlcGetErrorText': [[ct.c_int32, ct.c_char_p, ct.c_uint]],
         'kvlcGetFirstWriterFormat': [[ct.POINTER(ct.c_int)]],
         'kvlcGetNextWriterFormat': [[ct.c_int, ct.POINTER(ct.c_int)]],
@@ -44,6 +49,10 @@ class KvlclibDll(dllLoader.MyDll):
         'kvlcResetOverrunActive': [[ct.c_void_p]],
         'kvlcSetInputFile': [[ct.c_void_p, ct.c_char_p, ct.c_int]],
         'kvlcSetProperty': [[ct.c_void_p, ct.c_uint, ct.c_void_p, ct.c_size_t]],
+        # Reading from device is not supported yet:
+        # kvlcFeedSelectFormat(KvLogCnvHandle handle, int format);
+        # kvlcFeedLogEvent(KvLogCnvHandle handle, void *event);
+        # kvlcFeedNextFile(KvLogCnvHandle handle);
     }
 
     def __init__(self, ct_dll):

@@ -307,31 +307,6 @@ class Dbc(object):
         message = Message(self, mh)
         return message
 
-    def get_message_by_pgn(self, can_id):
-        """Find message by PGN
-
-        Note:
-
-            The `can_id` must have the "EXT" flag bit set (bit 30, 0x40000000)
-
-        Args:
-            can_id (int): CAN id containing PGN to look for
-
-        Returns:
-            :obj:`Message`
-
-        Raises:
-            KvdNoMessage: If no match was found.
-
-        .. versionadded:: 1.18
-
-        """
-        mh = ct.c_void_p(None)
-
-        dll.kvaDbGetMsgByPGN(self._handle, can_id, ct.byref(mh))
-        message = Message(db=self, handle=mh)
-        return message
-
     def get_node_by_name(self, name):
         """Find node by name
 
@@ -387,28 +362,18 @@ class Dbc(object):
             except KvdNoMessage:
                 return
 
-    def interpret(self, frame, j1939=False):
+    def interpret(self, frame):
         """Interprets a given Frame object, returning a BoundMessage"""
-        can_id = frame.id
+        id = frame.id
         flags = 0
-
-        if j1939:
-            # When calling get_message_by_pgn, the EXT flag must be attached to the CAN ID
-            # Check frame.flags first, since it may be '0'
-            # Note that MessageFlag.EXT has different values in canlib vs kvadblib
-            if frame.flags and canlib_MessageFlag.EXT in frame.flags:
-                can_id |= MessageFlag.EXT
-            message = self.get_message_by_pgn(can_id)
-            return message.bind(frame)
-
-        # When calling get_message_by_id, the EXT flag must be provided in flags argument
+        # Add extended bit to id if frame has an extended id
         # Note that MessageFlag.EXT has different values in canlib vs kvadblib
         # Check frame.flags first, since it may be '0'
         if frame.flags and canlib_MessageFlag.EXT in frame.flags:
             flags = flags | MessageFlag.EXT
         # Still using legacy version of get_message_by_id in order to be
         # backwards compliant.
-        message = self.get_message_by_id(can_id, flags)
+        message = self.get_message_by_id(id, flags)
         return message.bind(frame)
 
     def new_attribute_definition(self, name, owner, type, definition):

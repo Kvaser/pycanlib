@@ -322,9 +322,6 @@ class LEDAction(CEnum):
 
     The following can be used together with `canlib.canlib.Channel.flashLeds`.
 
-    .. versionchanged:: 1.18
-       Added LEDs 4 through 11 (needs CANlib v5.19+)
-
     """
 
     ALL_LEDS_ON = 0  #: Turn all LEDs on.
@@ -337,22 +334,6 @@ class LEDAction(CEnum):
     LED_2_OFF = 7  #: Turn LED 2 off.
     LED_3_ON = 8  #: Turn LED 3 on.
     LED_3_OFF = 9  #: Turn LED 3 off.
-    LED_4_ON = 10  #: Turn LED 4 on.
-    LED_4_OFF = 11  #: Turn LED 4 off.
-    LED_5_ON = 12  #: Turn LED 5 on.
-    LED_5_OFF = 13  #: Turn LED 5 off.
-    LED_6_ON = 14  #: Turn LED 6 on.
-    LED_6_OFF = 15  #: Turn LED 6 off.
-    LED_7_ON = 16  #: Turn LED 7 on.
-    LED_7_OFF = 17  #: Turn LED 7 off.
-    LED_8_ON = 18  #: Turn LED 8 on.
-    LED_8_OFF = 19  #: Turn LED 8 off.
-    LED_9_ON = 20  #: Turn LED 9 on.
-    LED_9_OFF = 21  #: Turn LED 9 off.
-    LED_10_ON = 22  #: Turn LED 10 on.
-    LED_10_OFF = 23  #: Turn LED 10 off.
-    LED_11_ON = 24  #: Turn LED 11 on.
-    LED_11_OFF = 25  #: Turn LED 11 off.
 
 
 class TransceiverType(CEnum):

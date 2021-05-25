@@ -5,7 +5,7 @@ import ctypes as ct
 from ..canlib import MessageFlag as CanMessageFlag
 from ..frame import Frame
 from . import wrapper
-from .attribute import Attribute, EnumValue
+from .attribute import Attribute
 from .bound_message import BoundMessage
 from .enums import (AttributeOwner, MessageFlag, SignalByteOrder,
                     SignalMultiplexMode, SignalType)
@@ -67,7 +67,7 @@ class Message(object):
     def __ne__(self, other):
         return not self == other
 
-    def __str__(self):
+    def __repr__(self):
         return "Message(name={!r}, id={!r}, flags={!r}, dlc={!r}, comment={!r})".format(
             self.name, self.id, self.flags, self.dlc, self.comment
         )
@@ -130,10 +130,6 @@ class Message(object):
         If the attribute is not set on the message, we return the attribute
         definition default value.
 
-        .. versionchanged:: 1.18
-            When an EnumAttribute is not set, the default value will now be
-            returned as `int` (instead of `EnumValue` with empty `name`).
-
         """
         ah = ct.c_void_p()
 
@@ -153,11 +149,6 @@ class Message(object):
         else:
             attribute = Attribute(self._db, ah)
             value = attribute.value
-            # if the attribute was an EnumAttribute, find the value
-            try:
-                value = value.value
-            except:
-                pass
         return value
 
     def get_signal(self, name):
@@ -266,11 +257,7 @@ class Message(object):
         """`str`: Comment message"""
         buf = ct.create_string_buffer(255)
         dll.kvaDbGetMsgComment(self._handle, buf, ct.sizeof(buf))
-        try:
-            comment = buf.value.decode('utf-8')
-        except UnicodeDecodeError:
-            comment = buf.value.decode('cp1252')
-        return comment
+        return buf.value.decode('utf-8')
 
     @comment.setter
     def comment(self, value):

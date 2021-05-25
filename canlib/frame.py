@@ -27,31 +27,6 @@ def dlc_to_bytes(dlc, canFd=False):
         return min(bytes, 8)
 
 
-def bytes_to_dlc(num_bytes, canFD=True):
-    """Calculate minimum DLC that can hold number of bytes
-
-    .. versionadded:: 1.18
-
-    """
-    if not canFD:
-        return num_bytes
-    if num_bytes < 8:
-        return num_bytes
-    if num_bytes <= 12:
-        return 9
-    if num_bytes <= 16:
-        return 10
-    if num_bytes <= 20:
-        return 11
-    if num_bytes <= 24:
-        return 12
-    if num_bytes <= 32:
-        return 13
-    if num_bytes <= 48:
-        return 14
-    return 15
-
-
 class Frame(object):
     """Represents a CAN message
 

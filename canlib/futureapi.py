@@ -226,10 +226,6 @@ def kvaDbGetMsgByIdEx(dh, nah):
     raise NotYetSupportedError("Reading database attributes requires CANlib SDK v5.34 or newer.")
 
 
-def kvaDbGetMsgByPGNEx(dh, nah):
-    raise NotYetSupportedError("Accessing kvaDbGetMsgByPGNEx requires CANlib SDK v5.34 or newer.")
-
-
 def kvBitrateToBusParamsTq(hnd, freq, nominal):
     raise NotYetSupportedError(
         "Translating can_BITRATE_xxx constants to corresponding bus parameter values requires CANlib SDK v5.35 or newer."

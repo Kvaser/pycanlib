@@ -262,9 +262,6 @@ def to_BusParamsTq(clk_freq, bus_param, prescaler=1, data=False):
         bptq.prop = bptq.prop // prescaler
         assert bptq.tq == bptq.prop + bptq.phase1 + bptq.phase2 + 1
 
-    # if bptq.sjw < 1:
-    #     bptq.sjw = 1
-
     if data is True:
         bptq.phase1 += bptq.prop
         bptq.prop = 0
@@ -457,7 +454,7 @@ class BusParamsTq:
             return False
         return True
 
-    def __str__(self):
+    def __repr__(self):
         txt = (
             f"BusParamsTq(tq={self.tq}, prop={self.prop}, phase1={self.phase1},"
             f" phase2={self.phase2}, sjw={self.sjw}, prescaler={self.prescaler})"

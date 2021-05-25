@@ -39,18 +39,20 @@ LINlib         canlib.linlib         linlib.dll           liblinlib.so
 .. [1] The kvlclib.dll depends on dll files from matlab wich are installed alongside kvlclib.dll.
 .. [2] The kvaMemoLib0600.dll, which supports older devices, is not supported under Linux.
 
+What's new
+------------
+For a complete set of release notes, see `Release Notes <Relnotes.html>`__.
+
+
 Installation
 ------------
-Install the Python package from `PyPI <https://pypi.org/project/canlib/>`_ using e.g. ``pip``:
+Install the Python package using e.g. ``pip``:
 
-.. code-block:: shell
-
-    $ pip install canlib
-
-If you have downloaded the package zip file from the `Kvaser Download page <https://www.kvaser.com/downloads-kvaser/>`_, first unzip ``pycanlib.zip``. Then navigate to the unzipped pycanlib using the command line. It should contain the file ``canlib-x.y.z-py2.py3-none-any.whl``, where x,y,z are version numbers.
+Unzip ``pycanlib.zip``. Navigate to the unzipped pycanlib in the command line. It should
+contain the file ``canlib-x.y.z-py2.py3-none-any.whl``, where x,y,z are version numbers.
 Run the following command:
 
-.. code-block:: shell
+.. code-block:: bash
 
     $ pip install canlib-x.y.z-py2.py3-none-any.whl
 
@@ -76,42 +78,29 @@ If more than just CANlib will be used, the rest of the supported libraries will 
 Usage
 -----
 
-Example of using canlib to list some information about connected Kvaser devices:
+Example of using canlib to list connected Kvaser devices:
 
 .. code-block:: Python
 
         from canlib import canlib
 
         num_channels = canlib.getNumberOfChannels()
-        print(f"Found {num_channels} channels")
-        for ch in range(num_channels):
-            chd = canlib.ChannelData(ch)
-            print(f"{ch}. {chd.channel_name} ({chd.card_upc_no} / {chd.card_serial_no})")
-
+        print("Found %d channels" % num_channels)
+        for ch in range(0, num_channels):
+            chdata = canlib.ChannelData(ch)
+            print("%d. %s (%s / %s)" % (ch, chdata.channel_name,
+                                        chdata.card_upc_no,
+                                        chdata.card_serial_no))
 
 Which may result in:
 
-.. code-block:: shell
+.. code-block:: Python
 
         Found 4 channels
-        0. Kvaser Memorator Pro 2xHS v2 (channel 0) (73-30130-00819-9 / 12330)
-        1. Kvaser Memorator Pro 2xHS v2 (channel 1) (73-30130-00819-9 / 12330)
+        0. Kvaser Memorator Professional HS/HS (channel 0) (73-30130-00351-4 / 12377)
+        1. Kvaser Memorator Professional HS/HS (channel 1) (73-30130-00351-4 / 12377)
         2. Kvaser Virtual CAN Driver (channel 0) (00-00000-00000-0 / 0)
         3. Kvaser Virtual CAN Driver (channel 1) (00-00000-00000-0 / 0)
-
-..
-   .. code-block:: Python
-
-           >>> from canlib import canlib
-           >>> canlib.getNumberOfChannels()
-           4
-           >>> for ch in range(canlib.getNumberOfChannels()):
-           ...     chd = canlib.ChannelData(ch)
-           ...     print(f"{ch}. {chd.channel_name} ({chd.card_upc_no} / {chd.card_serial_no})")
-           0. Kvaser Memorator Pro 2xHS v2 (channel 0) (73-30130-00819-9 / 12330)
-           1. Kvaser Memorator Pro 2xHS v2 (channel 1) (73-30130-00819-9 / 12330)
-           2. Kvaser Virtual CAN Driver (channel 0) (00-00000-00000-0 / 0)
-           3. Kvaser Virtual CAN Driver (channel 1) (00-00000-00000-0 / 0)
 
 
 Support
@@ -122,14 +111,9 @@ You are invited to visit the Kvaser web pages at https://www.kvaser.com/support/
 Bug reports, contributions, suggestions for improvements, and similar things are much appreciated and can be sent by e-mail to support@kvaser.com.
 
 
-What's new
-------------
-A complete set of release notes are available in the package documentation included in the zip file available at the `Kvaser Download page <https://www.kvaser.com/downloads-kvaser/>`_.
 
-
-
-Links
------
+References
+----------
 
   * Kvaser CANlib SDK Page: https://www.kvaser.com/developer/canlib-sdk/
   * Description of CANlib SDK library contents: https://www.kvaser.com/developer-blog/get-hardware-kvaser-sdk-libraries/

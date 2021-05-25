@@ -5,7 +5,6 @@ from .. import deprecation
 from ..futureapi import NotYetSupportedError
 from .properties import _PROPERTY_TYPE
 from .readerformat import ReaderFormat
-from .writerformat import WriterFormat
 from .wrapper import dll
 
 
@@ -21,15 +20,8 @@ class Converter(object):
     its files, `flush` can be used to simulate destroying and recreating the
     converter object.
 
-    Args:
-        filename (string): Name of output file
-        file_format (`~canlib.kvlclib.FileFormat` | `~canlib.kvlclib.WriterFormat` ): A supported output format
-
     Note:
         No more than 128 converters can be open at the same time.
-
-    .. versionchanged:: 1.18
-        The `file_format` parameter now accepts `~canlib.kvlclib.WriterFormat` as well.
 
     """
 
@@ -37,10 +29,8 @@ class Converter(object):
         self.format = file_format
         self.handle = ct.c_void_p(None)
         self.filename = os.path.realpath(filename)
-        if isinstance(file_format, WriterFormat):
-            file_format = file_format.id_
         self.file_format = file_format
-        dll.kvlcCreateConverter(ct.byref(self.handle), self.filename.encode(), self.file_format)
+        dll.kvlcCreateConverter(ct.byref(self.handle), self.filename.encode(), file_format.id_)
 
     def __del__(self):
         """Delete the converter and close all files."""
@@ -76,30 +66,6 @@ class Converter(object):
         Convert one event from input file and write it to output file.
         """
         dll.kvlcConvertEvent(self.handle)
-
-    def feedLogEvent(self, event):
-        """Feed one event to the converter.
-
-        Used when reading log files directly from device.
-
-        """
-        # event should be of type memoLogEventEx
-        # event._asMrtEvent()
-        memoLogEventEx = event._asMrtEvent()
-        dll.kvlcFeedLogEvent(self.handle, ct.byref(memoLogEventEx))
-
-    def feedNextFile(self):
-        """Prepare for new file
-
-        Notify the converter that next event in kvlcFeedLogEvent() will come
-        from another file. Used when reading log files directly from device.
-
-        E.g. use this function with KVLC_FILE_FORMAT_MEMO_LOG when using
-        KVMLIB to read events from a Kvaser Memorator connected to USB.
-
-        .. versionadded:: 1.18
-
-        """
 
     def flush(self):
         """Recreate the converter so changes are saved to disk
@@ -274,18 +240,12 @@ class Converter(object):
         .. versionchanged:: 1.16
             The `file_format` parameter now accepts `~canlib.kvlclib.ReaderFormat` as well.
 
-        .. versionchanged:: 1.18
-            If `filename` is `None`, the format for `feedLogEvent` is set.
-
         """
+        filename = os.path.realpath(filename)
+        ct_filename = ct.c_char_p(filename.encode('utf-8'))
         if isinstance(file_format, ReaderFormat):
             file_format = file_format.id_
-        if filename is None:
-            dll.kvlcFeedSelectFormat(self.handle, file_format)
-        else:
-            filename = os.path.realpath(filename)
-            ct_filename = ct.c_char_p(filename.encode('utf-8'))
-            dll.kvlcSetInputFile(self.handle, ct_filename, file_format)
+        dll.kvlcSetInputFile(self.handle, ct_filename, file_format)
 
     @deprecation.deprecated.favour(".format.getPropertyDefault")
     def getPropertyDefault(self, wr_property):

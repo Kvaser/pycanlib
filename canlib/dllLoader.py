@@ -142,6 +142,11 @@ def load_dll(win_name=None, linux_name=None):
         the OS try and find a matching shared library object.
 
     """
+    # ReadTheDocs does not have canlib dll installed...
+    if os.environ.get('READTHEDOCS') == 'True':
+        from unittest.mock import MagicMock
+        return MagicMock()
+
     dir = os.getcwd()
     installDir = os.environ.get("KVDLLPATH", "")
     if not installDir:

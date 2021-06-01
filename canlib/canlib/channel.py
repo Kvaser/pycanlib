@@ -140,213 +140,6 @@ class ScriptText(str):
         return obj
 
 
-class BusParamHelper(object):
-    """Helper class for setting and getting bus parameters. Automatically
-    converts supported objects to `BusParamsTq`.
-    """
-
-    def __init__(self, channel):
-        self.channel = channel
-        self.clk_freq = channel.channel_data.clock_info.frequency()
-
-    def bitrate_to_BusParamsTq(self, freq_a, freq_d=None):
-        """Calculate bus parameters based on predefined frequencies.
-
-        This function uses the `~canlib.canlib.Bitrate` and
-        `~canlib.canlib.BitrateFD` values to create bus parameters for use with
-        the new bus parameter API.
-
-        Args:
-            freq_a (`~canlib.canlib.Bitrate` or `~canlib.canlib.BitrateFD`): The bitrate for classic CAN channels specified as a `~canlib.canlib.Bitrate`, or the arbitration bitrate for CAN FD channels specified as a `~canlib.canlib.BitrateFD`.
-            freq_d (`~canlib.canlib.BitrateFD`): Data bitrate for CAN FD channels.
-
-        Returns:
-            (`nominal`, `None`) for classic CAN, where `nominal` is a `~busparams.BusParamsTq` object.
-
-            (`nominal`, `data`) for CAN FD, where both `nominal` and `data` are `~busparams.BusParamsTq` objects, representing the arbitration bitrate and the data bitrate, respectively.
-
-        .. versionadded:: 1.17
-
-        """
-        if self.channel.is_can_fd() and freq_d is None:
-            raise ValueError("Data bitrate must be specified for CAN FD channels.")
-
-        nominal = CanBusParamsTq()
-        if self.channel.is_can_fd():
-            data = CanBusParamsTq()
-            dll.kvBitrateToBusParamsFdTq(
-                self.channel.handle, freq_a, freq_d, ct.byref(nominal), ct.byref(data)
-            )
-            return (nominal._tobusparamstq(), data._tobusparamstq())
-        else:
-            dll.kvBitrateToBusParamsTq(self.channel.handle, freq_a, ct.byref(nominal))
-            return (nominal._tobusparamstq(), None)
-
-    def set(self, nominal, data=None):
-        """Set bus parameters. Both arguments must be of the same type.
-
-        Args:
-            nominal (`~.busparams.BusParamsTq` or `~.busparams.BitrateSetting`): Specifies bus parameters for classic CAN or arbitration phase parameters for CAN FD.
-
-            data (`~.busparams.BusParamsTq` or `~.busparams.BitrateSetting`): Specifies data rate parameters for CAN FD.
-
-        """
-        if data is not None and (type(nominal) != type(data)):
-            raise TypeError("Arguments must have the same type.")
-
-        new_nominal = nominal
-        new_data = data
-
-        if isinstance(nominal, BitrateSetting):
-            # Check if freq_a and freq_d are predefined bitrates
-            if isinstance(nominal.freq, Bitrate) or isinstance(nominal.freq, BitrateFD):
-                freq_a = nominal.freq
-            else:
-                freq_a = None
-
-            if self.channel.is_can_fd() and isinstance(data.freq, BitrateFD):
-                freq_d = data.freq
-            else:
-                freq_d = None
-
-            if freq_a is not None and freq_d is not None:
-                new_nominal, new_data = self.bitrate_to_BusParamsTq(freq_a, freq_d)
-
-            elif freq_a is not None:
-                # freq_d must be specified in bitrate_to_BusParamsTq() for CAN FD,
-                # so we use a default value to obtain a nominal bitrate.
-                freq_d = BitrateFD.BITRATE_1M_80P
-                new_nominal, _ = self.bitrate_to_BusParamsTq(freq_a, freq_d)
-                new_data = to_BusParamsTq(
-                    self.clk_freq, data, prescaler=new_nominal.prescaler, data=True
-                )
-            elif freq_d is not None:
-                # freq_a must be specified in bitrate_to_BusParamsTq() for CAN FD,
-                # so we use a default value to obtain a data bitrate.
-                freq_a = BitrateFD.BITRATE_500K_80P
-                _, new_data = self.bitrate_to_BusParamsTq(freq_a, freq_d)
-                new_nominal = to_BusParamsTq(
-                    self.clk_freq, nominal, prescaler=new_data.prescaler, data=False
-                )
-            else:
-                new_nominal = to_BusParamsTq(self.clk_freq, nominal, prescaler=2)
-                new_data = to_BusParamsTq(self.clk_freq, data, prescaler=2, data=True)
-
-        if self.channel.is_can_fd():
-            dll.canSetBusParamsFdTq(
-                self.channel.handle,
-                CanBusParamsTq._frombusparamstq(new_nominal),
-                CanBusParamsTq._frombusparamstq(new_data),
-            )
-        else:
-            dll.canSetBusParamsTq(
-                self.channel.handle, CanBusParamsTq._frombusparamstq(new_nominal)
-            )
-
-    def get(self):
-        """ Get current bus parameters.
-
-        Returns:
-            (`nominal`, `data`) tuple where `nominal` and `data` are the bus parameters
-            as `~.busparams.BusParamsTq` objects. data is None for classic CAN channels.
-
-        """
-        nominal = CanBusParamsTq()
-        data = None
-        if self.channel.is_can_fd():
-            data = CanBusParamsTq()
-            dll.canGetBusParamsFdTq(self.channel.handle, ct.byref(nominal), ct.byref(data))
-            return (
-                nominal._tobusparamstq(),
-                data._tobusparamstq(),
-            )
-        else:
-            dll.canGetBusParamsTq(self.channel.handle, ct.byref(nominal))
-            return (
-                nominal._tobusparamstq(),
-                None,
-            )
-
-
-class BusParamHelperLegacy(object):
-    """Helper class for setting and getting bus parameters. Automatically
-    converts `BitrateSetting` objects to (freq, tseg1, tseg2, sjw) tuples.
-    """
-
-    def __init__(self, channel):
-        self.channel = channel
-
-    def set(self, nominal, data=None):
-        """Set bus parameters.
-
-        Args:
-            nominal (`~.busparams.BitrateSetting`): Specifies bus parameters for classic CAN or arbitration phase parameters for CAN FD.
-
-            data (`~.busparams.BusParamsTq` or `~.busparams.BitrateSetting`): Specifies data rate parameters for CAN FD.
-
-        """
-        new_nominal = (
-            nominal.freq,
-            nominal.tseg1,
-            nominal.tseg2,
-            nominal.sjw,
-            nominal.nosamp,
-            nominal.syncMode,
-        )
-
-        dll.canSetBusParams(self.channel.handle, *new_nominal)
-
-        if data is not None:
-            new_data = (data.freq, data.tseg1, data.tseg2, data.sjw)
-            dll.canSetBusParamsFd(self.channel.handle, *new_data)
-
-    def get(self):
-        """Get bus parameters.
-
-        Returns:
-            (`nominal`, `data`) tuple where nominal and data are the bus parameters as `~.busparams.BitrateSetting` objects. data is None for classic CAN channels.
-
-        """
-        freq = ct.c_long()
-        tseg1 = ct.c_uint()
-        tseg2 = ct.c_uint()
-        sjw = ct.c_uint()
-        noSamp = ct.c_uint()
-        syncmode = ct.c_uint()
-
-        dll.canGetBusParams(
-            self.channel.handle,
-            ct.byref(freq),
-            ct.byref(tseg1),
-            ct.byref(tseg2),
-            ct.byref(sjw),
-            ct.byref(noSamp),
-            ct.byref(syncmode),
-        )
-
-        nominal = BitrateSetting(
-            freq.value, tseg1.value, tseg2.value, sjw.value, noSamp.value, syncmode.value
-        )
-        data = None
-
-        if self.channel.is_can_fd():
-            freq_brs = ct.c_long()
-            tseg1_brs = ct.c_uint()
-            tseg2_brs = ct.c_uint()
-            sjw_brs = ct.c_uint()
-            dll.canGetBusParamsFd(
-                self.channel.handle,
-                ct.byref(freq_brs),
-                ct.byref(tseg1_brs),
-                ct.byref(tseg2_brs),
-                ct.byref(sjw_brs),
-            )
-
-            data = BitrateSetting(freq_brs.value, tseg1_brs.value, tseg2_brs.value, sjw_brs.value)
-
-        return (nominal, data)
-
-
 class Channel(object):
     """Helper class that represents a CANlib channel.
 
@@ -381,13 +174,6 @@ class Channel(object):
         self.handle = dll.canOpenChannel(channel_number, flags)
         self.envvar = EnvVar(self)
         self._device = None
-        self.bhhelper = None  #: `.BusParamHelper`/`.BusParamHelperLegacy` for current channel
-
-        # Check if BusParamsTq is supported. This should be more readable, see BLB-2078.
-        if self.channel_data.__getattr__('channel_cap_ex') == (1, 1):
-            self.bphelper = BusParamHelper(self)
-        else:
-            self.bphelper = BusParamHelperLegacy(self)
 
     def __enter__(self):
         return self
@@ -578,90 +364,7 @@ class Channel(object):
             Now accepts `canlib.canlib.Bitrate` and `canlib.canlib.BitrateFD` enumerations.
 
         """
-        if isinstance(freq, Bitrate):
-            nominal = BitrateSetting.from_predefined(freq)
-        else:
-            nominal = BitrateSetting(freq, tseg1, tseg2, sjw, noSamp, syncmode)
-        data = None
-        if self.is_can_fd():
-            try:
-                _, data = self.bphelper.get()
-                if isinstance(data, BusParamsTq):
-                    clk_freq = self.channel_data.clock_info.frequency()
-                    data = to_BitrateSetting(clk_freq, data)
-            except CanError:
-                # default to 1Mbit
-                data = BitrateSetting(const.canFD_BITRATE_1M_80P, tseg1=0, tseg2=0, sjw=0)
-
-        self.bphelper.set(nominal, data)
-
-    def get_bus_params_tq(self):
-        """Get bus timing parameters, in time quanta
-
-        This function retrieves the current bus parameters for the specified
-        channel. Only the returned `nominal` parameter is valid when classic CAN
-        is in use.
-
-        Returns: A `tuple` containing:
-
-            *nominal*: (`~canlib.canlib.busparams.BusParamsTq`) Nominal bus
-            timing parameters, also used in classic CAN.
-
-            *data*: (`~canlib.canlib.busparams.BusParamsTq`) Bus timing
-            parameters for data rate in CAN FD.
-
-        .. versionadded:: 1.16
-
-        """
-        if isinstance(self.bphelper, BusParamHelperLegacy):
-            raise TypeError(
-                self._bus_params_tq_err_msg.format(
-                    self.channel_data.channel_name,
-                    self.channel_data.card_firmware_rev.major,
-                    self.channel_data.card_firmware_rev.minor,
-                    self.channel_data.card_firmware_rev.build,
-                )
-            )
-
-        return self.bphelper.get()
-
-    def set_bus_params_tq(self, nominal, data=None):
-        """Set bus timing parameters, using time quanta
-
-        This function sets the bus timing parameters for the specified CAN
-        controller. When setting bus parameters for CAN FD, both `nominal` and
-        `data` must be given.
-
-        If you are using multiple handles to the same physical channel, for
-        example if you are implementing a multithreaded application, you must
-        call `busOff()` once for each handle. The physical channel will not go
-        off bus until the last handle to the channel goes off bus.
-        The same applies to `busOn()`.
-
-        Args:
-            nominal (`~canlib.canlib.busparams.BusParamsTq`): Nominal Bus
-                timing parameters, also used for classic CAN
-
-            data (`~canlib.canlib.busparams.BusParamsTq`): Bus timing parameters
-                for data rate in CAN FD.
-
-        .. versionadded:: 1.16
-
-        """
-        if isinstance(self.bphelper, BusParamHelperLegacy):
-            raise TypeError(
-                self._bus_params_tq_err_msg.format(
-                    self.channel_data.channel_name,
-                    self.channel_data.card_firmware_rev.major,
-                    self.channel_data.card_firmware_rev.minor,
-                    self.channel_data.card_firmware_rev.build,
-                )
-            )
-
-        if self.is_can_fd() and data is None:
-            raise ValueError("data must be specified for CAN FD channels.")
-
-        self.bphelper.set(nominal, data)
+        dll.canSetBusParams(self.handle, freq, tseg1, tseg2, sjw, noSamp, syncmode)
 
     def getBusParams(self):
         """Get bus timing parameters for classic CAN.
@@ -685,20 +388,31 @@ class Channel(object):
             *syncmode*: Unsupported, always read as zero.
 
         """
-        nominal, _ = self.bphelper.get()
-        if isinstance(nominal, BusParamsTq):
-            clk_freq = self.channel_data.clock_info.frequency()
-            bs = to_BitrateSetting(clk_freq, nominal)
-            return (bs.freq, bs.tseg1, bs.tseg2, bs.sjw, bs.nosamp, bs.syncMode)
-        else:
-            return (
-                nominal.freq,
-                nominal.tseg1,
-                nominal.tseg2,
-                nominal.sjw,
-                nominal.nosamp,
-                nominal.syncMode,
-            )
+        freq = ct.c_long()
+        tseg1 = ct.c_uint()
+        tseg2 = ct.c_uint()
+        sjw = ct.c_uint()
+        noSamp = ct.c_uint()
+        syncmode = ct.c_uint()
+
+        dll.canGetBusParams(
+            self.handle,
+            ct.byref(freq),
+            ct.byref(tseg1),
+            ct.byref(tseg2),
+            ct.byref(sjw),
+            ct.byref(noSamp),
+            ct.byref(syncmode),
+        )
+
+        return (
+            freq.value,
+            tseg1.value,
+            tseg2.value,
+            sjw.value,
+            noSamp.value,
+            syncmode.value,
+        )
 
     def setBusParamsFd(self, freq_brs, tseg1_brs=0, tseg2_brs=0, sjw_brs=0):
         """Set bus timing parameters for BRS in CAN FD
@@ -735,18 +449,7 @@ class Channel(object):
                     "opened with the CAN_FD or CAN_FD_NONISO flags."
                 )
             )
-
-        nominal, _ = self.bphelper.get()
-        if isinstance(nominal, BusParamsTq):
-            clk_freq = self.channel_data.clock_info.frequency()
-            nominal = to_BitrateSetting(clk_freq, nominal)
-
-        if isinstance(freq_brs, BitrateFD):
-            data = BitrateSetting.from_predefined(freq_brs)
-        else:
-            data = BitrateSetting(freq_brs, tseg1_brs, tseg2_brs, sjw_brs)
-
-        self.bphelper.set(nominal, data)
+        dll.canSetBusParamsFd(self.handle, freq_brs, tseg1_brs, tseg2_brs, sjw_brs)
 
     def getBusParamsFd(self):
         """Get bus timing parameters for BRS in CAN FD.
@@ -782,14 +485,129 @@ class Channel(object):
                     "opened with the CAN_FD or CAN_FD_NONISO flags."
                 )
             )
+        freq_brs = ct.c_long()
+        tseg1_brs = ct.c_uint()
+        tseg2_brs = ct.c_uint()
+        sjw_brs = ct.c_uint()
 
-        _, data = self.bphelper.get()
-        if isinstance(data, BusParamsTq):
-            clk_freq = self.channel_data.clock_info.frequency()
-            bs = to_BitrateSetting(clk_freq, data)
-            return (bs.freq, bs.tseg1, bs.tseg2, bs.sjw)
+        dll.canGetBusParamsFd(
+            self.handle,
+            ct.byref(freq_brs),
+            ct.byref(tseg1_brs),
+            ct.byref(tseg2_brs),
+            ct.byref(sjw_brs),
+        )
+
+        return (freq_brs.value, tseg1_brs.value, tseg2_brs.value, sjw_brs.value)
+
+    def set_bus_params_tq(self, nominal, data=None):
+        """Set bus timing parameters, using time quanta
+
+        This function sets the bus timing parameters for the specified CAN
+        controller. When setting bus parameters for CAN FD, both `nominal` and
+        `data` must be given.
+
+        If you are using multiple handles to the same physical channel, for
+        example if you are implementing a multithreaded application, you must
+        call `busOff()` once for each handle. The physical channel will not go
+        off bus until the last handle to the channel goes off bus.
+        The same applies to `busOn()`.
+
+        Args:
+            nominal (`~canlib.canlib.busparams.BusParamsTq`): Nominal Bus
+                timing parameters, also used for classic CAN
+
+            data (`~canlib.canlib.busparams.BusParamsTq`): Bus timing parameters
+                for data rate in CAN FD.
+
+        .. versionadded:: 1.16
+
+        """
+        if self.is_can_fd():
+            if data is None:
+                raise ValueError("data must be specified for CAN FD channels.")
+            else:
+                dll.canSetBusParamsFdTq(
+                    self.handle,
+                    CanBusParamsTq._frombusparamstq(nominal),
+                    CanBusParamsTq._frombusparamstq(data),
+                )
         else:
-            return (data.freq, data.tseg1, data.tseg2, data.sjw)
+            dll.canSetBusParamsTq(
+                self.handle, CanBusParamsTq._frombusparamstq(nominal)
+            )
+
+    def get_bus_params_tq(self):
+        """Get bus timing parameters, in time quanta
+
+        This function retrieves the current bus parameters for the specified
+        channel. Only the returned `nominal` parameter is valid when classic CAN
+        is in use.
+
+        Returns: A `tuple` containing:
+
+            *nominal*: (`~canlib.canlib.busparams.BusParamsTq`) Nominal bus
+            timing parameters, also used in classic CAN.
+
+            *data*: (`~canlib.canlib.busparams.BusParamsTq`) Bus timing
+            parameters for data rate in CAN FD.
+
+        .. versionadded:: 1.16
+
+        """
+        nominal = CanBusParamsTq()
+        if self.is_can_fd():
+            data = CanBusParamsTq()
+            dll.canGetBusParamsFdTq(self.handle, ct.byref(nominal), ct.byref(data))
+            return (
+                nominal._tobusparamstq(),
+                data._tobusparamstq(),
+            )
+        else:
+            dll.canGetBusParamsTq(self.handle, ct.byref(nominal))
+            return (
+                nominal._tobusparamstq(),
+                None,
+            )
+
+    def bitrate_to_BusParamsTq(self, freq_a, freq_d=None):
+        """Calculate bus parameters based on predefined frequencies.
+
+        This function uses the `~canlib.canlib.Bitrate` and
+        `~canlib.canlib.BitrateFD` values to create bus parameters for use with
+        the new bus parameter API.
+
+        Args:
+            freq_a (`~canlib.canlib.Bitrate` or `~canlib.canlib.BitrateFD`): The bitrate for classic CAN channels specified as a `~canlib.canlib.Bitrate`, or the arbitration bitrate for CAN FD channels specified as a `~canlib.canlib.BitrateFD`.
+            freq_d (`~canlib.canlib.BitrateFD`): Data bitrate for CAN FD channels.
+
+        Returns:
+            (`nominal`, `None`) for classic CAN, where `nominal` is a `~busparams.BusParamsTq` object.
+
+            (`nominal`, `data`) for CAN FD, where both `nominal` and `data` are `~busparams.BusParamsTq` objects, representing the arbitration bitrate and the data bitrate, respectively.
+
+        .. versionadded:: 1.17
+
+        """
+        if self.is_can_fd() and freq_d is None:
+            raise ValueError("Data bitrate must be specified for CAN FD channels.")
+
+        nominal = CanBusParamsTq()
+        if self.is_can_fd():
+            data = CanBusParamsTq()
+            dll.kvBitrateToBusParamsFdTq(
+                self.handle,
+                freq_a,
+                freq_d,
+                ct.byref(nominal),
+                ct.byref(data))
+            return (nominal._tobusparamstq(), data._tobusparamstq())
+        else:
+            dll.kvBitrateToBusParamsTq(
+                self.handle,
+                freq_a,
+                ct.byref(nominal))
+            return (nominal._tobusparamstq(), None)
 
     def busOn(self):
         """Takes the specified channel on-bus.

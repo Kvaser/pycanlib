@@ -42,6 +42,7 @@ class Property(CEnum):
     TIMEZONE = 29  # Timezone for absolute timestamps
     FULLY_QUALIFIED_NAMES = 30  # Write fully qualified signal names
     NUMBER_OF_DATA_DECIMALS = 31  # Number of data decimals (0-50)
+    COMPRESSION_LEVEL = 32  # ZLIB compression level for writers that use ZLIB for compression. [-1, 9].
 
     SIGNAL_BASED = (
         1001  # Writes signals and not data frames. Used only with kvlcIsPropertySupported().
@@ -82,6 +83,7 @@ _PROPERTY_TYPE = {
     Property.TIMEZONE: ct.c_int,
     Property.FULLY_QUALIFIED_NAMES: ct.c_int,
     Property.NUMBER_OF_DATA_DECIMALS: ct.c_int,
+    Property.COMPRESSION_LEVEL: ct.c_int,
     Property.SIGNAL_BASED: None,
     Property.SHOW_SIGNAL_SELECT: None,
     Property.ATTACHMENTS: None,

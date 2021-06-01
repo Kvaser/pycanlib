@@ -7,6 +7,24 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.18.846  (25-MAY-2021)
+===========================================================================
+* `canlib.canlib`:
+
+  - Added LEDs 4 through 11 to `canlib.canlib.LEDAction` (needs CANlib v5.19+).
+
+* `canlib.kvadblib`:
+
+  - Default value of EnumAttribute is now returned as `int`
+  - Added wrapper for kvaDbGetMsgByPGNEx
+
+* `canlib.kvlclib`:
+
+  - Added wrapper for kvlcFeedLogEvent
+
+* Added `canlib.j1939` module for some j1939 helpers.
+
+
 New Features and Fixed Problems in V1.17.748  (16-FEB-2021)
 ===========================================================================
 * `canlib.canlib`:
@@ -58,7 +76,7 @@ New Features and Fixed Problems in V1.16.588  (09-SEP-2020)
   - The `file_format` parameter in `canlib.kvlclib.Converter.setInputFile` now
     accepts `~canlib.kvlclib.ReaderFormat` as well.
   - Added a newer version of the BLF format, now also with CAN FD support
-   'canlib.kvlclib.FileFormat.VECTOR_BLF_FD'. The format has both read and write
+    'canlib.kvlclib.FileFormat.VECTOR_BLF_FD'. The format has both read and write
     capabilities.
 
 

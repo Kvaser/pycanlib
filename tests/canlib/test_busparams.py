@@ -396,7 +396,7 @@ def test_to_BusParamsTq(channel_no):
     """Test converting bus parameters using to_BusParamsTq()"""
 
     ch = canlib.openChannel(channel_no, canlib.Open.CAN_FD)
-    if isinstance(ch.bphelper, canlib.channel.BusParamHelperLegacy):
+    if not (ch.channel_data.__getattr__('channel_cap_ex') == (1, 1)):
         pytest.skip()
     clk_freq = ch.channel_data.clock_info.frequency()
     # Bitrates are 500Kbit/s and 1Mbit/s
@@ -410,32 +410,30 @@ def test_to_BusParamsTq(channel_no):
     assert canlib.busparams.to_BusParamsTq(clk_freq, bsD, prescaler=2, data=True) == bpD
     ch.close()
 
-
 @pytest.mark.feature(features.canfd)
 def test_to_BitrateSetting(channel_no):
     """Test converting bus parameters using to_BitrateSetting()"""
     ch = canlib.openChannel(channel_no, canlib.Open.CAN_FD)
-    if isinstance(ch.bphelper, canlib.channel.BusParamHelperLegacy):
+    if not (ch.channel_data.__getattr__('channel_cap_ex') == (1, 1)):
         pytest.skip()
     clk_freq = ch.channel_data.clock_info.frequency()
-    bsA = canlib.busparams.BitrateSetting(freq=500000.0, tseg1=63, tseg2=16, sjw=16)
-    bsD = canlib.busparams.BitrateSetting(freq=1000000.0, tseg1=31, tseg2=8, sjw=8)
+    bsA = canlib.busparams.BitrateSetting(freq=500000, tseg1=63, tseg2=16, sjw=16)
+    bsD = canlib.busparams.BitrateSetting(freq=1000000, tseg1=31, tseg2=8, sjw=8)
     ch.setBusParams(bsA.freq, bsA.tseg1, bsA.tseg2, bsA.sjw)
     ch.setBusParamsFd(bsD.freq, bsD.tseg1, bsD.tseg2, bsD.sjw)
     assert canlib.busparams.to_BitrateSetting(clk_freq, ch.get_bus_params_tq()[0]) == bsA
     assert canlib.busparams.to_BitrateSetting(clk_freq, ch.get_bus_params_tq()[1]) == bsD
     ch.close()
 
-
 @pytest.mark.feature(features.canfd)
 def test_predefined_bitrates(channel_no):
     """ Test using predefined bitrates on channels supporting Tq"""
     ch = canlib.openChannel(channel_no, canlib.Open.CAN_FD)
-    if isinstance(ch.bphelper, canlib.channel.BusParamHelperLegacy):
+    if not (ch.channel_data.__getattr__('channel_cap_ex') == (1, 1)):
         pytest.skip()
     freq_a = canlib.canFD_BITRATE_500K_80P
     freq_d = canlib.canFD_BITRATE_1M_80P
-    bpA, bpD = ch.bphelper.bitrate_to_BusParamsTq(freq_a=freq_a, freq_d=freq_d)
+    bpA, bpD = ch.bitrate_to_BusParamsTq(freq_a=freq_a, freq_d=freq_d)
     ch.setBusParams(freq_a)
     ch.setBusParamsFd(freq_d)
     bp1, bp2 = ch.get_bus_params_tq()
@@ -448,25 +446,8 @@ def test_predefined_bitrates(channel_no):
     assert bp2.sync_jump_width() == bpD.sync_jump_width()
     ch.close()
 
-
-@pytest.mark.feature(features.canfd)
-def test_BusParamHelperLegacy_tq_err(channel_no):
-    """Test error message when trying to use tq functions on old devices"""
+def test_BusParam_set_and_get(channel_no):
     ch = canlib.openChannel(channel_no, canlib.Open.CAN_FD)
-    ch.bphelper = canlib.channel.BusParamHelperLegacy(ch)
-    bpA = canlib.busparams.BusParamsTq(tq=80, phase1=16, phase2=16, sjw=16, prescaler=2, prop=47)
-    bpD = canlib.busparams.BusParamsTq(tq=40, phase1=31, phase2=8, sjw=8, prescaler=2)
-    with pytest.raises(TypeError):
-        ch.set_bus_params_tq(bpA, bpD)
-    with pytest.raises(TypeError):
-        ch.get_bus_params_tq()
-
-    ch.close()
-
-
-def test_BusParamHelperLegacy_set_and_get(channel_no):
-    ch = canlib.openChannel(channel_no, canlib.Open.CAN_FD)
-    ch.bphelper = canlib.channel.BusParamHelperLegacy(ch)
     expectedA = (500000, 63, 16, 16)
     expectedD = (1000000, 31, 8, 8)
     ch.setBusParams(canlib.canFD_BITRATE_500K_80P)

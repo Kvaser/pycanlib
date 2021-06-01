@@ -31,7 +31,7 @@ This code print some basic information (device name, EAN number and serial numbe
 Send and receive single frame
 -----------------------------
 
-Here is some basic code to send and receive a single frame. 
+Here is some basic code to send and receive a single frame.
 
 .. code-block:: python
 
@@ -45,14 +45,14 @@ Here is some basic code to send and receive a single frame.
         print("Using channel: %s, EAN: %s" % (ChannelData(channel).channel_name,
                                               ChannelData(channel).card_upc_no))
         ch.setBusOutputControl(outputControl)
-        # Specifying a bus speed of 500 kbit/s. See documentation  
+        # Specifying a bus speed of 250 kbit/s. See documentation
         # for more informationon how to set bus parameters.
         params = canlib.busparams.BusParamsTq(
-            tq=8, 
-            phase1=2, 
-            phase2=2, 
-            sjw=1, 
-            prescaler=40, 
+            tq=8,
+            phase1=2,
+            phase2=2,
+            sjw=1,
+            prescaler=40,
             prop=3
         )
         ch.set_bus_params_tq(params)
@@ -71,8 +71,8 @@ Here is some basic code to send and receive a single frame.
     ch1 = setUpChannel(channel=1)
 
     frame = Frame(
-        id_=100, 
-        data=[1, 2, 3, 4], 
+        id_=100,
+        data=[1, 2, 3, 4],
         flags=canlib.MessageFlag.EXT
     )
     ch1.write(frame)
@@ -100,23 +100,23 @@ Here are some minimal code to send and receive a CAN FD frame.
 
     from canlib import canlib, Frame
 
-    # Specifying an arbitration phase bus speed of 1 Mbit/s, 
+    # Specifying an arbitration phase bus speed of 1 Mbit/s,
     # and a data phase bus speed of 2 Mbit/s. See documentation
     # for more information on how to set bus parameters.
     params_arbitration = canlib.busparams.BusParamsTq(
-        tq=40, 
-        phase1=8, 
-        phase2=8, 
-        sjw=8, 
-        prescaler=2, 
+        tq=40,
+        phase1=8,
+        phase2=8,
+        sjw=8,
+        prescaler=2,
         prop=23
     )
     params_data = canlib.busparams.BusParamsTq(
-        tq=20, 
-        phase1=15, 
-        phase2=4, 
-        sjw=4, 
-        prescaler=2, 
+        tq=20,
+        phase1=15,
+        phase2=4,
+        sjw=4,
+        prescaler=2,
         prop=0
     )
 
@@ -134,7 +134,7 @@ Here are some minimal code to send and receive a CAN FD frame.
     # set FDF flag to send using CAN FD
     # set BRS flag to send using higher bit rate in the data phase
     frame = Frame(
-        id_=100, 
+        id_=100,
         data=range(32),
         flags=canlib.MessageFlag.FDF | canlib.MessageFlag.BRS
     )

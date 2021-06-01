@@ -750,11 +750,11 @@ def test_attribute_enum():
 
     message.set_attribute_value('CANFD_BRS', 1)
     atr = message.get_attribute_value('CANFD_BRS')
-    assert atr.value == 1
+    assert atr == 1
 
     message.set_attribute_value('CANFD_BRS', 0)
     atr = message.get_attribute_value('CANFD_BRS')
-    assert atr.value == 0
+    assert atr == 0
 
     adf = db.get_attribute_definition_by_name('CANFD_BRS')
     print(type(adf))

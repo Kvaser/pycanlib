@@ -83,6 +83,8 @@ class KvaDbDll(dllLoader.MyDll):
         'kvaDbGetMsgById': [[ct.c_void_p, ct.c_uint, ct.POINTER(ct.c_void_p)]],
         'kvaDbGetMsgByIdEx': [[ct.c_void_p, ct.c_uint, ct.c_uint, ct.POINTER(ct.c_void_p)]],
         'kvaDbGetMsgByName': [[ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_void_p)]],
+        'kvaDbGetMsgByPGN': [[ct.c_void_p, ct.c_int, ct.POINTER(ct.c_void_p)]],
+        'kvaDbGetMsgByPGNEx': [[ct.c_void_p, ct.c_int, ct.POINTER(ct.c_void_p)]],
         'kvaDbGetMsgComment': [[ct.c_void_p, ct.c_char_p, ct.c_size_t]],
         'kvaDbGetMsgDlc': [[ct.c_void_p, ct.POINTER(ct.c_int)]],
         'kvaDbGetMsgId': [[ct.c_void_p, ct.POINTER(ct.c_uint), ct.POINTER(ct.c_uint)]],

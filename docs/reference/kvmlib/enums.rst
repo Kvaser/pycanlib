@@ -32,3 +32,9 @@ LogFileType
    :members:
    :undoc-members:
 
+SoftwareInfoItem
+~~~~~~~~~~~~~~~~
+.. autoclass:: canlib.kvmlib.enums.SoftwareInfoItem
+   :members:
+   :undoc-members:
+

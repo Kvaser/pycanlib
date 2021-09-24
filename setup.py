@@ -1,6 +1,5 @@
 from setuptools import Command, find_packages, setup
 
-aenum = "aenum >=2.0.9, <3"
 pytest = "pytest >=3.3.0"
 pytest_cov = "pytest-cov >=2.5.1"
 pandas = "pandas >=1.2.3"
@@ -9,7 +8,6 @@ sphinx_rtd_theme = "sphinx_rtd_theme >=0.2.4"
 
 
 extras_require = {
-    ":python_version<'3.6'": [aenum],
     "dev": [pytest, pytest_cov, sphinx, sphinx_rtd_theme],
     "test": [pytest, pandas],
 }

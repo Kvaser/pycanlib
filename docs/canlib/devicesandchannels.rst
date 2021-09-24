@@ -4,7 +4,7 @@ Devices and Channels
 Identifying Devices and Channels
 --------------------------------
 
-Once we have imported `canlib.canlib` which enumerates the connected Kvaser CAN
+Once we have imported `canlib.canlib`, which enumerates the connected Kvaser CAN
 devices, we can call `~canlib.canlib.getNumberOfChannels` to get the number of
 enumerated channels in our system.
 
@@ -77,6 +77,6 @@ Virtual Channels
 CANlib supports virtual channels that you can use for development, test or
 demonstration purposes when you don't have any hardware installed.
 
-To open a virtual channel, call `canlib.canlib.openChannel` with the
+To open a virtual channel, call `~canlib.canlib.openChannel` with the
 appropriate channel number, and specify `~canlib.canlib.Open.ACCEPT_VIRTUAL` in the
 flags argument to canOpenChannel().

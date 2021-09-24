@@ -14,7 +14,7 @@ dll = CanlibDll(_ct_dll)
 dll.canInitializeLibrary()
 
 
-class CANLib(object):
+class CANLib:
     """Deprecated wrapper class for the Kvaser CANlib.
 
     .. deprecated:: 1.5
@@ -47,7 +47,7 @@ class CANLib(object):
             return getattr(self._module, name)
         except AttributeError:
             raise AttributeError(
-                "{t} object has no attribute {n}".format(t=str(type(self)), n=name)
+                f"{str(type(self))} object has no attribute {name}"
             )
 
     def openChannel(self, channel, flags=0):
@@ -87,7 +87,9 @@ def _version_number(v, beta):
 def enumerate_hardware():
     """Enumerate connected Kvaser devices and rebuild list of available channels
 
-    Returns the number of CAN channels appended.
+    Returns:
+
+        The number of CAN channels enumerated.
 
     .. versionadded:: 1.13
 
@@ -103,8 +105,8 @@ def dllversion():
     Args:
         None
 
-    Returns a `BetaVersionNumber` if the CANlib DLL is marked as beta
-    (preview), otherwise returns `VersionNumber`.
+    Returns a `canlib.BetaVersionNumber` if the CANlib DLL is marked as beta
+    (preview), otherwise returns `canlib.VersionNumber`.
 
     .. versionchanged:: 1.6
 
@@ -125,8 +127,8 @@ def prodversion():
     Args:
         None
 
-    Returns a `BetaVersionNumber` if the CANlib driver/DLL is marked as beta
-    (preview), otherwise returns `VersionNumber`.
+    Returns a `canlib.BetaVersionNumber` if the CANlib driver/DLL is marked as
+    beta (preview), otherwise returns `canlib.VersionNumber`.
 
     .. versionadded:: 1.6
 
@@ -141,6 +143,9 @@ def getNumberOfChannels(driver=False):
 
     Returns the number of available CAN channels in the computer. The
     virtual channels are included in this number.
+
+    In order to manually re-enumerate connected devices when a device has been
+    added or removed, use `enumerate_hardware`.
 
     Args:
         None
@@ -161,7 +166,7 @@ def getChannelData_Channel_Flags(channel):
     .. deprecated:: 1.5
        Use `ChannelData` and their ``channel_flags`` attribute instead.
 
-    Returns a :py:class:`ChannelData_Channel_Flags` object holding
+    Returns a `ChannelData_Channel_Flags` object holding
     information about the channel.
 
     Note: Currently not implemented!
@@ -211,7 +216,7 @@ def getChannelData_Name(channel):
         ct.byref(buf),
         ct.sizeof(buf),
     )
-    return "%s (channel %d)" % (name.value.decode(), buf[0])
+    return f"{name.value.decode()} (channel {buf[0]})"
 
 
 @deprecation.deprecated.favour("ChannelData(channel).custom_name")
@@ -239,7 +244,7 @@ def getChannelData_Cust_Name(channel):
         ct.byref(name),
         ct.sizeof(name),
     )
-    return "%s" % (name.value.decode())
+    return f"{name.value.decode()}"
 
 
 @deprecation.deprecated.favour("ChannelData(channel).chan_no_on_card")
@@ -367,7 +372,7 @@ def getChannelData_EAN_short(channel):
         ct.sizeof(buf),
     )
     (ean_lo, ean_hi) = struct.unpack('II', buf)
-    return "%04x-%x" % ((ean_lo >> 4) & 0xFFFF, ean_lo & 0xF)
+    return f"{ean_lo >> 4 & 65535:04x}-{ean_lo & 15:x}"
 
 
 @deprecation.deprecated.favour("ChannelData(channel).card_serial_no")
@@ -460,15 +465,14 @@ def getChannelData_Firmware(channel):
 def translateBaud(freq):
     """Translate bitrate constant
 
-    This function translates the canBITRATE_xxx constants to their
-    corresponding bus parameter values.
+    This function translates the `.canlib.Bitrate` and `.canlib.BitrateFD` enums
+    to their corresponding bus parameter values.
 
     Args:
-        freq: Any of the predefined constants canBITRATE_xxx
+        freq: Any of the predefined `.canlib.Bitrate` or `.canlib.BitrateFD`.
 
     Returns:
-        A BitrateSetting object containing the actual values of
-            frequency, tseg1, tseg2 etc.
+        A `~canlib.canlib.busparams.BitrateSetting` object containing the actual values of frequency, tseg1, tseg2 etc.
 
     """
     freq_p = ct.c_long(freq)
@@ -520,8 +524,8 @@ def initializeLibrary():
 
         This initializes the driver and must be called before any other
         function in the CANlib DLL is used. This is handled in most cases by
-        the Python wrapper but if you want to trigger a re-enumeration of
-        connected devices, call this function.
+        the Python wrapper. If you want to trigger a re-enumeration of
+        connected devices, you should call `enumerate_hardware` instead.
 
     Any errors encountered during library initialization will be "silent"
     and an appropriate error code will be returned later on when an API
@@ -537,18 +541,24 @@ def reinitializeLibrary():
     Convenience function that calls `unloadLibrary` and `initializeLibrary`
     in succession.
 
+    Warning:
+
+        Calling `reinitializeLibrary` invalidates every canlib-object. Use at
+        your own risk.  You most likely would like to call
+        `enumerate_hardware()` instead.
+
     """
     unloadLibrary()
     dll.canInitializeLibrary()
 
 
 class ChannelData_Channel_Flags_bits(ct.LittleEndianStructure):
-    """Access flags of :py:class:`ChannelData_Channel_Flags`
+    """Access flags of `ChannelData_Channel_Flags`
 
     .. deprecated:: 1.5
 
-    Gives access to individual parts in :py:class:`ChannelData_Channel_Flags`
-    as flags.
+    Gives access to individual parts in `ChannelData_Channel_Flags` as flags.
+
     """
 
     _fields_ = [
@@ -559,13 +569,12 @@ class ChannelData_Channel_Flags_bits(ct.LittleEndianStructure):
 
 
 class ChannelData_Channel_Flags(ct.Union):
-    """Holds data from :py:meth:`canlib.getChannelData_Channel_Flags()`
+    """Holds data from `canlib.getChannelData_Channel_Flags()`
 
     .. deprecated:: 1.5
 
     Data in this object may be accessed as an c_uint32 using `object.asbyte`,
-    or as indivisual flags using the class
-    :py:class:`ChannelData_Channel_Flags_bits`.
+    or as indivisual flags using the class `ChannelData_Channel_Flags_bits`.
 
     """
 

@@ -21,6 +21,6 @@ def test_ean_hi_lo2ean():
 @kvdeprecated
 def test_allDevices():
     devices = kvDevice.kvDevice.allDevices()
-    print("List all %d devices..." % (len(devices)))
+    print(f"List all {len(devices)} devices...")
     for dev in devices:
         print("\n", dev)

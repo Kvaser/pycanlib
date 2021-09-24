@@ -34,14 +34,28 @@ def load_xml(xml_string):
 
 def load_xml_file(filepath):
     """Like `load_lif` but takes a path to a file containing the XML configuration"""
-    with open(filepath, 'r') as f:
+    with open(filepath) as f:
         xml_string = f.read()
     return load_xml(xml_string)
 
 
 ValidationResult = namedtuple('ValidationResult', "errors, warnings")
+"""Validation errors and warnings.
+
+    Args:
+        errors (list(`int`)): Valdiation errors.
+        warnings ([`str`]): Validation warnings.
+
+"""
 
 ValidationMessage = namedtuple('ValidationMessage', "code text")
+"""Validation code and message.
+
+    Args:
+        code (`int`): Valdiation status code.
+        text (`str`): Validation message.
+
+"""
 
 
 class ValidationErrorMessage(ValidationMessage):
@@ -50,7 +64,7 @@ class ValidationErrorMessage(ValidationMessage):
     __slots__ = ()
 
     def __str__(self):
-        return "Error: {text} ({code!s})".format(text=self.text, code=self.code)
+        return f"Error: {self.text} ({self.code!s})"
 
 
 class ValidationWarningMessage(ValidationMessage):
@@ -59,10 +73,10 @@ class ValidationWarningMessage(ValidationMessage):
     __slots__ = ()
 
     def __str__(self):
-        return "Warning: {text} ({code!s})".format(text=self.text, code=self.code)
+        return f"Warning: {self.text} ({self.code!s})"
 
 
-class Configuration(object):
+class Configuration:
     """Configuration data for Kvaser devices
 
     It is usually preferred to create objects of this class with one of the
@@ -127,8 +141,8 @@ class Configuration(object):
 
         Validates the XML representation of this configuration, and returns a
         tuple ``(errors, warnings)`` where ``errors`` is a `list` of
-        `canlib.kvamemolibxml.ValidationError` and ``warnings`` is a `list`
-        `canlib.kvamemolibxml.ValidationWarning`.
+        `~canlib.kvamemolibxml.ValidationError` and ``warnings`` is a `list`
+        `~canlib.kvamemolibxml.ValidationWarning`.
 
         """
         kvaXmlValidate(self.xml)

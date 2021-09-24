@@ -48,7 +48,7 @@ def test_err_config(datadir):
 
 def test_xmlGetValidationError(datadir):
     (status, text) = kvamemolibxml.xmlGetValidationError()
-    print("Validation error status:%d, text:\n%s" % (status, text))
+    print(f"Validation error status:{status}, text:\n{text}")
     assert status == kvamemolibxml.KvaXmlStatusOK
     assert text == ""
 
@@ -60,13 +60,21 @@ def test_xmlGetValidationError(datadir):
     assert numWarn == 0
     assert numErr == 1
     (status, text) = kvamemolibxml.xmlGetValidationError()
-    print("First validation error:%d, text:\n%s" % (status, text))
+    print(f"First validation error:{status}, text:\n{text}")
     assert status == kvamemolibxml.ValidationError.EXPRESSION
-    assert text == (
+    expected_text = (
         "The trigger 'My_first_id_trigger' in"
         " 'My_first_id_trigger,My_first_dlc_trigger,AND,"
         "My_first_id_trigger,OR' is not defined.\n"
     )
+    assert text == expected_text
+
+    (text, status) = kvamemolibxml.xmlGetLastError()
+    print(f"Last error status:{status}, text:\n{text}")
+    assert status == kvamemolibxml.KvaXmlStatusOK
+    # assert text == ""  # BLA-2952
+    assert text == expected_text  # BLA-2952
 
     (status, text) = kvamemolibxml.xmlGetValidationError()
     assert status == kvamemolibxml.KvaXmlStatusOK
+    assert text == ""

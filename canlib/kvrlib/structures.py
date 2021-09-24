@@ -10,15 +10,15 @@ class kvrVersion(ct.Structure):
     ]
 
     def __str__(self):
-        return "%d.%d" % (self.major, self.minor)
+        return f"{self.major}.{self.minor}"
 
 
 class kvrAddress(ct.Structure):
-    Type_UNKNOWN = 0
-    Type_IPV4 = 1
-    Type_IPV6 = 2
-    Type_IPV4_PORT = 3
-    Type_MAC = 4
+    Type_UNKNOWN = 0  #: Unknown (e.g., no reply from device).
+    Type_IPV4 = 1  #: IP v.4 address.
+    Type_IPV6 = 2  #: IP v.6 address.
+    Type_IPV4_PORT = 3  #: IP v.4 address with tcp-port.
+    Type_MAC = 4  #: Ethernet MAC address.
 
     TypeText = {
         Type_UNKNOWN: 'UNKNOWN',
@@ -36,9 +36,9 @@ class kvrAddress(ct.Structure):
             addr = '.'.join(str(x) for x in self.address[:4])
         elif self.type == self.Type_IPV4_PORT:
             addr = '.'.join(str(x) for x in self.address[:4])
-            addr += ':%s' % self.address[5]
+            addr += f':{self.address[5]}'
         type = self.TypeText[self.type]
-        return "%s (%s)" % (addr, type)
+        return f"{addr} ({type})"
 
 
 class kvrAddressList(ct.Structure):
@@ -53,7 +53,7 @@ class kvrAddressList(ct.Structure):
     def __str__(self):
         elements = []
         for i in range(0, self.count):
-            elements.append("%s" % self.STRUCT_ARRAY[i])
+            elements.append(f"{self.STRUCT_ARRAY[i]}")
         return "\n".join(elements)
 
 
@@ -116,34 +116,27 @@ class kvrDeviceInfo(ct.Structure):
 
     def __str__(self):
         text = "\n"
-        acc_pwd = "no"
-        enc_key = "no"
-
-        text += "name/hostname  : \"%s\" / \"%s\"\n" % (
-            self.name.decode(),
-            self.host_name.decode(),
+        text += f"name/hostname  : '{self.name.decode()}' / '{self.host_name.decode()}'\n"
+        text += f"  ean/serial   : {self.ean_hi:x}-{self.ean_lo:x} / {self.ser_no}\n"
+        text += f"  {'fw':13}: v{self.fw_major_ver}.{self.fw_minor_ver}.{self.fw_build_ver:03}\n"
+        text += (
+            f"  addr/cli/AP  : "
+            f"{self.device_address} / {self.client_address} / {self.base_station_id}\n"
         )
-        text += "  ean/serial   : %x-%x / %d\n" % (self.ean_hi, self.ean_lo, self.ser_no)
-        text += "  fw           : %d.%d.%03d\n" % (
-            self.fw_major_ver,
-            self.fw_minor_ver,
-            self.fw_build_ver,
-        )
-        text += "  addr/cli/AP  : %s / %s / %s\n" % (
-            self.device_address,
-            self.client_address,
-            self.base_station_id,
-        )
-        text += "  availability : %s\n" % (Availability(self.availability))
-        text += "  usage/access : %s / %s\n" % (
-            DeviceUsage(self.usage),
-            Accessibility(self.accessibility),
+        text += f"  availability : {Availability(self.availability).name}\n"
+        text += (
+            f"  usage/access : "
+            f"{DeviceUsage(self.usage).name} / {Accessibility(self.accessibility).name}\n"
         )
         if self.accessibility_pwd:
             acc_pwd = "yes"
+        else:
+            acc_pwd = "no"
         if self.encryption_key:
             enc_key = "yes"
-        text += "  pass/enc.key : %s / %s" % (acc_pwd, enc_key)
+        else:
+            enc_key = "no"
+        text += f"  pass/enc.key : {acc_pwd} / {enc_key}"
         return text
 
     def __repr__(self):
@@ -166,5 +159,5 @@ class kvrDeviceInfoList(ct.Structure):
     def __str__(self):
         elements = []
         for i in range(0, self.elements):
-            elements.append("%s" % (self.STRUCT_ARRAY[i]))
+            elements.append(f"{self.STRUCT_ARRAY[i]}")
         return "\n".join(elements)

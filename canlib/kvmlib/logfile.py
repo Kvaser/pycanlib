@@ -8,7 +8,7 @@ from .exceptions import KvmNoLogMsg
 from .wrapper import dll
 
 
-class LogFile(object):
+class LogFile:
     """A log file read from a `MountedLog` object
 
     This class is normally not directly instantiated but retrieved from a

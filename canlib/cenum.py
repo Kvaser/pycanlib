@@ -1,13 +1,5 @@
-# use aenum in Python 2.7
-try:
-    from enum import IntEnum
-except:
-    from aenum import IntEnum
-
-try:
-    from enum import IntFlag
-except:
-    from aenum import IntFlag
+from enum import IntEnum
+from enum import IntFlag
 
 
 class CEnum(IntEnum):

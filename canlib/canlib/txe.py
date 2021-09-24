@@ -12,7 +12,7 @@ from .wrapper import dll
 SourceElement = namedtuple('SourceElement', 'name contents')
 
 
-class Txe(object):
+class Txe:
     """The Txe class provides an interface to compiled t programs (.txe) files.
 
     .. versionadded:: 1.6

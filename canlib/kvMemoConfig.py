@@ -1,6 +1,7 @@
 from xml.dom import minidom
 
 from . import kvamemolibxml
+from .exceptions import CanlibException
 
 # XML Values
 TRIG_LOG_ALL = 'TRIG_LOG_ALL'
@@ -8,7 +9,7 @@ TRIG_ON_EVENT = 'TRIG_ON_EVENT'
 TRIG_SCRIPTED = 'TRIG_SCRIPTED'
 
 
-class kvFilter(object):
+class kvFilter:
     def __init__(self):
         self.msgStop = []
         self.msgPass = []
@@ -17,15 +18,15 @@ class kvFilter(object):
         if isinstance(object, kvFilterMsgStop):
             self.addMsgStop(object)
         else:
-            raise Exception(
-                "ERROR: (kvFilter) Can not add object of type %s!" % type(object).__name__
+            raise CanlibException(
+                f"kvFilter: Can not add object of type {type(object).__name__}!"
             )
 
     def addMsgStop(self, msgStop):
         self.msgStop.append(msgStop)
 
 
-class kvFilterMsgStop(object):
+class kvFilterMsgStop:
     def __init__(
         self, protocol="NONE", msgid=None, dlc=None, msgid_min=None, channel=0, can_ext="NO"
     ):
@@ -39,7 +40,7 @@ class kvFilterMsgStop(object):
         self.can_ext = can_ext
 
 
-class kvTrigger(object):
+class kvTrigger:
     def __init__(self, logmode=TRIG_LOG_ALL, fifomode=True):
         self.logmode = logmode
         self.fifomode = fifomode
@@ -67,13 +68,13 @@ class kvTrigger(object):
         return xmlStatements
 
 
-class kvScript(object):
+class kvScript:
     def __init__(self, filename, path=''):
         self.filename = filename
         self.path = path
 
 
-class kvTrigVarStartup(object):
+class kvTrigVarStartup:
     def __init__(self, name="trigger_startup_0"):
         self.name = name
 
@@ -86,7 +87,7 @@ class kvTrigVarStartup(object):
         return xmlTrigger
 
 
-class kvTrigVarDiskFull(object):
+class kvTrigVarDiskFull:
     def __init__(self, name="trigger_diskfull_0"):
         self.name = name
 
@@ -99,7 +100,7 @@ class kvTrigVarDiskFull(object):
         return xmlTrigger
 
 
-class kvTrigVarTimer(object):
+class kvTrigVarTimer:
     def __init__(self, name="trigger_timer_0", offset=600, repeat=False, channel=0, timeout=0):
         self.name = name
         self.offset = offset
@@ -119,7 +120,7 @@ class kvTrigVarTimer(object):
         return xmlTrigger
 
 
-class kvTrigVarMsgId(object):
+class kvTrigVarMsgId:
     def __init__(
         self,
         name="trigger_msg_id_0",
@@ -162,7 +163,7 @@ class kvTrigVarMsgId(object):
         return xmlTrigger
 
 
-class kvTrigVarMsgDlc(object):
+class kvTrigVarMsgDlc:
     def __init__(
         self, name="trigger_msg_dlc_0", channel=0, timeout=0, dlc=0, dlc_min=None, can_fd="NO"
     ):
@@ -189,7 +190,7 @@ class kvTrigVarMsgDlc(object):
         return xmlTrigger
 
 
-class kvTrigVarMsgErrorFrame(object):
+class kvTrigVarMsgErrorFrame:
     def __init__(self, name="trigger_msg_errorframe_0", channel=0, timeout=0):
         self.name = name
         self.channel = channel
@@ -206,8 +207,8 @@ class kvTrigVarMsgErrorFrame(object):
         return xmlTrigger
 
 
-class kvTrigVarSigVal(object):
-    class condition(object):
+class kvTrigVarSigVal:
+    class condition:
         ON_DATA_EQUAL_TO = "ON_DATA_EQUAL_TO"
         ON_DATA_NOT_EQUAL_TO = "ON_DATA_NOT_EQUAL_TO"
         ON_DATA_LARGER_THAN = "ON_DATA_LARGER_THAN"
@@ -218,7 +219,7 @@ class kvTrigVarSigVal(object):
         ON_DATA_LARGER_THAN_OR_EQUAL = "ON_DATA_LARGER_THAN_OR_EQUAL"
         ON_DATA_SMALLER_THAN_OR_EQUAL = "ON_DATA_SMALLER_THAN_OR_EQUAL"
 
-    class byteorder(object):
+    class byteorder:
         INTEL = "LITTLE_ENDIAN"
         LITTLE_ENDIAN = "LITTLE_ENDIAN"
         MOTOROLA = "BIG_ENDIAN"
@@ -287,7 +288,7 @@ class kvTrigVarSigVal(object):
         return xmlTrigger
 
 
-class kvTrigStatement(object):
+class kvTrigStatement:
     def __init__(self, expression, preTrigger=0, postTrigger=0):
         self.preTrigger = preTrigger
         self.postTrigger = postTrigger
@@ -298,10 +299,8 @@ class kvTrigStatement(object):
         if isinstance(obj, kvTrigAction):
             self.actions.append(obj)
         else:
-            raise Exception(
-                "ERROR: (kvTrigStatement) Can not add object of type {0}!".format(
-                    type(obj).__name__
-                )
+            raise CanlibException(
+                f"(kvTrigStatement) Can not add object of type {type(obj).__name__}!"
             )
 
     def addToTriggerList(self, triggerList):
@@ -323,7 +322,7 @@ class kvTrigStatement(object):
         return xmlStatement
 
 
-class kvTrigAction(object):
+class kvTrigAction:
     class function:
         START_LOG = 'ACTION_START_LOG'
         STOP_LOG = 'ACTION_STOP_LOG'
@@ -352,7 +351,7 @@ class kvTrigAction(object):
         return xmlAction
 
 
-class kvMessage(object):
+class kvMessage:
     def __init__(
         self,
         name,
@@ -395,7 +394,7 @@ class kvMessage(object):
         return xmlStatement
 
 
-class kvTransmitList(object):
+class kvTransmitList:
     def __init__(self, name, msg_delay=0, cycle_delay=0, cyclic=False, autostart=False):
         self.name = name
         self.msg_delay = msg_delay
@@ -407,10 +406,8 @@ class kvTransmitList(object):
         if isinstance(obj, kvTransmitMessage):
             self.messages.append(obj)
         else:
-            raise Exception(
-                "ERROR: (kvTransmitList) Can not add object of type {0}!".format(
-                    type(obj).__name__
-                )
+            raise CanlibException(
+                f"(kvTransmitList) Can not add object of type {type(obj).__name__}!"
             )
 
     def getXml(self, document):
@@ -427,7 +424,7 @@ class kvTransmitList(object):
         return xmlTransmitList
 
 
-class kvTransmitMessage(object):
+class kvTransmitMessage:
     def __init__(self, name, channel=0):
         self.name = name
         self.channel = channel
@@ -439,17 +436,17 @@ class kvTransmitMessage(object):
         return xmlTransmitList
 
 
-class ValidationResult(object):
+class ValidationResult:
     def __init__(self, severity, status, text):
         self.severity = severity
         self.status = status
         self.text = text
 
     def __str__(self):
-        return "[%s %d]: %s" % (self.severity, self.status, self.text)
+        return f"[{self.severity} {self.status}]: {self.text}"
 
 
-class kvMemoConfig(object):
+class kvMemoConfig:
     def __init__(
         self,
         version="2.0",
@@ -525,8 +522,8 @@ class kvMemoConfig(object):
         elif isinstance(obj, kvTransmitList):
             self.addTransmitList(obj)
         else:
-            raise Exception(
-                "ERROR: (kvMemoConfig) Can not add object of type {0}!".format(type(obj).__name__)
+            raise CanlibException(
+                f"(kvMemoConfig) Can not add object of type {type(obj).__name__}!"
             )
 
     def _addFilterAttribute(self, xmlFilterMsg, filter):

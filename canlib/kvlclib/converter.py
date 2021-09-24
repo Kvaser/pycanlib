@@ -9,7 +9,7 @@ from .writerformat import WriterFormat
 from .wrapper import dll
 
 
-class Converter(object):
+class Converter:
     """A kvlclib converter
 
     This class wraps all kvlclib functions related to converters, and saves you
@@ -23,13 +23,13 @@ class Converter(object):
 
     Args:
         filename (string): Name of output file
-        file_format (`~canlib.kvlclib.FileFormat` | `~canlib.kvlclib.WriterFormat` ): A supported output format
+        file_format (`.FileFormat` | `.WriterFormat` ): A supported output format
 
     Note:
         No more than 128 converters can be open at the same time.
 
     .. versionchanged:: 1.18
-        The `file_format` parameter now accepts `~canlib.kvlclib.WriterFormat` as well.
+        The `file_format` parameter now accepts `.WriterFormat` as well.
 
     """
 
@@ -64,7 +64,7 @@ class Converter(object):
         E.g. used to add a database or a movie to the output.
 
         Note that the output format must support the property
-        `canlib.kvlclib.Property.ATTACHMENTS`.
+        `.Property.ATTACHMENTS`.
         """
         filename = os.path.realpath(filename)
         ct_filename = ct.c_char_p(filename.encode('utf-8'))
@@ -138,7 +138,7 @@ class Converter(object):
         """Get current value for a writer property.
 
         Args:
-            wr_property (`canlib.kvlclib.Property`): Writer property to be set
+            wr_property (`.Property`): Writer property to be set
         """
         # Backward compatibility with deprecated kvlclib.PROPERTY_XXX
         if isinstance(wr_property, dict):
@@ -179,7 +179,7 @@ class Converter(object):
         """Set a property value.
 
         Args:
-            wr_property (`canlib.kvlclib.Property`): Writer property to be set
+            wr_property (`.Property`): Writer property to be set
         """
         # Backward compatibility with deprecated kvlclib.PROPERTY_XXX
         if isinstance(wr_property, dict):
@@ -244,9 +244,9 @@ class Converter(object):
         Truncation occurs when the selected output converter can't write all
         bytes in a data frame to file. This can happen if CAN FD data is
         extracted to a format that only supports up to 8 data bytes,
-        e.g. `canlib.kvlclib.FileFormat.KME40`.
+        e.g. `.FileFormat.KME40`.
 
-        Truncation can also happen if `kvlclib.Property.LIMIT_DATA_BYTES` is
+        Truncation can also happen if `.Property.LIMIT_DATA_BYTES` is
         set to limit the number of data bytes in output.
 
         Returns True if data has been truncated
@@ -269,10 +269,10 @@ class Converter(object):
 
         Args:
             filename (string): Name of input file
-            file_format (`~canlib.kvlclib.FileFormat` | `~canlib.kvlclib.ReaderFormat` ): A supported input format
+            file_format (`.FileFormat` | `.ReaderFormat` ): A supported input format
 
         .. versionchanged:: 1.16
-            The `file_format` parameter now accepts `~canlib.kvlclib.ReaderFormat` as well.
+            The `file_format` parameter now accepts `.ReaderFormat` as well.
 
         .. versionchanged:: 1.18
             If `filename` is `None`, the format for `feedLogEvent` is set.

@@ -18,10 +18,10 @@ class DllException(CanlibException):
 
     @staticmethod
     def _get_error_text(status):
-        return "Unknown error text (%d)" % status
+        return f"Unknown error text ({status})"
 
     def __init__(self):
         assert hasattr(self, 'status'), "DllExceptions must have a status attribute"
-        super(DllException, self).__init__(self._get_error_text(self.status))
+        super().__init__(self._get_error_text(self.status))
 
     canERR = deprecation.attr_replaced("canERR", "status")

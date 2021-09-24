@@ -22,9 +22,17 @@ prodversion()
 ~~~~~~~~~~~~~
 .. autofunction:: canlib.canlib.prodversion
 
+initializeLibrary()
+~~~~~~~~~~~~~~~~~~~
+.. autofunction:: canlib.canlib.initializeLibrary
+
 reinitializeLibrary()
 ~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: canlib.canlib.reinitializeLibrary
+
+enumerate_hardware()
+~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: canlib.canlib.enumerate_hardware
 
 ScriptText
 ~~~~~~~~~~

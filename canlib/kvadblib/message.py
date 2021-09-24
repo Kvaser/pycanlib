@@ -5,14 +5,14 @@ import ctypes as ct
 from ..canlib import MessageFlag as CanMessageFlag
 from ..frame import Frame
 from . import wrapper
-from .attribute import Attribute, EnumValue
+from .attribute import Attribute
 from .bound_message import BoundMessage
 from .enums import (AttributeOwner, MessageFlag, SignalByteOrder,
                     SignalMultiplexMode, SignalType)
 from .exceptions import (KvdNoAttribute, KvdNoMessage, KvdNoSignal,
                          KvdWrongOwner)
 from .node import Node
-from .signal import EnumSignal, Signal, ValueScaling
+from .signal import EnumSignal, Signal
 from .wrapper import dll
 
 
@@ -32,7 +32,7 @@ def _signal_object(db, msg, handle):
         return EnumSignal(db, msg, handle, mode=None, scaling=None)
 
 
-class Message(object):
+class Message:
     """Database message, holds signals."""
 
     def __init__(self, db, handle, name=None, id=None, flags=None, dlc=None, comment=None):
@@ -68,6 +68,7 @@ class Message(object):
         return not self == other
 
     def __str__(self):
+        # __repr__ should never do any calls to the dll, so this needs to be done in __str__
         return "Message(name={!r}, id={!r}, flags={!r}, dlc={!r}, comment={!r})".format(
             self.name, self.id, self.flags, self.dlc, self.comment
         )
@@ -119,7 +120,7 @@ class Message(object):
         """Delete signal from message.
 
         Args:
-            signal (:obj:`Signal`): signal to be deleted
+            signal (`Signal`): signal to be deleted
 
         """
         dll.kvaDbDeleteSignal(self._handle, signal._handle)
@@ -156,7 +157,7 @@ class Message(object):
             # if the attribute was an EnumAttribute, find the value
             try:
                 value = value.value
-            except:
+            except AttributeError:
                 pass
         return value
 
@@ -179,11 +180,11 @@ class Message(object):
         mode=SignalMultiplexMode.SIGNAL,
         representation=None,
         size=None,
-        scaling=ValueScaling(factor=1, offset=0),
+        scaling=None,
         limits=None,
         unit=None,
         comment=None,
-        enums={},
+        enums=None,
     ):
         """Create and add a new signal to the message."""
         sh = ct.c_void_p(None)
@@ -203,7 +204,7 @@ class Message(object):
                 limits,
                 unit,
                 comment,
-                dict(enums),
+                enums,
             )
         else:
             signal = Signal(

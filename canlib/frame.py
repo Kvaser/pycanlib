@@ -52,7 +52,7 @@ def bytes_to_dlc(num_bytes, canFD=True):
     return 15
 
 
-class Frame(object):
+class Frame:
     """Represents a CAN message
 
     Args:
@@ -61,7 +61,7 @@ class Frame(object):
         dlc : Message dlc, default is calculated from number of data
         flags (`canlib.MessageFlag`): Message flags, default is 0
         timestamp : Optional timestamp
-    """
+    """  # noqa: RST306
 
     __slots__ = ('id', 'data', 'dlc', 'flags', 'timestamp')
     _repr_slots = __slots__
@@ -145,5 +145,5 @@ class LINFrame(Frame):
         info = kwargs.pop("info", None)
         if 'timestamp' not in kwargs and info is not None:
             kwargs['timestamp'] = info.timestamp
-        super(LINFrame, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.info = info

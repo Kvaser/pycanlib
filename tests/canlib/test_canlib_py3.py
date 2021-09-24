@@ -16,7 +16,7 @@ def test_notify_callback_buson(channel_no):
     def callback_func(hnd, context, event):
         event = canlib.Notify(event)
         nonlocal callback_has_been_called
-        print("Callback function called, context:{}, event:{!r}".format(context, event))
+        print(f"Callback function called, context:{context}, event:{event!r}")
         callback_has_been_called = True
 
     callback = canlib.dll.KVCALLBACK_T(callback_func)
@@ -42,7 +42,7 @@ def test_notify_callback_errorstatus(channel_no):
         event = canlib.Notify(event)
         nonlocal callback_status_has_been_called
         nonlocal callback_error_has_been_called
-        print("Callback function called, context:{}, event:{!r}".format(context, event))
+        print(f"Callback function called, context:{context}, event:{event!r}")
         if event == canlib.Notify.STATUS:
             callback_status_has_been_called = True
         elif event == canlib.Notify.ERROR:
@@ -84,7 +84,7 @@ def test_notify_callback_rxtx(channel_no_pair):
         event = canlib.Notify(event)
         nonlocal callback_rx_has_been_called
         nonlocal callback_tx_has_been_called
-        print("Callback function called, context:{}, event:{!r}".format(context, event))
+        print(f"Callback function called, context:{context}, event:{event!r}")
         if context == 121:
             callback_rx_has_been_called = True
         elif context == 122:

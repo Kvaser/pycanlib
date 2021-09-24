@@ -21,7 +21,7 @@ def test_version():
 
 def test_list_devices():
     num_channels = canlib.getNumberOfChannels()
-    print("Found %d channels" % num_channels)
+    print(f"Found {num_channels} channels")
     for ch in range(0, num_channels):
         chdata = canlib.ChannelData(ch)
         print(
@@ -115,7 +115,7 @@ def test_iocontrol(chA, iocontrol_attribute):
     if callable(value):
         # its a function
         args = value()
-        print("%s(*%r)" % (name, args))
+        print(f"{name}(*{args!r})")
         print("->", getattr(ioc, name)(*args))
     elif value is None:
         # value can't be set
@@ -412,7 +412,7 @@ def test_can_channel_flags(channel_no):
     # Flags are remembered, so we can't test this now...
     # assert channeldata.channel_flags == 0
 
-    print('Opening channel {} as CAN'.format(channel_no))
+    print(f'Opening channel {channel_no} as CAN')
     ch = canlib.openChannel(channel_no)
     assert channeldata.channel_flags == 0
     ch.busOn()
@@ -429,7 +429,7 @@ def test_canfd_channel_flags(channel_no):
     # Flags are remembered, so we can't test this now...
     # assert channeldata.channel_flags == 0
 
-    print('Opening channel {} as CAN FD'.format(channel_no))
+    print(f'Opening channel {channel_no} as CAN FD')
     ch = canlib.openChannel(channel_no, flags=canlib.Open.CAN_FD)
     assert channeldata.channel_flags == canlib.ChannelFlags.IS_CANFD
     ch.busOn()
@@ -443,7 +443,7 @@ def test_canfd_channel_flags(channel_no):
 
 def test_data_bitrate_no_canfd(channel_no):
     with pytest.raises(TypeError):
-        ch = canlib.openChannel(channel_no, 0, None, canlib.canFD_BITRATE_1M_80P)
+        _ = canlib.openChannel(channel_no, 0, None, canlib.canFD_BITRATE_1M_80P)
 
 
 @pytest.mark.feature(features.canfd)
@@ -525,7 +525,7 @@ def test_notify_callback_py27(channel_no):
 
     def callback_func(hnd, context, event):
         event = canlib.Notify(event)
-        print("Callback function called, context:{}, event:{!r}".format(context, event))
+        print(f"Callback function called, context:{context}, event:{event!r}")
         callback_has_been_called['y'] = True
 
     callback = canlib.dll.KVCALLBACK_T(callback_func)
@@ -615,10 +615,10 @@ def bus_statistics(ch0, ch1, min_num_msg):
         ),
     ]
     for num_of_msg, frame in frames:
-        for i in range(num_of_msg):
+        for _ in range(num_of_msg):
             chA.write(frame)
 
-        for i in range(num_of_msg):
+        for _ in range(num_of_msg):
             assert frame == chB.read(timeout=200)
     statistics = chA.get_bus_statistics()
     print("A channel")

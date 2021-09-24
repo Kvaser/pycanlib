@@ -46,7 +46,7 @@ Acknowledgement Slot:
     despite of its name, necessarily identifying the contents of the message.
 
 The `canlib.Frame.flags` attribute consists of message information flags,
-according to `canlib.canlib.MessageFlag`.
+according to `~canlib.canlib.MessageFlag`.
 
 
 CAN FD Data Frames

@@ -4,12 +4,13 @@ import sys
 
 from .. import VersionNumber, deprecation, dllLoader
 from .dll import KvaMemoLibXmlDll
+from .enums import Error, ValidationError
 
 _ct_dll = dllLoader.load_dll(win_name='kvaMemoLibXML.dll', linux_name='libkvamemolibxml.so')
 dll = KvaMemoLibXmlDll(_ct_dll)
 
 
-class KvaMemoLibXml(object):
+class KvaMemoLibXml:
     """Deprecated wrapper class for the Kvaser kvaMemoLibXml
 
     .. deprecated:: 1.5
@@ -53,7 +54,7 @@ class KvaMemoLibXml(object):
             return getattr(self._module, name)
         except AttributeError:
             raise AttributeError(
-                "{t} object has no attribute {n}".format(t=str(type(self)), n=name)
+                f"{str(type(self))} object has no attribute {name}"
             )
 
     @staticmethod
@@ -67,7 +68,7 @@ class KvaMemoLibXml(object):
             kvaERR (int): kvaMemoLibXml error code.
 
         Returns:
-           msg (string): Error message associated with kvaERR.
+           msg (`str`): Error message associated with kvaERR.
 
         """
         msg = ct.create_string_buffer(1 * 1024)
@@ -88,7 +89,12 @@ def getVersion():
 
 
 def dllversion():
-    """Get the kvaMemoLibXML DLL version number as a `VersionNumber`"""
+    """Get the kvaMemoLibXML DLL version number.
+
+    Returns:
+        `canlib.VersionNumber`
+
+    """
     v = dll.kvaXmlGetVersion()
     version = VersionNumber(major=v >> 8, minor=v & 0xFF)
     return version
@@ -101,10 +107,10 @@ def kvaBufferToXml(conf_lif):
     directory.
 
     Args:
-        conf_lif (string): Buffer containing param.lif to convert.
+        conf_lif (`str`): Buffer containing param.lif to convert.
 
     Returns:
-        xml_buf (string): Buffer containing converted XML settings.
+        `str`: Buffer containing converted XML settings.
     """
     version = ct.c_long(0)
     xml_buf = ct.create_string_buffer(500 * 1024)
@@ -125,10 +131,10 @@ def kvaXmlToBuffer(conf_xml):
     """Convert XML settings to param.lif buffer.
 
     Args:
-        conf_xml (string): XML settings to convert.
+        conf_xml (`str`): XML settings to convert.
 
-    Return:
-        lif_buf (string): Buffer containing converted param.lif.
+    Returns:
+        `str`: Buffer containing converted param.lif.
     """
     version = ct.c_long(0)
     lif_buf = ct.create_string_buffer(320 * 32 * 1024)
@@ -148,8 +154,8 @@ def kvaXmlToFile(xml_filename, binary_filename):
     """Convert XML file to binary configuration file.
 
     Args:
-        infile (string): Filename of file containing the XML settings.
-        outfile (string): Filename of binary configuration.
+        xml_filename (`str`): Filename of file containing the XML settings.
+        binary_filename (`str`): Filename of binary configuration.
     """
     dll.kvaXmlToFile(xml_filename.encode(), binary_filename.encode())
 
@@ -158,11 +164,13 @@ def kvaXmlValidate(conf_xml):
     """Validate a buffer with XML settings.
 
     Args:
-        conf_xml (string): string containing the XML settings to validate.
+        conf_xml (`str`): string containing the XML settings to validate.
 
     Returns:
-        countErr (int):  Number of XML validation errors.
-        countWarn (int): Number of XML validation warnings.
+        `tuple`: containing
+
+        - `int`: Number of XML validation errors.
+        - `int`: Number of XML validation warnings.
     """
     dll.kvaXmlValidate(conf_xml.encode(), len(conf_xml))
     return xmlGetValidationStatusCount()
@@ -174,8 +182,10 @@ def xmlGetValidationStatusCount():
     Call after kvaXmlValidate().
 
     Returns:
-        countErr (int):  Number of XML validation errors.
-        countWarn (int): Number of XML validation warnings.
+        `tuple`: containing
+
+        - `int`: Number of XML validation errors.
+        - `int`: Number of XML validation warnings.
     """
     countErr = ct.c_int(0)
     countWarn = ct.c_int(0)
@@ -190,13 +200,19 @@ def xmlGetValidationError():
     KvaXmlValidationStatusOK.
 
     Returns:
-        validationStatus (int): Validation status code.
-        text (string):          Validation status message.
+        `tuple`: containing
+
+        - `int`: Validation error status code.
+        - `str`: Validation error status message.
+
+    .. versionchanged:: 1.19
+        Returned status code is now an enum.
+
     """
-    validationStatus = ct.c_int(-666)
+    status = ct.c_int(-666)
     text = ct.create_string_buffer(1048)
-    dll.kvaXmlGetValidationError(ct.byref(validationStatus), text, len(text))
-    return (validationStatus.value, text.value.decode())
+    dll.kvaXmlGetValidationError(ct.byref(status), text, len(text))
+    return (ValidationError.from_number(status.value), text.value.decode())
 
 
 def xmlGetValidationWarning():
@@ -206,27 +222,35 @@ def xmlGetValidationWarning():
     KvaXmlValidationStatusOK.
 
     Returns:
-        validationStatus (int): Validation status code.
-        text (string):          Validation status message.
+        `tuple`: containing
+
+        - `int`: Validation warning status code.
+        - `str`: Validation warning status message.
+
+    .. versionchanged:: 1.19
+        Returned status code is now an enum.
+
     """
-    validationStatus = ct.c_int(-666)
-    text = ct.create_string_buffer(1048)
-    dll.kvaXmlGetValidationWarning(ct.byref(validationStatus), text, len(text))
-    return (validationStatus.value, text.value.decode())
+    status = ct.c_int(-666)
+    text = ct.create_string_buffer(2048)
+    dll.kvaXmlGetValidationWarning(ct.byref(status), text, len(text))
+    return (ValidationError.from_number(status.value), text.value.decode())
 
 
 def xmlGetLastError():
     """Get the last error message (if any).
 
-    Get the last error message (if any) from conversion in human redable
-    format.
-
     Returns:
-       msg (string): Error message associated with kvaERR.
-       err (int): kvaMemoLibXml error code.
+        `tuple`: containing
+
+        - `str`: Error message associated with the error code.
+        - `~.enums.Error`: Error code.
+
+    .. versionchanged:: 1.19
+        Returned error code is now an enum.
 
     """
-    msg = ct.create_string_buffer(1 * 1024)
-    err = ct.c_int()
+    msg = ct.create_string_buffer(2 * 1024)
+    err = ct.c_int(-666)
     dll.kvaXmlGetLastError(msg, ct.sizeof(msg), ct.byref(err))
-    return (msg.value, err.value)
+    return (msg.value.decode("utf-8"), Error.from_number(err.value))

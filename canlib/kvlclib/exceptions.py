@@ -17,7 +17,7 @@ def kvlc_error(status):
 
 
 class KvlcError(DllException):
-    """Base class for exceptions raised by the Kvlclib class.
+    """Base class for exceptions raised by the kvlclib module.
 
     Looks up the error text in the kvlclib dll and presents it together with
     the error code and the wrapper function that triggered the exception.
@@ -29,12 +29,13 @@ class KvlcError(DllException):
         try:
             from .wrapper import dll
 
-            msg = ct.create_string_buffer("Error description is missing.".encode('utf-8'))
+            msg = ct.create_string_buffer(b"Error description is missing.")
             dll.kvlcGetErrorText(status, msg, ct.sizeof(msg))
             err_txt = msg.value.decode('utf-8')
-        except:
+        # The important thing is to give original error code.
+        except Exception:
             err_txt = "Unknown error text"
-        return err_txt + ' (%d)' % status
+        return err_txt + f' ({status})'
 
 
 class KvlcGeneralError(KvlcError):
@@ -46,28 +47,32 @@ class KvlcGeneralError(KvlcError):
     `KvlcError` can always be accessed through a `status` attribute.
 
     """
-
     def __init__(self, status):
         self.status = status
-        super(KvlcGeneralError, self).__init__()
+        super().__init__()
 
 
 class KvlcEndOfFile(KvlcError):
-    """Exception used when EOF is reached on input file."""
+    """Exception used when kvlclib returns `Error.EOF`.
 
+    Exception used when end of file is reached on input file.
+
+    """
     status = Error.EOF
 
 
 class KvlcFileExists(KvlcError):
-    """File exists, set `Property.OVERWRITE` to overwrite
+    """Exception used when kvlclib returns `Error.FILE_EXISTS`.
+
+    File exists, set `Property.OVERWRITE` to overwrite
 
     .. versionadded:: 1.17
-    """
 
+    """
     status = Error.FILE_EXISTS
 
 
 class KvlcNotImplemented(KvlcError, NotImplementedError):
-    """Exception used when kvlclib returns -11."""
+    """Exception used when kvlclib returns `Error.NOT_IMPLEMENTED`."""
 
     status = Error.NOT_IMPLEMENTED

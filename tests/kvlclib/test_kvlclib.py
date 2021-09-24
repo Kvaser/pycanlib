@@ -25,7 +25,7 @@ def create_outfile_name(name, fmt):
     tmp_dir = create_tmp_dir()
     fname = os.path.join(tmp_dir, name + "." + fmt.extension)
     if os.path.exists(fname):
-        print("removing %s" % fname)
+        print(f"removing {fname}")
         os.remove(fname)
     return fname
 
@@ -52,8 +52,8 @@ def test_setInputFile_Plain_TXT(datadir):
             converter.convertEvent()
             if converter.isOutputFilenameNew():
                 n_new_file_name += 1
-                print("New output filename: %s" % converter.getOutputFilename())
-                print("About %d events left to convert..." % converter.eventCount())
+                print(f"New output filename: {converter.getOutputFilename()}")
+                print(f"About {converter.eventCount()} events left to convert...")
         except kvlclib.KvlcEndOfFile:
             assert converter.isOverrunActive() == 0
             if converter.isOverrunActive():
@@ -90,8 +90,8 @@ def test_setInputFile_Vector_ASC(datadir):
             converter.convertEvent()
             if converter.isOutputFilenameNew():
                 n_new_file_name += 1
-                print("New output filename: %s" % converter.getOutputFilename())
-                print("About %d events left to convert..." % converter.eventCount())
+                print(f"New output filename: {converter.getOutputFilename()}")
+                print(f"About {converter.eventCount()} events left to convert...")
         except kvlclib.KvlcEndOfFile:
             assert converter.isOverrunActive() == 0
             if converter.isOverrunActive():
@@ -114,25 +114,25 @@ def test_setInputFile_Vector_ASC(datadir):
 
 def test_reader_formats():
     for fmt in kvlclib.reader_formats():
-        print('\n{} ({!r})'.format(fmt, fmt))
+        print(f'\n{fmt} ({fmt!r})')
         for property in kvlclib.Property:
             if fmt.isPropertySupported(property):
                 if kvlclib.properties._PROPERTY_TYPE[property] is None:
-                    print('\t{!r} is supported'.format(property))
+                    print(f'\t{property!r} is supported')
                 else:
-                    print('\t{!r} = {}'.format(property, fmt.getPropertyDefault(property)))
+                    print(f'\t{property!r} = {fmt.getPropertyDefault(property)}')
             else:
-                print('\t{!r} is not supported'.format(property))
+                print(f'\t{property!r} is not supported')
 
 
 def test_writer_formats():
     for fmt in kvlclib.writer_formats():
-        print('\n{} ({!r})'.format(fmt, fmt))
+        print(f'\n{fmt} ({fmt!r})')
         for property in kvlclib.Property:
             if fmt.isPropertySupported(property):
                 if kvlclib.properties._PROPERTY_TYPE[property] is None:
-                    print('\t{!r} is supported'.format(property))
+                    print(f'\t{property!r} is supported')
                 else:
-                    print('\t{!r} = {}'.format(property, fmt.getPropertyDefault(property)))
+                    print(f'\t{property!r} = {fmt.getPropertyDefault(property)}')
             else:
-                print('\t{!r} is not supported'.format(property))
+                print(f'\t{property!r} is not supported')

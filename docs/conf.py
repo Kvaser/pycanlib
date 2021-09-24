@@ -33,6 +33,7 @@ if os.getenv('SPELLCHECK'):
     spelling_show_suggestions = True
     spelling_lang = 'en_US'
 
+
 source_suffix = '.rst'
 master_doc = 'index'
 project = __title__

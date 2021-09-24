@@ -2,9 +2,10 @@ Miscellaneous
 -------------
 
 
-addressFromString()
-~~~~~~~~~~~~~~~~~~~
-.. autofunction:: canlib.kvrlib.addressFromString
+..
+   addressFromString()
+   ~~~~~~~~~~~~~~~~~~~
+   .. autofunction:: canlib.kvrlib.addressFromString
 
 configActiveProfileSet()
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -42,9 +43,10 @@ hostname()
 ~~~~~~~~~~
 .. autofunction:: canlib.kvrlib.hostname
 
-initializeLibrary()
-~~~~~~~~~~~~~~~~~~~
-.. autofunction:: canlib.kvrlib.initializeLibrary
+..
+   initializeLibrary()
+   ~~~~~~~~~~~~~~~~~~~
+   .. autofunction:: canlib.kvrlib.initializeLibrary
 
 kvrDiscovery
 ~~~~~~~~~~~~
@@ -58,9 +60,10 @@ kvrConfig
    :members:
    :undoc-members:
 
-stringFromAddress()
-~~~~~~~~~~~~~~~~~~~
-.. autofunction:: canlib.kvrlib.stringFromAddress
+..
+   stringFromAddress()
+   ~~~~~~~~~~~~~~~~~~~
+   .. autofunction:: canlib.kvrlib.stringFromAddress
 
 unload()
 ~~~~~~~~

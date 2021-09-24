@@ -9,6 +9,22 @@ from .wrapper import dll
 def writer_formats():
     """Return a generator of all writer formats.
 
+    You may list available Writers using::
+
+        >>> from canlib import kvlclib
+        >>> for format in kvlclib.writer_formats():
+        ...     print(format)
+        CSV (.csv): Writer, CAN frames in CSV format
+        CSV_SIGNAL (.csv): Writer, Selected signals in CSV format
+        XCP (.csv): Writer, CCP/XCP calibration in CSV format
+        MATLAB (.mat): Writer, Selected signals in Matlab format for ATI Vision
+        KME24 (.kme): Writer, Kvaser binary format (KME 2.4) - used for Vector CANalyzer
+        KME25 (.kme25): Writer, Kvaser binary format (KME 2.5)
+        KME40 (.kme40): Writer, Kvaser binary format (KME 4.0)
+        KME50 (.kme50): Writer, Kvaser binary format (KME 5.0)
+        PLAIN_ASC (.txt): Writer, CAN frames in plain text format
+           ...
+
     .. versionadded:: 1.7
 
     """
@@ -20,13 +36,13 @@ def writer_formats():
         dll.kvlcGetNextWriterFormat(previous_id, ct.byref(id_))
 
 
-class WriterFormat(object):
+class WriterFormat:
     """Helper class that encapsulates a Writer.
 
-    You may list available Writers using::
+    You may use `writer_formats()` to list available Writers.
 
-        for format in kvlclib.writer_formats():
-            print(format)
+    .. versionchanged:: 1.19
+       Updated formating in `__str__`.
 
     """
 
@@ -66,13 +82,11 @@ class WriterFormat(object):
         self.description = text.value.decode('utf-8')
 
     def __repr__(self):
-        text = "WriterFormat({!r})".format(self.id_)
+        text = f"WriterFormat({self.id_!r})"
         return text
 
     def __str__(self):
-        text = "%4d: %s (.%s)" % (self.id_, self.name, self.extension)
-        text += " Writer"
-        text += ", %s" % self.description
+        text = f"{self.id_.name} (.{self.extension}): Writer, {self.description}"
         return text
 
     def isPropertySupported(self, wr_property):
@@ -81,7 +95,7 @@ class WriterFormat(object):
         Retuns True if the property is supported by output format.
 
         Args:
-            wr_property (`canlib.kvlclib.Property`): Writer property
+            wr_property (`Property`): Writer property
 
         Returns:
             `bool`

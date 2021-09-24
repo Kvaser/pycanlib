@@ -31,11 +31,11 @@ def test_can_dev(channel_no):
 
 
 def test_device_issubset():
-    d_890_2 = Device(ean=EAN.from_string('67890-1'), serial=2)
-    d_890_1 = Device(ean=EAN.from_string('67890-1'), serial=1)
-    d_891_2 = Device(ean=EAN.from_string('00891-2'), serial=2)
-    d_890_x = Device(ean=EAN.from_string('67890-1'), serial=None)
-    d_891_x = Device(ean=EAN.from_string('67891-2'), serial=None)
+    d_890_2 = Device(ean=EAN('67890-1'), serial=2)
+    d_890_1 = Device(ean=EAN('67890-1'), serial=1)
+    d_891_2 = Device(ean=EAN('00891-2'), serial=2)
+    d_890_x = Device(ean=EAN('67890-1'), serial=None)
+    d_891_x = Device(ean=EAN('67891-2'), serial=None)
     d_xxx_2 = Device(ean=None, serial=2)
     d_xxx_1 = Device(ean=None, serial=1)
     d_xxx_x = Device(ean=None, serial=None)
@@ -74,7 +74,7 @@ def test_connected_devices():
 
 
 def test_unconnected():
-    dev = Device(ean=EAN.from_string('67890-1'), serial=-1)
+    dev = Device(ean=EAN('67890-1'), serial=-1)
     print(dev.probe_info())
 
     assert dev.isconnected() is False

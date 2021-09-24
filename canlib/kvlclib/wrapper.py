@@ -19,7 +19,7 @@ def getVersion():
 
 
 def dllversion():
-    """Get the kvlclib version number as a `VersionNumber`"""
+    """Get the kvlclib version number as a `canlib.VersionNumber`"""
     major = ct.c_int()
     minor = ct.c_int()
     build = ct.c_int()

@@ -41,7 +41,7 @@ Pin Information
 ---------------
 
 Pins are identified by their pin number, which is a number from zero up to, but
-not including, the value returned by `.canlib.Channel.number_of_io_pins`. Using
+not including, the value returned by `~.canlib.Channel.number_of_io_pins`. Using
 the pin number, the specific properties of any pin is retrieved and set using
 `.canlib.iopin.IoPin`.
 
@@ -52,14 +52,14 @@ I/O pin types
 There are currently three types of pins that is supported by the API dedicated
 to I/O Pin Handling. These include analog, digital and relay pins. To learn
 what pin type a given pin is, use `.canlib.iopin.IoPin.pin_type`. See
-`.canlib.iopin.PinType` to see all supported types.
+`~.canlib.iopin.PinType` to see all supported types.
 
 
 Analog Pins
 ~~~~~~~~~~~
 
 The analog pins are represented by multiple bits, the number of bits can be
-retrieved by calling `.canlib.iopin.IoPin.number_of_bits`. The value of an
+retrieved by calling ~`.canlib.iopin.IoPin.number_of_bits`. The value of an
 analog pin is within in the interval given by `~.canlib.iopin.IoPin.range_min`
 and `~.canlib.iopin.IoPin.range_min`. The analog input pin has two configurable
 properties, namely the low pass filter order and the hysteresis. See
@@ -73,7 +73,7 @@ Digital Pins
 ~~~~~~~~~~~~
 
 The digital pins have two configurable properties, namely the low-to-high and
-the high-to-low filter time. See `.canlib.iopin.DigitalIn.high_low_filter` and
+the high-to-low filter time. See `~.canlib.iopin.DigitalIn.high_low_filter` and
 `~.canlib.iopin.DigitalIn.low_high_filter`. Pins are read and set using
 `~.canlib.iopin.IoPin.value`. When reading an output, the latest value set is
 retrieved.

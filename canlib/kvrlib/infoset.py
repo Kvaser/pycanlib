@@ -32,14 +32,11 @@ class DeviceInfoSet(MutableSet):
 
     There are three different functions for creating `DeviceInfoSet` objects:
 
-    `empty_info_set`
-        Creates an empty set.
+    - `empty_info_set`: Creates an empty set.
 
-    `stored_info_set`
-        Creates a set from the device information stored in the registry.
+    - `stored_info_set`: Creates a set from the device information stored in the registry.
 
-    `discover_info_set`
-        Create a set from the results of a `canlib.kvrlib.Discovery`.
+    - `discover_info_set`: Create a set from the results of a `Discovery`.
 
     Once a `DeviceInfoSet` has been created it can be modified as a normal set,
     and the `DeviceInfo` elements can also be modified. Once all modification
@@ -118,11 +115,11 @@ class DeviceInfoSet(MutableSet):
         """Find and return a specific `DeviceInfo` in this set
 
         Args:
-            ean (`canlib.ean.EAN`): The EAN to search for
+            ean (`~canlib.ean.EAN`): The EAN to search for
             serial (`int`): The serial number to search for
 
         If no `DeviceInfo` with the EAN and serial number is found in this set,
-        `canlib.kvrlib.DeviceNotInSetError` is raised.
+        `DeviceNotInSetError` is raised.
 
         Note that there can never be more than one `DeviceInfo` with the same
         EAN and serial number in a `DeviceInfoSet`.
@@ -133,9 +130,7 @@ class DeviceInfoSet(MutableSet):
             return self._elements[elemid]
         else:
             raise DeviceNotInSetError(
-                "No device info matching ean={ean} and serial={serial} found".format(
-                    ean=ean, serial=serial
-                )
+                f"No device info matching ean={ean} and serial={serial} found"
             )
 
     def find_remove(self, ean, serial):
@@ -144,7 +139,7 @@ class DeviceInfoSet(MutableSet):
         Like `DeviceInfoSet.find` but immediately removes the `DeviceInfo` found from the set.
 
         Args:
-            ean (`canlib.ean.EAN`): The EAN to search for
+            ean (`~canlib.ean.EAN`): The EAN to search for
             serial (`int`): The serial number to search for
 
         """
@@ -154,10 +149,10 @@ class DeviceInfoSet(MutableSet):
         """Check whether the set contains a specific `DeviceInfo`
 
         Similar to `DeviceInfoSet.find` but instead of returning a `DeviceInfo`
-        or raising an exception, this function returns ``True`` or ``False``.
+        or raising an exception, this function returns `True` or `False`.
 
         Args:
-            ean (`canlib.ean.EAN`): The EAN to search for
+            ean (`~canlib.ean.EAN`): The EAN to search for
             serial (`int`): The serial number to search for
 
         """
@@ -172,9 +167,9 @@ class DeviceInfoSet(MutableSet):
         The EAN and serial number must be provided.
 
         Args:
-            ean (`canlib.ean.EAN`): The EAN of the info (`DeviceInfo.ean`)
+            ean (`~canlib.ean.EAN`): The EAN of the info (`DeviceInfo.ean`)
             serial (`int`): The serial number of the info (`DeviceInfo.serial`)
-            **attrs: Any other attributes to be set on the `DeviceInfo`
+            attrs: Any other attributes to be set on the `DeviceInfo`
 
         If the set already contains a `DeviceInfo` with the EAN ``ean`` and
         serial number ``serial``, the previous `DeviceInfo` will be discarded

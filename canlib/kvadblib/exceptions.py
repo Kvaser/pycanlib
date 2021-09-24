@@ -31,9 +31,10 @@ class KvdError(DllException):
             msg = ct.create_string_buffer(80)
             dll.kvaDbGetErrorText(status, msg, ct.sizeof(msg))
             err_txt = msg.value.decode('utf-8')
-        except:
+        # The important thing is to give original error code.
+        except Exception:
             err_txt = "Unknown error text"
-        err_txt += ' (%d)' % status
+        err_txt += f' ({status})'
         return err_txt
 
 
@@ -49,7 +50,7 @@ class KvdGeneralError(KvdError):
 
     def __init__(self, status):
         self.status = status
-        super(KvdGeneralError, self).__init__()
+        super().__init__()
 
 
 @_remember
@@ -78,11 +79,13 @@ class KvdDbFileParse(KvdError):
 
 @_remember
 class KvdErrInParameter(KvdError):
+    """One or more of the parameters in call is erronous."""
     status = Error.PARAM
 
 
 @_remember
 class KvdInUse(KvdError):
+    """An item is in use."""
     status = Error.IN_USE
 
 
@@ -92,29 +95,39 @@ class KvdNotFound(KvdError):
 
 @_remember
 class KvdNoAttribute(KvdNotFound):
+    """No attribute found."""
     status = Error.NO_ATTRIB
 
 
 @_remember
 class KvdNoMessage(KvdNotFound):
+    """No message was found."""
     status = Error.NO_MSG
 
 
 @_remember
 class KvdNoNode(KvdNotFound):
+    """Could not find the database node."""
     status = Error.NO_NODE
 
 
 @_remember
 class KvdNoSignal(KvdNotFound):
+    """No signal was found."""
     status = Error.NO_SIGNAL
 
 
 @_remember
 class KvdWrongOwner(KvdNotFound):
+    """Wrong owner for attribute."""
     status = Error.WRONG_OWNER
 
 
 @_remember
 class KvdOnlyOneAllowed(KvdError):
+    """An identical kvaDbLib structure already exists.
+
+    Only one database at a time can be used).
+
+    """
     status = Error.ONLY_ONE_ALLOWED

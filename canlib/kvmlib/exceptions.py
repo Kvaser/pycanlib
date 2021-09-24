@@ -16,7 +16,7 @@ class LockedLogError(RuntimeError):
     """
 
     def __init__(self):
-        super(LockedLogError, self).__init__("Active log file switched during iteration")
+        super().__init__("Active log file switched during iteration")
 
 
 _all_errors_by_status = {}
@@ -47,9 +47,10 @@ class KvmError(DllException):
             msg = ct.create_string_buffer(80)
             dll.kvmGetErrorText(status, msg, ct.sizeof(msg))
             err_txt = msg.value.decode('utf-8')
-        except:
+        # The important thing is to give original error code.
+        except Exception:
             err_txt = "Unknown error text"
-        err_txt += ' (%d)' % status
+        err_txt += f' ({status})'
         return err_txt
 
 
@@ -65,7 +66,7 @@ class KvmGeneralError(KvmError):
 
     def __init__(self, status):
         self.status = status
-        super(KvmGeneralError, self).__init__()
+        super().__init__()
 
 
 @_remember

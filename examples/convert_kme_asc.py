@@ -19,28 +19,28 @@ def try_set_propery(cnv, property, value=None):
 
         # Get the property's default value
         default = cnv.format.getPropertyDefault(property)
-        print('  %s is supported (Default: %s)' % (property, default))
+        print(f'  {property} is supported (Default: {default})')
 
         # Get the property's current value
         value = cnv.getProperty(property)
-        print('    Current value: %s' % value)
+        print(f'    Current value: {value}')
     else:
-        print('  %s is not supported' % property)
+        print(f'  {property} is not supported')
 
 
 def convert_events(cnv):
     # Get estimated number of remaining events in the input file. This
     # can be useful for displaying progress during conversion.
     total = cnv.eventCount()
-    print("Converting about %d events..." % total)
+    print(f"Converting about {total} events...")
     while True:
         try:
             # Convert events from input file one by one until EOF
             # is reached
             cnv.convertEvent()
             if cnv.isOutputFilenameNew():
-                print("New output filename: '%s'" % cnv.getOutputFilename())
-                print("About %d events left..." % cnv.eventCount())
+                print(f"New output filename: '{cnv.getOutputFilename()}'")
+                print(f"About {cnv.eventCount()} events left...")
         except kvlclib.KvlcEndOfFile:
             if cnv.isOverrunActive():
                 print("NOTE! The extracted data contained overrun.")
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     # set resulting output file name taking advantage of the extension
     # defined in the format.
     out_file = in_file.with_suffix('.' + out_fmt.extension)
-    print("Output filename is '%s'" % out_file)
+    print(f"Output filename is '{out_file}'")
 
     # create converter
     cnv = kvlclib.Converter(out_file, out_fmt)

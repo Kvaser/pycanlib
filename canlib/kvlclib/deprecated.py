@@ -1,5 +1,4 @@
 import ctypes as ct
-import sys
 
 from .. import deprecation
 from . import wrapper
@@ -40,7 +39,7 @@ class KvlcLib(Converter):
     """
 
     def __init__(self, filename, file_format):
-        super(KvlcLib, self).__init__(filename, file_format)
+        super().__init__(filename, file_format)
 
         deprecation.manual_warn(
             "Creating KvlcLib objects is deprecated, "
@@ -52,9 +51,7 @@ class KvlcLib(Converter):
         try:
             return getattr(self._module, name)
         except AttributeError:
-            raise AttributeError(
-                "{t} object has no attribute {n}".format(t=str(type(self)), n=name)
-            )
+            raise AttributeError(f"{type(self)} object has no attribute {name}")
 
     def deleteConverter(self):
         deprecation.manual_warn("Manually deleting converters is deprecated. Also see flush().")

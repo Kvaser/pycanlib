@@ -15,7 +15,7 @@ def openChannel(channel_number, channel_type, bps=None):
 
     Args:
         channel_number (`int`): The number of the channel. This is the same
-            channel number as used by `canlib.canlib.ppenChannel`.
+            channel number as used by `.canlib.openChannel`.
         channel_type (`ChannelType`): Whether the LIN interface will be a
             master or slave.
         bps (`int` or `None`): If not `None`, `Channel.setBitrate` will be called with
@@ -56,7 +56,7 @@ def openSlave(channel_number, bps=None):
     return openChannel(channel_number, ChannelType.SLAVE, bps=bps)
 
 
-class Channel(object):
+class Channel:
     """A LINlib channel
 
     This class is normally instantiated with `openMaster` or `openSlave`.
@@ -322,9 +322,9 @@ class Channel(object):
 
         Args:
 
-            frame (`canlib.Frame`): The information to be updated. Only the `Frame.id`,
-                `Frame.data`, and `Frame.dlc` attributes are used. Note that the frame can,
-                but not need not, be a `canlib.LINFrame`.
+            frame (`canlib.Frame`): The information to be updated. Only the `.Frame.id`,
+                `.Frame.data`, and `.Frame.dlc` attributes are used. Note that the frame can,
+                but not need not, be a `.LINFrame`.
 
         """
         void_p_data = (ct.c_ubyte * frame.dlc)(*frame.data)
@@ -343,9 +343,9 @@ class Channel(object):
 
         Args:
 
-            frame (`canlib.Frame`) :: The information to be updated. Only the `Frame.id`,
-                `Frame.data`, and `Frame.dlc` attributes are used. Note that the frame can,
-                but not need not, be a `canlib.LINFrame`.
+            frame (`canlib.Frame`) :: The information to be updated. Only the `.Frame.id`,
+                `.Frame.data`, and `.Frame.dlc` attributes are used. Note that the frame can,
+                but not need not, be a `.LINFrame`.
 
         """
         void_p_data = (ct.c_ubyte * frame.dlc)(*frame.data)

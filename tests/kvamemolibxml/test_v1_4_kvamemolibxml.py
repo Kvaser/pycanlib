@@ -8,14 +8,14 @@ from canlib import kvamemolibxml
 @kvdeprecated
 def test_import_kvamemolibxml():
     xl = kvamemolibxml.kvaMemoLibXml()
-    print("Python kvaMemoLibXml version: v%s" % xl.getVersion())
+    print(f"Python kvaMemoLibXml version: v{xl.getVersion()}")
 
 
 @kvdeprecated
 def test_xmlGetValidationError(datadir):
     xl = kvamemolibxml.kvaMemoLibXml()
     (status, text) = xl.xmlGetValidationError()
-    print("Validation error status:%d, text:\n%s" % (status, text))
+    print("Validation error status:%s, text:\n%s" % (status, text))
     assert status == kvamemolibxml.KvaXmlStatusOK
     assert text == ""
 

@@ -47,18 +47,18 @@ def module_pin_names(module_type, prefix=''):
 
     """
     if module_type == ModuleType.DIGITAL:
-        pin_names = ['%sDO%s' % (prefix, x) for x in range(1, 17)]
-        pin_names += ['%sDI%s' % (prefix, x) for x in range(1, 17)]
+        pin_names = [f'{prefix}DO{x}' for x in range(1, 17)]
+        pin_names += [f'{prefix}DI{x}' for x in range(1, 17)]
     elif module_type == ModuleType.ANALOG:
-        pin_names = ['%sAO%s' % (prefix, x) for x in range(1, 5)]
-        pin_names += ['%sAI%s' % (prefix, x) for x in range(1, 5)]
+        pin_names = [f'{prefix}AO{x}' for x in range(1, 5)]
+        pin_names += [f'{prefix}AI{x}' for x in range(1, 5)]
     elif module_type == ModuleType.RELAY:
-        pin_names = ['%sR%s' % (prefix, x) for x in range(1, 9)]
-        pin_names += ['%sDI%s' % (prefix, x) for x in range(1, 9)]
+        pin_names = [f'{prefix}R{x}' for x in range(1, 9)]
+        pin_names += [f'{prefix}DI{x}' for x in range(1, 9)]
     elif module_type == ModuleType.INTERNAL:
         pin_names = ['DO1', 'DI1']
     else:
-        raise AttributeError("%s is an unknown ModuleType" % module_type)
+        raise AttributeError(f"{module_type} is an unknown ModuleType")
     return pin_names
 
 
@@ -66,7 +66,7 @@ def _create_pin_names(io_pins):
     """Create a list of names for the given list of `iopin.IoPin`.
 
     Used by `iopin.Configuration` to create a list of label pin names
-    from a given list of `iopin.IoPin`s
+    from a given list of `iopin.IoPin` s
 
     """
     module_index = 0
@@ -74,19 +74,19 @@ def _create_pin_names(io_pins):
     pin_names = []
     while pin_index < len(io_pins):
         module_index += 1
-        names = module_pin_names(io_pins[pin_index].module_type, prefix='%s:' % module_index)
+        names = module_pin_names(io_pins[pin_index].module_type, prefix=f'{module_index}:')
         pin_names += names
         pin_index += len(names)
     return pin_names
 
 
-class AddonModule(object):
+class AddonModule:
     """Contains information about one add-on module
 
-    Attributes:
-        module_type (`iopin.ModuleType`): The type of the add-on module.
-        sw_version (`canlib.Version`): The software version in the add-on module.
-        iopin.serial (int): The serial number of the add-on module.
+    Args:
+        module_type (`ModuleType`): The type of the add-on module.
+        sw_version (`canlib.VersionNumber`): The software version in the add-on module.
+        serial (int): The serial number of the add-on module.
         first_index (int): The index of the add-on modules first pin.
 
     .. versionadded:: 1.9
@@ -105,7 +105,7 @@ class AddonModule(object):
         )
 
     def issubset(self, spec):
-        """Check if current attributes are fulfilling attributes in spec
+        """Check if current attributes are fulfilling attributes in *spec*.
 
         Any attribute in spec that is set to None is automatically considered fulfilled.
 
@@ -153,18 +153,19 @@ class AddonModule(object):
         return True
 
 
-class Configuration(object):
+class Configuration:
     """Contains I/O pins and the `.canlib.Channel` to find them on
 
     Creating this object may take some time depending on the number of I/O pins
     availably on the given `.canlib.Channel`.
 
     Args:
-        channel ('canlib.Channel'): The channel where the discovery of I/O pins
-        should take place.
+        channel (`~.canlib.Channel`): The channel where the discovery of I/O pins
+            should take place.
 
     Attributes:
-        io_pins (list(`iopin.IoPin`)): All discovered I/O pins.
+        io_pins (list(`IoPin`)): All discovered I/O pins.
+        modules (list(`AddonModule`)): All included add-on-modules.
         pin_names (list(str)): List of label I/O pin names.
         pin_index (dict(str: int)): Dictionary with I/O pin label name as key, and pin index as value.
 
@@ -196,7 +197,7 @@ class Configuration(object):
 
     Note:
         A configuration needs to be confirmed using `.iopin.Configuration.confirm`
-        (which calls `canlib.channel.io_confirm_config`) before accessing pin values::
+        (which calls `.Channel.io_confirm_config`) before accessing pin values::
 
             >>> config.pin(name='4:AO1').value = 4
             Traceback (most recent call last):
@@ -211,11 +212,11 @@ class Configuration(object):
 
             >>> config.pin(name='4:AO1').value = 4
 
-    An `.iopin.Configuration` may be compared with an expected ordered list of
-    `.iopin.AddonModule` before confirming using `.iopin.AddonModule.issubset`
+    A `Configuration` may be compared with an expected ordered list of
+    `AddonModule` before confirming using `AddonModule.issubset`
 
     .. versionchanged:: 1.9
-       `.iopin.Configuration.modules` is now an attribute, containing an ordered list of `AddonModule` objects.
+       `Configuration.modules` is now an attribute, containing an ordered list of `AddonModule` objects.
 
     """
 
@@ -303,34 +304,59 @@ class Configuration(object):
 
 
 class Info(CEnum):
-    """Enum used for calls to `kvIoPinGetInfo` and `kvIoPinSetInfo`"""
+    """Enum used internally in `IoPin` for calls to `kvIoPinGetInfo` and `kvIoPinSetInfo`"""
 
-    MODULE_TYPE = 1
-    DIRECTION = 2
-    PIN_TYPE = 4
-    NUMBER_OF_BITS = 5
-    RANGE_MIN = 6
-    RANGE_MAX = 7
-    DI_LOW_HIGH_FILTER = 8  # 0 - 65000, Default 5000 us
-    DI_HIGH_LOW_FILTER = 9  # 0 - 65000, Default 5000 us
-    AI_LP_FILTER_ORDER = 10  # 0 - 16, default 3 (sample time is 1 ms)
-    AI_HYSTERESIS = 11  # 0 - 10, default 0.3
-    MODULE_NUMBER = 14
-    SERIAL_NUMBER = 15
-    FW_VERSION = 16
+    MODULE_TYPE = 1  #: One of `ModuleType`
+    DIRECTION = 2  #: One of `Direction`
+    PIN_TYPE = 4  #: One of `PinType`
+    NUMBER_OF_BITS = 5  #: Resolution in number of bits. Read-only.
+    RANGE_MIN = 6  #: A float that contains the lower range limit in volts. Read-only.
+    RANGE_MAX = 7  #: A float that contains the upper range limit in volts. Read-only.
+    DI_LOW_HIGH_FILTER = 8
+    """Time when a digital input pin goes from HIGH to LOW.
+
+    Filter time in micro seconds when a digital input pin goes from HIGH to LOW.
+    Range: 0 - 65000, Default 5000 us
+
+    """
+    DI_HIGH_LOW_FILTER = 9
+    """Time when a digital input pin goes from LOW to HIGH.
+
+    Filter time in micro seconds when a digital input pin goes from LOW to HIGH.
+
+    Range: 0 - 65000, Default 5000 us
+    """
+    AI_LP_FILTER_ORDER = 10
+    """The low-pass filter order for an analog input pin.
+
+    0 - 16, default 3 (sample time is 1 ms)
+
+    """
+    AI_HYSTERESIS = 11
+    """The hysteresis in volt.
+
+    The hysteresis in volt for an analog input pin, i.e. the amount the input
+    have to change before the sampled value is updated.
+
+    0.0 - 10.0, default 0.3
+
+    """
+    MODULE_NUMBER = 14  #: The module number the pin belongs to. The number starts from 0. Read-only.
+    SERIAL_NUMBER = 15  #: Serial number of the submodule the pin belongs to. Read-only.
+    FW_VERSION = 16  #: Software version number of the submodule the pin belongs to. Read-only.
 
 
 class ModuleType(CEnum):
     """Enum used for return values in `kvIoPinGetInfo`"""
 
-    DIGITAL = 1  # Digital Add-on (16 inputs, 16 outputs)
-    ANALOG = 2  # Analog Add-on (4 inputs, 4 outputs)
-    RELAY = 3  # Relay Add-on (8 inputs, 8 outputs)
-    INTERNAL = 4  # Internal Digital module (1 input, 1 output)
+    DIGITAL = 1  #: Digital Add-on (16 inputs, 16 outputs).
+    ANALOG = 2  #: Analog Add-on (4 inputs, 4 outputs).
+    RELAY = 3  #: Relay Add-on (8 inputs, 8 outputs).
+    INTERNAL = 4  #: Internal Digital module (1 input, 1 output).
 
 
 class PinType(CEnum):
-    """Enum used for return values in `kvIoPinGetInfo`"""
+    """Enum used for values in `Info`"""
 
     DIGITAL = 1
     ANALOG = 2
@@ -338,10 +364,10 @@ class PinType(CEnum):
 
 
 class Direction(CEnum):
-    """Enum used for return values in `kvIoPinGetInfo`"""
+    """Enum used for values in `Info`"""
 
-    IN = 4
-    OUT = 8
+    IN = 4  #: Input
+    OUT = 8  #: Output
 
 
 class DigitalValue(CEnum):
@@ -351,7 +377,7 @@ class DigitalValue(CEnum):
     HIGH = 1
 
 
-class IoPin(object):
+class IoPin:
     """Base class of I/O ports"""
 
     def __init__(self, channel, pin):
@@ -590,7 +616,7 @@ class DigitalOut(IoPin):
 class Relay(IoPin):
     @property
     def value(self):
-        """Value on relay (0:off, 1:on)"""
+        """Value on relay, `0` for off, `1` for on"""
         value = ct.c_uint()
         dll.kvIoPinGetOutputRelay(self.channel.handle, self.pin, ct.byref(value))
         return value.value

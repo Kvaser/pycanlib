@@ -17,7 +17,7 @@ else:
 def test_import_kvrlib():
     rl = kvrlib.kvrlib()
     version = rl.getVersion()
-    print("Python kvrlib version: %s" % version)
+    print(f"Python kvrlib version: {version}")
     # assert str(version) == "8.23"
 
 
@@ -72,7 +72,7 @@ def test_qqqmac():
     channel = 5
     try:
         num_profiles = rl.configNoProfilesGet(channel=channel)
-    except:
+    except Exception:
         print("Remote device needs to be connected")
     else:
         assert num_profiles == 4
@@ -96,7 +96,7 @@ def test_kvrConfig():
 def test_discovery_scan():
     print("Scanning for devices")
     addressList = kvrlib.kvrDiscovery.getDefaultAddresses(kvrlib.kvrAddressTypeFlag_BROADCAST)
-    print("IP addresses to scan for devices on: %s" % addressList)
+    print(f"IP addresses to scan for devices on: {addressList}")
 
     rl = kvrlib.kvrlib()
     discovery = rl.discoveryOpen()
@@ -106,7 +106,7 @@ def test_discovery_scan():
     deviceInfos = discovery.getResults()
     # We should get at least one hit
     assert len(deviceInfos) > 0
-    print("Scanning result:%s\n" % deviceInfos)
+    print(f"Scanning result:{deviceInfos}\n")
 
     discovery.close()
     rl.unload()
@@ -130,12 +130,12 @@ def test_kvrdeviceinfo():
     assert (
         str(deviceInfo_0)
         == """
-name/hostname  : "" / ""
+name/hostname  : '' / ''
   ean/serial   : 457-8ae / 3333
-  fw           : 0.0.000
+  fw           : v0.0.000
   addr/cli/AP  : - (UNKNOWN) / - (UNKNOWN) / - (UNKNOWN)
-  availability : Availability.NONE
-  usage/access : DeviceUsage.UNKNOWN / Accessibility.UNKNOWN
+  availability : NONE
+  usage/access : UNKNOWN / UNKNOWN
   pass/enc.key : no / no"""
     )
 
@@ -148,7 +148,7 @@ name/hostname  : "" / ""
     deviceInfo_1.ser_no = ct.c_uint32(4444)
 
     # Checking __eq__ so we need != here
-    assert deviceInfo_1 != None
+    assert deviceInfo_1 is not None  # noqa: E711
 
     assert deviceInfo_0 == deviceInfo_0
     assert not deviceInfo_0 == deviceInfo_1
@@ -170,20 +170,20 @@ name/hostname  : "" / ""
     assert (
         str(my_info_list)
         == """
-name/hostname  : "" / ""
+name/hostname  : '' / ''
   ean/serial   : 457-8ae / 3333
-  fw           : 0.0.000
+  fw           : v0.0.000
   addr/cli/AP  : - (UNKNOWN) / - (UNKNOWN) / - (UNKNOWN)
-  availability : Availability.NONE
-  usage/access : DeviceUsage.UNKNOWN / Accessibility.UNKNOWN
+  availability : NONE
+  usage/access : UNKNOWN / UNKNOWN
   pass/enc.key : no / no
 
-name/hostname  : "" / ""
+name/hostname  : '' / ''
   ean/serial   : 457-8ae / 4444
-  fw           : 0.0.000
+  fw           : v0.0.000
   addr/cli/AP  : - (UNKNOWN) / - (UNKNOWN) / - (UNKNOWN)
-  availability : Availability.NONE
-  usage/access : DeviceUsage.UNKNOWN / Accessibility.UNKNOWN
+  availability : NONE
+  usage/access : UNKNOWN / UNKNOWN
   pass/enc.key : no / no"""
     )
 
@@ -200,9 +200,9 @@ def test_connect_disconnect_remote_device():
     # qqqmac would be nice to use kvdevice here
     serialNo = 10545
     dev = kvDevice.kvDevice(ean='73-30130-00671-3', serial=serialNo)
-    print("Connecting to device with serial number %s" % serialNo)
+    print(f"Connecting to device with serial number {serialNo}")
     addressList = kvrlib.kvrDiscovery.getDefaultAddresses(kvrlib.kvrAddressTypeFlag_BROADCAST)
-    print("IP addresses to scan for devices on: %s" % addressList)
+    print(f"IP addresses to scan for devices on: {addressList}")
 
     discovery = rl.discoveryOpen()
     discovery.setAddresses(addressList)
@@ -213,7 +213,7 @@ def test_connect_disconnect_remote_device():
 
     print("Scanning devices...\n")
     deviceInfos = discovery.getResults()
-    print("Scanning result:%s\n" % deviceInfos)
+    print(f"Scanning result:{deviceInfos}\n")
     for deviceInfo in deviceInfos:
         if deviceInfo.ser_no == serialNo:
             assert kvrlib.kvrlib().deviceGetServiceStatus(deviceInfo) == (12, 0)

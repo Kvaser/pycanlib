@@ -5,7 +5,6 @@ import pytest
 import source_frames_v5_1 as source_frames
 
 from canlib import kvlclib
-from canlib import canlib
 
 DBC_FILE_NEW_FORMAT = pathlib.Path(__file__).parent.absolute() / "j1939_new_format_sample.dbc"
 DBC_FILE_OLD_FORMAT = pathlib.Path(__file__).parent.absolute() / "j1939_old_format_sample.dbc"

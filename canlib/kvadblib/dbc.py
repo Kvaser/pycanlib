@@ -17,10 +17,10 @@ from .message import Message
 from .node import Node
 from .wrapper import dll, get_last_parse_error
 
-DATABASE_FLAG_J1939 = 0x0001
+DATABASE_FLAG_J1939 = 0x0001  #: Flag indicating that the database uses the J1939 protocol.
 
 
-class Dbc(object):
+class Dbc:
     """Holds a dbc database.
 
 
@@ -171,7 +171,7 @@ class Dbc(object):
         """Delete message from database.
 
         Args:
-            message (:obj:`Message`): message to be deleted
+            message (`Message`): message to be deleted
 
         """
         dll.kvaDbDeleteMsg(self._handle, message._handle)
@@ -180,7 +180,7 @@ class Dbc(object):
         """Delete node from database.
 
         Args:
-            node (:obj:`Node`): node to be deleted
+            node (`Node`): node to be deleted
 
         """
         dll.kvaDbDeleteNode(self._handle, node._handle)
@@ -192,7 +192,7 @@ class Dbc(object):
             name (str): name of attribute definition
 
         Returns an attribute definition object depending on type, e.g. if the
-        type is AttributeType.INTEGER, an :obj:`IntegerAttributeDefinition` is
+        type is AttributeType.INTEGER, an `IntegerAttributeDefinition` is
         returned.
 
         """
@@ -242,7 +242,7 @@ class Dbc(object):
             name (str): message name to look for
 
         Returns:
-            :obj:`Message`
+            `Message`
 
         Raises:
             KvdNoMessage: If no match was found, or if none of `id` and
@@ -272,7 +272,7 @@ class Dbc(object):
                         (Note that `kvadblib.MessageFlag.EXT` != `canlib.MessageFlag.EXT`)
 
         Returns:
-            :obj:`Message`
+            `Message`
 
         Raises:
             KvdNoMessage: If no match was found.
@@ -296,7 +296,7 @@ class Dbc(object):
             name (str): message name to look for
 
         Returns:
-            :obj:`Message`
+            `Message`
 
         Raises:
             KvdNoMessage: If no match was found.
@@ -308,17 +308,23 @@ class Dbc(object):
         return message
 
     def get_message_by_pgn(self, can_id):
-        """Find message by PGN
+        """Find message using the PGN part of the given CAN id.
 
         Note:
 
-            The `can_id` must have the "EXT" flag bit set (bit 30, 0x40000000)
+            The `can_id` must have the `MessageFlag.EXT` flag bit set (bit 31, 0x80000000) ::
+
+                dbc = kvadblib.Dbc("My_j1939_database.dbc")
+                can_id = 0xff4200
+                can_id |= kvadblib.MessageFlag.EXT
+                dbc.get_message_by_pgn(can_id)
+
 
         Args:
             can_id (int): CAN id containing PGN to look for
 
         Returns:
-            :obj:`Message`
+            `Message`
 
         Raises:
             KvdNoMessage: If no match was found.
@@ -339,7 +345,7 @@ class Dbc(object):
             name (str): node name to look for
 
         Returns:
-            :obj:`Node`
+            `Node`
 
         Raises:
             KvdNoNode: If no match was found.
@@ -388,7 +394,7 @@ class Dbc(object):
                 return
 
     def interpret(self, frame, j1939=False):
-        """Interprets a given Frame object, returning a BoundMessage"""
+        """Interprets a given `canlib.Frame` object, returning a `BoundMessage`."""
         can_id = frame.id
         flags = 0
 
@@ -415,15 +421,15 @@ class Dbc(object):
         """Create a new attribute definition in the database.
 
         The owner specify where the attribute is applicable,
-        e.g. :obj:`AttributeOwner.MESSAGE` specifies that this attribute is
-        only applicable on messages (:obj:`Message`).
+        e.g. `AttributeOwner.MESSAGE` specifies that this attribute is
+        only applicable on messages (`Message`).
 
         Args:
             name (str): a unique name.
-            owner (:obj:`AttributeOwner`): the owner type
+            owner (`AttributeOwner`): the owner type
 
         Returns:
-            :obj:`AttributeDefinition`
+            `AttributeDefinition`
 
         """
         adh = ct.c_void_p(None)
@@ -444,7 +450,7 @@ class Dbc(object):
             flags (int, optional): message flags, e.g. `kvadblib.MessageFlag.EXT`
 
         Returns:
-            :obj:`canlib.kvadblib.message.Message`
+            `~canlib.kvadblib.message.Message`
 
         """
         mh = ct.c_void_p(None)
@@ -467,7 +473,7 @@ class Dbc(object):
             comment (str, optional): message comment
 
         Returns:
-            :obj:`Node`
+            `Node`
 
         """
         nh = ct.c_void_p(None)

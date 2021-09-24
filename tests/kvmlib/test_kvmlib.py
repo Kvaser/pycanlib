@@ -249,7 +249,7 @@ def test_kme_rw(datadir, tmpdir):
     with kvmlib.openKme(str(src_name), filetype=kme_type) as src:
         with kvmlib.createKme(dest_name, filetype=kme_type) as dest:
             num_events = src.event_count_estimation()
-            print('{} contains about {} events.'.format(src_name, num_events))
+            print(f'{src_name} contains about {num_events} events.')
             for event in src:
                 print(event)
                 dest.write_event(event)

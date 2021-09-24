@@ -6,7 +6,7 @@ from .exceptions import KvdNoAttribute, KvdWrongOwner
 from .wrapper import dll
 
 
-class Node(object):
+class Node:
     """Database Node"""
 
     def __init__(self, db, handle, name=None, comment=None):
@@ -28,7 +28,7 @@ class Node(object):
         return not self == other
 
     def __repr__(self):
-        return "Node(name='{}, comment={}')".format(self.name, self.comment)
+        return f"Node(name='{self.name}, comment={self.comment}')"
 
     def attributes(self):
         """Return a generator over all message attributes."""

@@ -15,9 +15,8 @@ def openKmf(path, device_type=Device.MHYDRA_EXT):
         path (`str`): The filepath to the .KMF file
             (e.g. ``"data/kmf/LOG00000.KMF"``).
 
-        device_type (`canlib.kvmlib.Device`): The type of the memorator that
-            created the .KMF file(s) (defaults to
-            `canlib.kvmlib.Device.MHYDRA_EXT`)
+        device_type (`.Device`): The type of the memorator that created the
+            .KMF file(s) (defaults to `.Device.MHYDRA_EXT`)
 
     Returns:
         `Kmf`
@@ -36,7 +35,7 @@ def openKmf(path, device_type=Device.MHYDRA_EXT):
     return Kmf(handle, VersionNumber(major.value, minor.value))
 
 
-class KmfSystem(object):
+class KmfSystem:
     """The base class of `Kmf` and `Memorator`
 
     The `Kmf` and `Memorator` classes are very similar, they are different ways
@@ -68,10 +67,13 @@ class KmfSystem(object):
 
     @property
     def disk_usage(self):
-        """`KmfSystem.DiskUsage`: The disk usage
+        """`namedtuple`: The disk usage
 
-        The tuple has one `used` and one `total` field (in that order), which
-        reference disk space in megabytes.
+        Returns:
+            `namedtuple`: containing
+
+            - `used` (`int`): Used disk space in megabytes.
+            - `total` (`int`): Total disk space in megabytes.
 
         """
         total = ct.c_uint32()
@@ -87,7 +89,7 @@ class KmfSystem(object):
         """Close the internal handle
 
         Warning:
-            This invalidates the object.
+            Closing invalidates the object.
         """
         if self.handle is not None:
             dll.kvmClose(self.handle)
@@ -95,12 +97,12 @@ class KmfSystem(object):
 
 
 class Kmf(KmfSystem):
-    """A kmf file opened with `kvmlib.openKmf`
+    """A kmf file opened with `openKmf`
 
     The main use of this class is using its `log` attribute, which is a
     `MountedLog` object (see its documentation for how to use it).
 
-    Also see the base class `kvmlib.KmfSystem` for inherited functionality.
+    Also see the base class `.KmfSystem` for inherited functionality.
 
     Attributes:
         log (`MountedLog`): Object representing the log of log files within the
@@ -111,6 +113,6 @@ class Kmf(KmfSystem):
     """
 
     def __init__(self, handle, ldf_version):
-        super(Kmf, self).__init__(handle)
+        super().__init__(handle)
 
         self.log = MountedLog(self, ldf_version)

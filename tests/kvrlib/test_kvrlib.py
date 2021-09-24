@@ -65,7 +65,7 @@ def test_kvrConfig():
 def test_discovery_scan():
     print("Scanning for devices")
     addressList = kvrlib.kvrDiscovery.getDefaultAddresses(kvrlib.kvrAddressTypeFlag_BROADCAST)
-    print("IP addresses to scan for devices on: %s" % addressList)
+    print(f"IP addresses to scan for devices on: {addressList}")
 
     discovery = kvrlib.kvrDiscovery()
     discovery.setAddresses(addressList)
@@ -76,7 +76,7 @@ def test_discovery_scan():
     deviceInfos = discovery.getResults()
     # We should get at least one hit
     assert len(deviceInfos) > 0
-    print("Scanning result:%s\n" % deviceInfos)
+    print(f"Scanning result:{deviceInfos}\n")
 
     # qqqmac should we be able to use the with statement for discovery?
     discovery.close()
@@ -99,12 +99,12 @@ def test_kvrdeviceinfo():
     assert (
         str(deviceInfo_0)
         == """
-name/hostname  : "" / ""
+name/hostname  : '' / ''
   ean/serial   : 457-8ae / 3333
-  fw           : 0.0.000
+  fw           : v0.0.000
   addr/cli/AP  : - (UNKNOWN) / - (UNKNOWN) / - (UNKNOWN)
-  availability : Availability.NONE
-  usage/access : DeviceUsage.UNKNOWN / Accessibility.UNKNOWN
+  availability : NONE
+  usage/access : UNKNOWN / UNKNOWN
   pass/enc.key : no / no"""
     )
 
@@ -139,20 +139,20 @@ name/hostname  : "" / ""
     assert (
         str(my_info_list)
         == """
-name/hostname  : "" / ""
+name/hostname  : '' / ''
   ean/serial   : 457-8ae / 3333
-  fw           : 0.0.000
+  fw           : v0.0.000
   addr/cli/AP  : - (UNKNOWN) / - (UNKNOWN) / - (UNKNOWN)
-  availability : Availability.NONE
-  usage/access : DeviceUsage.UNKNOWN / Accessibility.UNKNOWN
+  availability : NONE
+  usage/access : UNKNOWN / UNKNOWN
   pass/enc.key : no / no
 
-name/hostname  : "" / ""
+name/hostname  : '' / ''
   ean/serial   : 457-8ae / 4444
-  fw           : 0.0.000
+  fw           : v0.0.000
   addr/cli/AP  : - (UNKNOWN) / - (UNKNOWN) / - (UNKNOWN)
-  availability : Availability.NONE
-  usage/access : DeviceUsage.UNKNOWN / Accessibility.UNKNOWN
+  availability : NONE
+  usage/access : UNKNOWN / UNKNOWN
   pass/enc.key : no / no"""
     )
 
@@ -399,9 +399,9 @@ def test_connect_disconnect_remote_device():
     # qqqmac would be nice to use kvdevice here
     serialNo = 10545
     dev = kvDevice.kvDevice(ean='73-30130-00671-3', serial=serialNo)
-    print("Connecting to device with serial number %s" % serialNo)
+    print(f"Connecting to device with serial number {serialNo}")
     addressList = kvrlib.kvrDiscovery.getDefaultAddresses(kvrlib.kvrAddressTypeFlag_BROADCAST)
-    print("IP addresses to scan for devices on: %s" % addressList)
+    print(f"IP addresses to scan for devices on: {addressList}")
 
     discovery = kvrlib.kvrDiscovery()
     # discovery.clearDevicesAtExit(True)
@@ -413,7 +413,7 @@ def test_connect_disconnect_remote_device():
 
     print("Scanning devices...\n")
     deviceInfos = discovery.getResults()
-    print("Scanning result:%s\n" % deviceInfos)
+    print(f"Scanning result:{deviceInfos}\n")
     for deviceInfo in deviceInfos:
         if deviceInfo.ser_no == serialNo:
             deviceInfo.connect()
@@ -463,7 +463,7 @@ def test_connect_disconnect_remote_device():
     assert active_profile == 0
 
     service_status = kvrlib.deviceGetServiceStatus(deviceInfo)
-    print("service status:{}".format(service_status))
+    print(f"service status:{service_status}")
     assert service_status == (6, 0)
     service_status_text = kvrlib.deviceGetServiceStatusText(deviceInfo)
     print(service_status_text)

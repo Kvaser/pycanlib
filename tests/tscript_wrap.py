@@ -1,8 +1,4 @@
-# use aenum in Python 2.7
-try:
-    from enum import IntEnum
-except Exception:
-    from aenum import IntEnum
+from enum import IntEnum
 
 from canlib import canlib
 
@@ -38,7 +34,7 @@ class LogLevel(IntEnum):
     CRITICAL = 3
 
 
-class ScriptRunner(object):
+class ScriptRunner:
     def __init__(self, channel_number, script_fp, slot=0):
         self.channel_number = channel_number
         # os.fspath is only supported in python 3.6+

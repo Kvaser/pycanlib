@@ -9,7 +9,7 @@ from .exceptions import KvrBlank, KvrNoAnswer, KvrPasswordError, KvrUnreachable
 from .structures import kvrAddress, kvrCipherInfoElement
 from .wrapper import HOST_NAME_MIN_SIZE, dll
 
-AddressInfo = namedtuple('AddressInfo', "adress1 address2 netmask gateway is_dhcp")
+AddressInfo = namedtuple('AddressInfo', "address1 address2 netmask gateway is_dhcp")
 ConnectionStatus = namedtuple(
     'ConnectionStatus', "state tx_rate rx_rate channel_number rssi tx_power"
 )
@@ -50,10 +50,10 @@ def openDevice(channel_number, password="", validate_password=False):
     return rdev
 
 
-class RemoteDevice(object):
+class RemoteDevice:
     """A remote-capable Kvaser device
 
-    This class is normally instantiated with `canlib.kvrlib.openDevice`::
+    This class is normally instantiated with `openDevice`::
 
         rdev = kvrlib.openDevice(CHANNEL_NUMBER)
 
@@ -61,7 +61,7 @@ class RemoteDevice(object):
 
         active = rdev.active_profile
 
-    All profiles, including the active one, are `canlib.kvrlib.ConfigProfile`
+    All profiles, including the active one, are `ConfigProfile`
     objects, see that documentation for all the operations available for
     profile objects.
 
@@ -94,7 +94,7 @@ class RemoteDevice(object):
     `RemoteDevice.wlan_scan`.
 
     If the device is password protected, that password can be passed to
-    `canlib.kvrlib.openDevice`::
+    `openDevice`::
 
         protected_device = kvrlib.openDevice(0, password="Once upon a playground rainy")
 
@@ -119,7 +119,7 @@ class RemoteDevice(object):
 
     """
 
-    class ProfileList(object):
+    class ProfileList:
         """The available profiles in a remote-capable device
 
         This is the type of `RemoteDevice.profiles`. It implements the following:
@@ -163,7 +163,7 @@ class RemoteDevice(object):
 
     @property
     def active_profile(self):
-        """`canlib.kvrlib.ConfigProfile`: The currently active profile
+        """`ConfigProfile`: The currently active profile
 
         Activating another profile is done by assigning this attribute to
         another profile::
@@ -172,7 +172,7 @@ class RemoteDevice(object):
             remote_device.active_profile = new_profile
 
         The value assigned to this property must be a
-        `canlib.kvrlib.ConfigProfile` that belongs to this device, i.e. the
+        `ConfigProfile` that belongs to this device, i.e. the
         following must be ``True``::
 
             new_profile in remote_device.profiles
@@ -194,7 +194,7 @@ class RemoteDevice(object):
 
     @property
     def address_info(self):
-        """`canlib.kvrlib.AddressInfo`: Information about network address settings
+        """`AddressInfo`: Information about network address settings
 
         Note:
             Accessing this attribute requires the correct password be set on the object.
@@ -226,12 +226,12 @@ class RemoteDevice(object):
 
     @property
     def connection_status(self):
-        """`canlib.kvrlib.ConnectionStatus`: Connection status information
+        """`ConnectionStatus`: Connection status information
 
         The returned tuple is a ``(state, tx_rate, rx_rate, channel, rssi,
         tx_power)`` namedtuple of:
 
-        #. ``state`` (`canlib.kvrlib.NetworkState`): Network connection state
+        #. ``state`` (`NetworkState`): Network connection state
         #. ``tx_rate`` (`int`): Transmit rate in kbit/s
         #. ``rx_rate`` (`int`): Receive rate in kbit/s
         #. ``channel`` (`int`): Channel
@@ -290,9 +290,9 @@ class RemoteDevice(object):
         """Creates a connection test for this device
 
         Returns:
-            `canlib.kvrlib.ConnectionTest`
+            `ConnectionTest`
 
-        See the documentation of `canlib.kvrlib.ConnectionTest` for more
+        See the documentation of `ConnectionTest` for more
         information.
 
         Note:
@@ -321,9 +321,9 @@ class RemoteDevice(object):
         """Creates and starts a wlan scan for this device
 
         Returns:
-            `canlib.kvrlib.WlanScan`
+            `WlanScan`
 
-        See the documentation of `canlib.kvrlib.WlanScan` for more
+        See the documentation of `WlanScan` for more
         information.
 
         Note:
@@ -350,10 +350,10 @@ class RemoteDevice(object):
         dll.kvrConfigClose(handle)
 
 
-class ConfigProfile(object):
+class ConfigProfile:
     """A configuration profile of a remote-capable device
 
-    The active profile for a `canlib.kvrlib.RemoteDevice`, ``rdev``, is accessed with::
+    The active profile for a `RemoteDevice`, ``rdev``, is accessed with::
 
         profile = rdev.active_profile
 
@@ -361,7 +361,7 @@ class ConfigProfile(object):
 
         first = rdev.profiles[0]
 
-    See the documentation for `canlib.kvrlib.RemoteDevice` for more information
+    See the documentation for `RemoteDevice` for more information
     on how to get `ConfigProfile` objects.
 
     The specific configuration of a profile can be read::
@@ -503,7 +503,7 @@ class ConfigProfile(object):
         dll.kvrConfigClose(handle)
 
 
-class ConnectionTest(object):
+class ConnectionTest:
     """A connection test for a specific device
 
     A connection test for a `RemoteDevice`, ``rdev``, is created by::
@@ -609,7 +609,7 @@ class ConnectionTest(object):
         dll.kvrNetworkConnectionTest(self._handle, 0)
 
 
-class WlanScan(object):
+class WlanScan:
     """A wlan scan for this device
 
     The device starts scanning as soon as this object is created by `RemoteDevice.wlan_scan`::

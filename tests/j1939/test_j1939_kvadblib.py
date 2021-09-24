@@ -92,11 +92,8 @@ def test_j1939_old_dbc(info_frame):
                 dbc.get_message_by_pgn(can_id)
 
 
-
 # If we call get_message_by_id, we still get J1939 messages, which the user
 # need to filter out using ID-Format (J1939 PG)
-
-
 @pytest.mark.parametrize("info_frame", source_frames.can_frames, ids=info_id)
 def test_can_new_dbc(info_frame):
     with kvadblib.Dbc(str(DBC_FILE_NEW_FORMAT)) as dbc:

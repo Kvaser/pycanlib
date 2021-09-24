@@ -10,6 +10,12 @@ def kva_error(status):
 
 
 class KvaError(DllException):
+    """Base class for exceptions raised by the kvamemolibxml library
+
+    Looks up the error text in the kvamemolibxml dll and presents it together with the
+    error code.
+
+    """
     @staticmethod
     def _get_error_text(status):
         try:
@@ -21,16 +27,18 @@ class KvaError(DllException):
                 msg_buf = ct.create_string_buffer(255)
                 dll.kvaXmlGetErrorText(status, msg_buf, ct.sizeof(msg_buf))
                 msg = msg_buf.value.decode('utf-8')
-            except:
+            # The important thing is to give original error code.
+            except Exception:
                 msg = "Unknown error text"
             try:
                 msg_buf = ct.create_string_buffer(XML_ERROR_MESSAGE_LENGTH)
                 dll.kvaXmlGetLastError(msg_buf, ct.sizeof(msg_buf), ct.byref(status))
                 last = msg_buf.value.decode('utf-8')
-            except:
+            # The important thing is to give original error code.
+            except Exception:
                 last = ""
 
-        msg += ' (%d)' % status
+        msg += f' ({status})'
         if last:
             msg += '\n' + last
 
@@ -49,4 +57,4 @@ class KvaGeneralError(KvaError):
 
     def __init__(self, status):
         self.status = status
-        super(KvaGeneralError, self).__init__()
+        super().__init__()

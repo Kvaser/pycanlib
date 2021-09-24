@@ -90,7 +90,7 @@ def get_dll_function(dll, name):
             raise orig_exc
 
 
-class MyDll(object):
+class MyDll:
     """Wrapper around a ctypes dll, `MyDll` only allows annotated functions to be called
 
     The first argument to the `__init__` function, `ct_dll`, is the ctypes dll
@@ -122,7 +122,7 @@ def no_errcheck(ret, func, args):
 
 
 def load_dll(win_name=None, linux_name=None):
-    """Load dll or shared object file as appropriate.
+    r"""Load dll or shared object file as appropriate.
 
     On Windows:
 
@@ -130,7 +130,7 @@ def load_dll(win_name=None, linux_name=None):
         win_name from that directory. Otherwise checks registry for CANlib SDK
         installation directory. On 64-bit Windows the registry key is
 
-          `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\KVASER AB\CanlibSDK`,
+           HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\KVASER AB\CanlibSDK,
 
         on 32-bit Windows the registry key is
 
@@ -215,8 +215,8 @@ def load_dll(win_name=None, linux_name=None):
                 loadedDll = ct.CDLL(dllFile)
     except Exception as e:
         print(e)
-        print("Could be a missing dependancy dll for '%s'." % dllFile)
-        print("(Directory for dll: '%s')\n" % installDir)
+        print(f"Could be a missing dependancy dll for '{dllFile}'.")
+        print(f"(Directory for dll: '{installDir}')\n")
         os.chdir(dir)
         exit(1)
     os.chdir(dir)
@@ -237,4 +237,4 @@ def _extract_value_from_pointer(pointer):
     except AttributeError:
         pass
 
-    raise ValueError("Could not resolve pointer %r" % pointer)
+    raise ValueError(f"Could not resolve pointer {pointer!r}")

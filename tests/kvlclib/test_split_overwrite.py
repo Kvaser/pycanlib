@@ -34,7 +34,7 @@ def convert_events(cnv):
             # is reached
             cnv.convertEvent()
             if cnv.isOutputFilenameNew():
-                print("New output filename: '%s'" % cnv.getOutputFilename())
+                print(f"New output filename: '{cnv.getOutputFilename()}'")
                 print("About %d events left..." % cnv.eventCount())
         except kvlclib.KvlcEndOfFile:
             if cnv.isOverrunActive():

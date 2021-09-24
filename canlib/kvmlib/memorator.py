@@ -26,8 +26,8 @@ def openDevice(channel_number, mount=False, device_type=Device.MHYDRA_EXT):
         mount (`bool`): Whether the memorator log area should be mounted before
             returned.
 
-        device_type (`canlib.kvmlib.Device`): The type of the memorator to be
-            opened (defaults to `canlib.kvmlib.Device.MHYDRA_EXT`)
+        device_type (`.Device`): The type of the memorator to be
+            opened (defaults to `.Device.MHYDRA_EXT`)
 
     Returns:
         `Memorator`
@@ -40,7 +40,7 @@ def openDevice(channel_number, mount=False, device_type=Device.MHYDRA_EXT):
     if mount:
         try:
             memo.mount()
-        except Exception as e:
+        except Exception:
             memo.close()
             raise
 
@@ -52,8 +52,8 @@ class Memorator(KmfSystem):
 
     This class should not be instantiated directly, instead call `openDevice`.
 
-    A device opened as `memorator` can be configured from XML using
-    `canlib.kvamemolibxml` and `write_config`::
+    A device opened as `Memorator` can be configured from XML using
+    `.kvamemolibxml.load_xml_file` and `.write_config`::
 
         # Read the original XML file (config.xml)
         config = kvamemolibxml.load_xml_file("config.xml")
@@ -78,13 +78,13 @@ class Memorator(KmfSystem):
 
         num_log_files = len(memorator.log)
 
-    For a full list of allowed operations, see `canlib.kvmlib.UnmountedLog`
+    For a full list of allowed operations, see `.UnmountedLog`
     (the type of ``.log`` before a mount).
 
-    The log area can be mounted either with `openDevice`'s `mount` argument set to
-    `True`, or later with the `Memorator.mount` function. Once this is done the
-    `log` attribute is a `canlib.kvmlib.MountedLog` which supports getting log
-    files as `canlib.kvmlib.LogFile` objects::
+    The log area can be mounted either with `openDevice`'s `mount` argument set
+    to `True`, or later with the `Memorator.mount` function. Once this is done
+    the `log` attribute is a `.MountedLog` which supports getting log files as
+    `.LogFile` objects::
 
         # We can index the Memorator object if we know what file we want
         log_file_number_two = memorator.log[2]
@@ -93,15 +93,14 @@ class Memorator(KmfSystem):
         for log_file in memorator.log:
             ...
 
-    See the documentation of `canlib.kvmlib.MountedLog` for all available
-    operations.
+    See the documentation of `.MountedLog` for all available operations.
 
     Attributes:
 
-        Memorator.channel_number (`int`): The channel number that was used to connect to
+        channel_number (`int`): The channel number that was used to connect to
             this memorator.
 
-        device_type (`canlib.kvmlib.Device`): The device type that was used to
+        device_type (`~canlib.kvmlib.Device`): The device type that was used to
             connect to this memorator.
 
         mounted (`bool`): Whether the device's memory card has been mounted.
@@ -115,7 +114,7 @@ class Memorator(KmfSystem):
     mounted = None
 
     def __init__(self, handle, channel_number, device_type):
-        super(Memorator, self).__init__(handle)
+        super().__init__(handle)
         self.channel_number = channel_number
         self.device_type = device_type
 
@@ -125,7 +124,7 @@ class Memorator(KmfSystem):
 
     @property
     def config_version_needed(self):
-        """`canlib.versionnumber.VersionNumber`: The version of param.lif that the connected device expects"""
+        """`canlib.VersionNumber`: The version of param.lif that the connected device expects"""
         return self._get_software_info(swinfo.DRIVER)
 
     @property
@@ -135,12 +134,12 @@ class Memorator(KmfSystem):
         Warning:
 
             This is not necessarily the amount of space available for
-            allocation; ``memo.format_disk(reserved_space=memo.disk_size)`` is
+            allocation; ``Memorator.format_disk(reserved_space=Memorator.disk_size)`` is
             not guaranteed to succeed.
 
             The most reliable way of calculating reserved space is to first
-            format the disk with `reserved_space` set to ``0``, and then use
-            ``memo.disk_usage.total``.
+            format the disk with `.reserved_space` set to ``0``, and then use
+            `Memorator.disk_usage.total`.
 
         """
         size = ct.c_uint32()
@@ -150,17 +149,17 @@ class Memorator(KmfSystem):
 
     @property
     def driver_version(self):
-        """`canlib.versionnumber.VersionNumber`: The used driver version information"""
+        """`canlib.VersionNumber`: The used driver version information"""
         return self._get_software_info(swinfo.DRIVER)
 
     @property
     def firmware_version(self):
-        """`canlib.versionnumber.VersionNumber`: The device firmware version information"""
+        """`canlib.VersionNumber`: The device firmware version information"""
         return self._get_software_info(swinfo.FIRMWARE)
 
     @property
     def kvmlib_version(self):
-        """`canlib.versionnumber.VersionNumber`: Returns the version of kvmlib"""
+        """`canlib.VersionNumber`: Returns the version of kvmlib"""
         return self._get_software_info(swinfo.KVMLIB)
 
     @property
@@ -235,8 +234,8 @@ class Memorator(KmfSystem):
         The configuration is returned as a `bytes` object with the binary
         configuration data (param.lif).
 
-        If a `canlib.kvamemolibxml.Configuration` is desired, the returned `bytes` can
-        be parsed using `canlib.kvamemolibxml.load_lif`::
+        If a `.kvamemolibxml.Configuration` is desired, the returned `bytes` can
+        be parsed using `.kvamemolibxml.load_lif`::
 
             config_object = kvamemolibxml.load_lif(memorator.read_config())
 
@@ -271,7 +270,7 @@ class Memorator(KmfSystem):
         The configuration should be given as a `bytes` object with the binary
         configuration data (param.lif).
 
-        Given a `canlib.kvamemolibxml.Configuration` object, pass its `lif`
+        Given a `.kvamemolibxml.Configuration` object, pass its `lif`
         attribute to this function::
 
             memorator.write_config(config_object.lif)

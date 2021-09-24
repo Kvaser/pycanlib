@@ -4,10 +4,10 @@ from .message import Message
 
 class SignalNotFound(CanlibException):
     def __init__(self, text):
-        super(SignalNotFound, self).__init__(self, text)
+        super().__init__(self, text)
 
 
-class FrameBox(object):
+class FrameBox:
     """Helper class for sending signals
 
     This class allows sending signals without worrying about what message they
@@ -67,8 +67,8 @@ class FrameBox(object):
     def signal(self, name):
         """Retrieves a signal by name
 
-        Returns a `BoundSignal` that shares its `Frame` object with its parent
-        message and sibling signals.
+        Returns a `BoundSignal` that shares its `canlib.Frame` object with its
+        parent message and sibling signals.
 
         """
         try:
@@ -83,8 +83,8 @@ class FrameBox(object):
     def message(self, name):
         """Retrieves a message by name
 
-        Returns a `BoundMessage` that shares its `Frame` object with its child
-        signals.
+        Returns a `BoundMessage` that shares its `canlib.Frame` object with its
+        child signals.
 
         """
         if name not in self._bmsgs:

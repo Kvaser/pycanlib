@@ -19,10 +19,10 @@ def createKme(path, filetype=FileType.KME50):
         path (`str`): The full filepath for the .KME file
             (e.g. ``"data/mylog.kme50"``).
 
-        filetype (`canlib.kvmlib.FileType`): The KME file type
+        filetype (`FileType`): The KME file type
 
     Returns:
-        `canlib.kvmlib.Kme`
+        `Kme`
 
     .. versionadded:: 1.7
 
@@ -44,10 +44,10 @@ def openKme(path, filetype=FileType.KME50):
         path (`str`): The full filepath for the .KME file
             (e.g. ``"data/mylog.kme50"``).
 
-        filetype (`canlib.kvmlib.FileType`): The KME file type
+        filetype (`FileType`): The KME file type
 
     Returns:
-        `canlib.kvmlib.Kme`
+        `Kme`
 
     .. versionadded:: 1.7
 
@@ -55,7 +55,7 @@ def openKme(path, filetype=FileType.KME50):
     status_p = ct.c_int32()
     kme_handle = dll.kvmKmeOpenFile(path.encode('utf-8'), ct.byref(status_p), filetype)
     if status_p.value != 0:
-        print("ERROR openKme failed with filename:" "%s, filetype:%s\n" % (path, filetype))
+        print(f"ERROR openKme failed with filename:{path}, filetype:{filetype}\n")
         raise kvm_error(status_p.value)
 
     if filetype == FileType.KME50:
@@ -76,7 +76,7 @@ def kme_file_type(path):
             (e.g. ``"data/mylog.kme"``).
 
     Returns:
-        `canlib.kvmlib.FileType`: The KME file type
+        `FileType`: The KME file type
 
     .. versionadded:: 1.7
 
@@ -89,19 +89,19 @@ def kme_file_type(path):
 
 
 def _dump_hex(text, data, group_size=4):
-    hexstring = ''.join(['%02x' % b for b in data])
+    hexstring = ''.join([f'{b:02x}' for b in data])
     n = group_size
-    grouped_hexstring = [hexstring[i : i + n] for i in range(0, len(hexstring), n)]
+    grouped_hexstring = [hexstring[i:i + n] for i in range(0, len(hexstring), n)]
     print(text, ' '.join(grouped_hexstring))
 
 
-class Kme(object):
+class Kme:
     """A kme file
 
     A class representing a KME file. The main use is twofold:
 
-    Either we create a KME file using `canlib.kvmlib.createKme` and would like
-    to write events using `canlib.kvmlib.Kme.write_event`::
+    Either we create a KME file using `createKme` and would like to write
+    events using `Kme.write_event`::
 
         with kvmlib.createKme('out/data.kme50') as kme:
             ...
@@ -179,7 +179,7 @@ class Kme(object):
         """Read logevent from KME file
 
             Returns:
-                `kvmlib.events. memoLogEventEx`
+                `memoLogEventEx`
 
         .. versionadded:: 1.7
 
@@ -209,7 +209,7 @@ class Kme50(Kme):
         .. versionadded:: 1.7
 
         """
-        logevent = super(Kme50, self).read_event()
+        logevent = super().read_event()
         return logevent.createMemoEvent()
 
     def write_event(self, event):

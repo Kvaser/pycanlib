@@ -102,7 +102,7 @@ ATTRIBUTES = {
         item=ChannelDataItem.DLL_PRODUCT_VERSION,
         ctype=ct.c_uint16 * 4,
         ptype=lambda t: VersionNumber(t[3], t[2]),  # little byteorder assumed,
-        __doc__="A `canlib.VersionNumber` with the product version of the dll file.",
+        __doc__="A `canlib.VersionNumber` with the product version of the dll.",
     ),
     'dll_filetype': dict(
         item=ChannelDataItem.DLL_FILETYPE,
@@ -281,7 +281,7 @@ ATTRIBUTES = {
 }
 
 
-class ChannelData(object):
+class ChannelData:
     __doc__ = """Object for querying various information about a channel
 
     After instantiating a `ChannelData` object with a channel number, a variety
@@ -316,9 +316,7 @@ class ChannelData(object):
             attr = ATTRIBUTES[name]
         except KeyError:
             raise AttributeError(
-                "{cls} object has no attribute {name}".format(
-                    cls=self.__class__.__name__, name=name
-                )
+                f"{self.__class__.__name__} object has no attribute {name}"
             )
 
         item = attr['item']
@@ -377,7 +375,7 @@ class ChannelData(object):
         """
         name = self.devdescr_ascii
         no_on_card = self.chan_no_on_card
-        return "%s (channel %d)" % (name, no_on_card)
+        return f"{name} (channel {no_on_card})"
 
     @property
     @deprecation.deprecated.favour("ChannelData.channel_name")

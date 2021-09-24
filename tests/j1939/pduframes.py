@@ -256,13 +256,13 @@ divider = [
 ]
 
 frames = (
-    divider +
-    pdu1_frames +
-    divider +
-    pdu2_frames +
-    divider +
-    wrong +
-    divider +
-    can_frames +
     divider
+    + pdu1_frames
+    + divider
+    + pdu2_frames
+    + divider
+    + wrong
+    + divider
+    + can_frames
+    + divider
 )

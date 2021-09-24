@@ -104,7 +104,7 @@ def verify_xml(xml_string):
     return error_string
 
 
-class kvrConfig(object):
+class kvrConfig:
     MODE_R = 0
     MODE_RW = 1
     MODE_ERASE = 2
@@ -163,7 +163,7 @@ class kvrConfig(object):
         dll.kvrConfigClear(self.handle)
 
 
-class kvrDiscovery(object):
+class kvrDiscovery:
     def __init__(self, kvrlib=None):
         """parameter kvrlib is deprecated"""
         self.handle = ct.c_int32(0xFF)
@@ -244,7 +244,7 @@ def ean2ean_hi(ean):
     """
     eanCompact = re.sub('-', '', ean)
     match = re.match(r'(\d{5})(\d{8})', eanCompact)
-    return int('0x%s' % match.group(1), 0)
+    return int(f'0x{match.group(1)}', 0)
 
 
 def ean2ean_lo(ean):
@@ -255,7 +255,7 @@ def ean2ean_lo(ean):
     """
     eanCompact = re.sub('-', '', ean)
     match = re.match(r'(\d{5})(\d{8})', eanCompact)
-    return int('0x%s' % match.group(2), 0)
+    return int(f'0x{match.group(2)}', 0)
 
 
 def ean_hi_lo2ean(ean_hi, ean_lo):
@@ -265,7 +265,7 @@ def ean_hi_lo2ean(ean_hi, ean_lo):
     format.  Calling ean_hi_lo2ean(ean_hi=0x73301, ean_lo=0x30006713)
     returns "73-30130-00671-3".
     """
-    return "%02x-%05x-%05x-%x" % (
+    return "{:02x}-{:05x}-{:05x}-{:x}".format(
         ean_hi >> 12,
         ((ean_hi & 0xFFF) << 8) | (ean_lo >> 24),
         (ean_lo >> 4) & 0xFFFFF,
@@ -274,6 +274,7 @@ def ean_hi_lo2ean(ean_hi, ean_lo):
 
 
 def deviceGetServiceStatus(device_info):
+    """Returns local connection status of the selected device."""
     state = ct.c_int32(-1)
     start_info = ct.c_int32(-1)
     dll.kvrDeviceGetServiceStatus(ct.byref(device_info), ct.byref(state), ct.byref(start_info))
@@ -281,6 +282,7 @@ def deviceGetServiceStatus(device_info):
 
 
 def deviceGetServiceStatusText(device_info):
+    """Returns local connection status of the selected device as ASCII text."""
     msg = ct.create_string_buffer(80)
     dll.kvrDeviceGetServiceStatusText(ct.byref(device_info), msg, ct.sizeof(msg))
     return msg.value.decode('utf-8')
@@ -299,22 +301,31 @@ def stringFromAddress(address):
 
 
 def configActiveProfileSet(channel, profile_number):
+    """Set active profile."""
     dll.kvrConfigActiveProfileSet(channel, profile_number)
 
 
 def configActiveProfileGet(channel):
+    """Get active profile."""
     no_profiles = ct.c_int32(-1)
     dll.kvrConfigActiveProfileGet(channel, ct.byref(no_profiles))
     return no_profiles.value
 
 
 def configNoProfilesGet(channel):
+    """Get the maximum number of profile(s) the device can store.
+
+    When a remote device is connected to the host it can be configured. The
+    remote device can hold a number of different profiles.
+
+    """
     no_profiles = ct.c_int32(-1)
     dll.kvrConfigNoProfilesGet(channel, ct.byref(no_profiles))
     return no_profiles.value
 
 
 def unload():
+    """Unloads library stuff."""
     dll.kvrUnloadLibrary()
 
 
@@ -330,7 +341,7 @@ def getVersion():
 
 
 def dllversion():
-    """Get the kvrlib version number as a `str`"""
+    """Get the kvrlib version number as a `~canlib.VersionNumber`"""
     v = dll.kvrGetVersion()
     return VersionNumber(v.major, v.minor)
 
@@ -345,7 +356,7 @@ def configOpen(channel=0, mode=kvrConfig.MODE_R):
     return kvrConfig(channel=channel, mode=mode)
 
 
-class KvrLib(object):
+class KvrLib:
     """Deprecated wrapper class for the Kvaser kvrlib.
 
     .. deprecated:: 1.5
@@ -387,9 +398,7 @@ class KvrLib(object):
         try:
             return getattr(self._module, name)
         except AttributeError:
-            raise AttributeError(
-                "{t} object xxx has no attribute {n}".format(t=str(type(self)), n=name)
-            )
+            raise AttributeError(f"{type(self)} object xxx has no attribute {name}")
 
     @staticmethod
     @deprecation.deprecated.favour("kvrlib.ean2ean_hi")

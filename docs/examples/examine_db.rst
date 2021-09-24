@@ -8,7 +8,7 @@ Description
 ===========
 
 The script is structured into several generator functions that take a
-`canlib.kvadblib` object and yield lines of information about it. This allows
+`~canlib.kvadblib` object and yield lines of information about it. This allows
 one function to add indentation to any other functions it uses.
 
 Generally each function first yields information in the following order:
@@ -22,7 +22,7 @@ Generally each function first yields information in the following order:
    #. A heading (e.g. ``'ATTRIBUTE_DEFINTIONS'``)
 
    #. For each object of that type (e.g. iterating through
-      `canlib.kvadblib.Dbc.attribute_definitions`):
+      `~canlib.kvadblib.Dbc.attribute_definitions`):
 
       #. The objects name
 

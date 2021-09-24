@@ -4,10 +4,10 @@ from canlib.ean import EAN, IllegalEAN
 
 
 def test_equality():
-    assert EAN.from_string('12345-6') == EAN.from_string('12345-6')
-    assert EAN.from_string('12345-6') != EAN.from_string('99999-9')
+    assert EAN('12345-6') == EAN('12345-6')
+    assert EAN('12345-6') != EAN('99999-9')
 
-    assert EAN.from_string('01234-6') == EAN.from_string('73-30130-01234-6')
+    assert EAN('01234-6') == EAN('73-30130-01234-6')
 
 
 def test_edge_cases():
@@ -34,7 +34,7 @@ def test_edge_cases():
 
 
 def test_creation():
-    class source(object):
+    class source:
         s = '73-30130-01234-5'
         s_short = '01234-5'
         bcd = b'\x45\x23\x01\x30\x01\x33\x07'

@@ -23,17 +23,9 @@ def snoop_loop(channel, slots):
             ch.scriptRequestText(canlib.ScriptRequest.ALL_SLOTS)
 
         if slots:
-            print(
-                "Listening on script slots {slots} via channel {channel}".format(
-                    slots=slots, channel=channel
-                )
-            )
+            print(f"Listening on script slots {slots} via channel {channel}")
         else:
-            print(
-                "Listening on all script slots via channel {channel}".format(
-                    slots=slots, channel=channel
-                )
-            )
+            print(f"Listening on all script slots via channel {channel}")
         while True:
             try:
                 text = ch.scriptGetText()

@@ -26,13 +26,11 @@ def getChannelData(channel_number, item=ChannelData.CARD_FIRMWARE_REV):
         channel (int): The number of the channel you are interested in. Channel
             numbers are integers in the interval beginning at 0.
 
-        item (linlib.ChannelData): This parameter specifies what data to obtain
+        item (`.ChannelData`): This parameter specifies what data to obtain
             for the specified channel. Currently the only item available is
-            `ChannelData.CARD_FIRMWARE_REV`, which is the default.
+            `~ChannelData.CARD_FIRMWARE_REV`, which is the default.
 
-    Returns:
-        (major, minor, release, build) :: A four-tuple of the firmware
-            version. (For `ChannelData.CARD_FIRMWARE_REV`)
+
 
     """
     if item != ChannelData.CARD_FIRMWARE_REV:
@@ -72,8 +70,7 @@ def getTransceiverData(channel_number):
 
         Attempts to use the channel for LIN communication will be meaningful
         only if the returned `TransceiverData`'s ~type~ attribute is one of
-        `canlib.canlib.TransceiverType.LIN` or
-        `canlib.canlib.TransceiverType.CANFD_LIN`
+        `.TransceiverType.LIN` or `.TransceiverType.CANFD_LIN`
 
         A LIN interface need not be powered for this call to succeed.
 
@@ -122,7 +119,7 @@ def unloadLibrary():
 
 
 def dllversion():
-    """Retrieve the LIN library version.
+    """Retrieve the LIN library version as a `~canlib.VersionNumber`
 
     Note:
         Requires CANlib v5.3

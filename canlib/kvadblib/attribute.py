@@ -8,7 +8,7 @@ EnumValue = namedtuple('EnumValue', 'name value')
 """Holds an Enum key - value pair"""
 
 
-class Attribute(object):
+class Attribute:
     """Factory for creating different types of attributes.
 
     This class is also the base class and thus contains all common properties.
@@ -17,7 +17,7 @@ class Attribute(object):
     def __new__(cls, db, handle):
         """Create new attribute class depending on type."""
         if cls != Attribute:
-            obj = super(Attribute, cls).__new__(cls)
+            obj = super().__new__(cls)
             return obj
         type = ct.c_int()
         dll.kvaDbGetAttributeType(handle, ct.byref(type))
@@ -31,14 +31,14 @@ class Attribute(object):
             return StringAttribute(db, handle)
         else:
             type = AttributeType(type.value)
-            raise NotImplementedError('{} not implemented'.format(type.name))
+            raise NotImplementedError(f'{type.name} not implemented')
 
     def __init__(self, db, handle):
         self._db = db
         self._handle = handle
 
     def __repr__(self):
-        txt = "<{}(name='{}', value={!r})>".format(self.__class__.__name__, self.name, self.value)
+        txt = f"<{self.__class__.__name__}(name='{self.name}', value={self.value!r})>"
         return txt
 
     @property

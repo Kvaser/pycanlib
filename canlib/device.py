@@ -6,7 +6,7 @@ from importlib import import_module
 from . import deprecation
 
 
-class _Libs(object):
+class _Libs:
     """Class to facilitate importing canlib modules on-demand
 
     The main problem this class solves is that kvrlib is not available on
@@ -129,7 +129,7 @@ def _match_channel(channel_number, info):
     return _ChannelInfo(channel_number, ean, serial, name)
 
 
-class Device(object):
+class Device:
     """Class for keeping track of a physical device
 
     This class represents a physical device regardless of whether it is
@@ -138,7 +138,7 @@ class Device(object):
     If the device is currently connected, `Device.find` can be used to get a
     `Device` object::
 
-        dev = Device.find(ean=EAN.from_string('67890-1'))
+        dev = Device.find(ean=EAN('67890-1'))
 
     `Device.find` supports searching for devices based on a variety of
     information, and will return a `Device` object corresponding to the first
@@ -149,7 +149,7 @@ class Device(object):
     created with their EAN and serial number (as this is the minimal
     information needed to uniquely identify a specific device)::
 
-        dev = Device(ean=EAN.from_string('67890-1'), serial=42)
+        dev = Device(ean=EAN('67890-1'), serial=42)
 
     Two `Device` objects can be checked for equality (whether they refer to the same
     device) and be converted to a `str`. `Device.probe_info` can also be used
@@ -165,9 +165,8 @@ class Device(object):
     * `linlib.Channel` -- `Device.lin_master` and `Device.lin_slave`
 
     Attributes:
-        Device.ean (`canlib.EAN`): The EAN of this device.
-        Device.serial (`int`): The serial number of this device.
-
+        ean (`canlib.EAN`): The EAN of this device.
+        serial (`int`): The serial number of this device.
         last_channel_number (`int`): The channel number this device was last
             found on (used as an optimization; while the device stays on the
             same CANlib channel there is no need for a linear search of all
@@ -240,18 +239,16 @@ class Device(object):
             object.__setattr__(self, name, value)
 
     def __repr__(self):
-        return "{cls}(ean={ean!r}, serial={serial!r})".format(
-            cls=self.__class__.__name__, ean=self.ean, serial=self.serial
-        )
+        return f"{self.__class__.__name__}(ean={self.ean!r}, serial={self.serial!r})"
 
     def __str__(self):
-        return "{ean}:{serial}".format(ean=self.ean, serial=self.serial)
+        return f"{self.ean}:{self.serial}"
 
     @deprecation.deprecated.favour(".open_channel()")
     def channel(self, *args, **kwargs):
-        """A `canlib.Channel` for this device's first channel
+        """A `~canlib.Channel` for this device's first channel
 
-        The experimental attribute `_chan_no_on_card` may be given, the `int`
+        The experimental argument `_chan_no_on_card` may be given, the `int`
         provided will be added (without any verifications) to the
         `channel_number` where this device was found on, and may thus be used
         to open a specific local channel on this device.
@@ -263,11 +260,11 @@ class Device(object):
             Using this argument with a too large `int` could return a channel
             belonging to a different device.
 
-        Arguments to `canlib.openChannel` other than the channel number
+        Arguments to `~canlib.openChannel` other than the channel number
         can be passed to this function.
 
         .. versionchanged:: 1.13
-           Added attribute `_chan_no_on_card`
+           Added argument `_chan_no_on_card`
 
         .. deprecated:: 1.16
            Use `open_channel` instead
@@ -344,9 +341,9 @@ class Device(object):
         return _libs.linlib.openSlave(self.channel_number(), *args, **kwargs)
 
     def memorator(self, *args, **kwargs):
-        """A `canlib.kvmlib.Memorator` for this device's first channel
+        """A `kvmlib.Memorator` for this device's first channel
 
-        Arguments to `canlib.openChannel` other than the channel number
+        Arguments to `kvmlib.openDevice` other than the channel number
         can be passed to this function.
 
         """
@@ -419,9 +416,9 @@ class Device(object):
         return text
 
     def remote(self, *args, **kwargs):
-        """A `canlib.kvrlib.RemoteDevice` for this device
+        """A `kvrlib.RemoteDevice` for this device
 
-        Arguments to `canlib.kvrlib.openDevice` other than the channel number
+        Arguments to `kvrlib.openDevice` other than the channel number
         can be passed to this function.
 
         """

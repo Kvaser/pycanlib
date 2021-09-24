@@ -5,13 +5,15 @@ import sys
 import time
 
 from .. import canlib, frame
+from ..exceptions import CanlibException
 
 
 def _eq_or_none(a, b):
     return a == b or a is None or b is None
 
 
-class LogEvent(object):
+class LogEvent:
+    """The base class for events recorded by a Memorator."""
     _comp_fields = None  # if not None, these attributes will be used to
     # compare objects
 
@@ -53,7 +55,7 @@ class MessageEvent(LogEvent):
     _comp_fields = ('id', 'channel', 'dlc', 'flags', 'data', 'timeStamp')
 
     def __init__(self, id=None, channel=None, dlc=None, flags=None, data=None, timestamp=None):
-        super(MessageEvent, self).__init__(timestamp)
+        super().__init__(timestamp)
         self.id = id
         self.channel = channel
         self.dlc = dlc
@@ -83,7 +85,7 @@ class MessageEvent(LogEvent):
         )
 
     def __str__(self):
-        text = super(MessageEvent, self).__str__()
+        text = super().__str__()
         text += " ch:%s " % ("-" if self.channel is None else "%x" % self.channel)
         text += "f:%s " % (" -" if self.flags is None else "%5x" % self.flags)
         text += "id:%s " % ("   -" if self.id is None else "%4x" % self.id)
@@ -98,8 +100,8 @@ class MessageEvent(LogEvent):
                 hex = unicode(binascii.hexlify(data))
             except (NameError):
                 hex = str(binascii.hexlify(data), 'ascii')
-            formatted_data = ' '.join(hex[i : i + 2] for i in range(0, len(hex), 2))
-            text += "d:%s" % formatted_data
+            formatted_data = ' '.join(hex[i:i + 2] for i in range(0, len(hex), 2))
+            text += f"d:{formatted_data}"
         else:
             text += "d: -  -  -  -  -  -  -  -"
         return text
@@ -137,11 +139,11 @@ class RTCEvent(LogEvent):
     _comp_fields = ('calendartime', 'timeStamp')
 
     def __init__(self, calendartime=None, timestamp=None):
-        super(RTCEvent, self).__init__(timestamp)
+        super().__init__(timestamp)
         self.calendartime = calendartime
 
     def __str__(self):
-        text = super(RTCEvent, self).__str__()
+        text = super().__str__()
         text += " DateTime: %s" % self.calendartime
         return text
 
@@ -159,10 +161,8 @@ class RTCEvent(LogEvent):
             calendar_time = int(self.calendartime.timestamp())  # only whole seconds
         except AttributeError:
             calendar_time = int(
-                (
                     time.mktime(self.calendartime.timetuple())
                     + self.calendartime.microsecond / 1000000.0
-                )
             )
 
         rtc = memoLogRtcClockEx(
@@ -179,14 +179,14 @@ class TriggerEvent(LogEvent):
     _comp_fields = ('type', 'timeStamp', 'pretrigger', 'posttrigger', 'trigno')
 
     def __init__(self, type=None, timestamp=None, pretrigger=None, posttrigger=None, trigno=None):
-        super(TriggerEvent, self).__init__(timestamp)
+        super().__init__(timestamp)
         self.type = type
         self.pretrigger = pretrigger
         self.posttrigger = posttrigger
         self.trigno = trigno
 
     def __str__(self):
-        text = super(TriggerEvent, self).__str__()
+        text = super().__str__()
         text += "Log Trigger Event ("
         text += "type: 0x%x, " % (self.type)
         text += "trigno: 0x%02x, " % (self.trigno)
@@ -232,7 +232,7 @@ class VersionEvent(LogEvent):
     )
 
     def __init__(self, lioMajor, lioMinor, fwMajor, fwMinor, fwBuild, serialNumber, eanHi, eanLo):
-        super(VersionEvent, self).__init__(None)
+        super().__init__(None)
         self.lioMajor = lioMajor
         self.lioMinor = lioMinor
         self.fwMajor = fwMajor
@@ -244,16 +244,16 @@ class VersionEvent(LogEvent):
         self.ignored = True
 
     def __str__(self):
-        text = super(VersionEvent, self).__str__()
-        text += "EAN:%02x-%05x-%05x-%x  " % (
+        text = super().__str__()
+        text += "EAN:{:02x}-{:05x}-{:05x}-{:x}  ".format(
             self.eanHi >> 12,
             ((self.eanHi & 0xFFF) << 8) | (self.eanLo >> 24),
             (self.eanLo >> 4) & 0xFFFFF,
             self.eanLo & 0xF,
         )
         text += "s/n:%d  " % (self.serialNumber)
-        text += "FW:v%s.%s.%s  " % (self.fwMajor, self.fwMinor, self.fwBuild)
-        text += "LIO:v%s.%s" % (self.lioMajor, self.lioMinor)
+        text += f"FW:v{self.fwMajor}.{self.fwMinor}.{self.fwBuild}  "
+        text += f"LIO:v{self.lioMajor}.{self.lioMinor}"
         return text
 
     # qqqmac remove!!!
@@ -362,16 +362,18 @@ class memoLogMrtEx(ct.Union):
 
 
 class memoLogEventEx(ct.Structure):
+    """Low level c type class holding a log event."""
 
-    MEMOLOG_TYPE_INVALID = 0
-    MEMOLOG_TYPE_CLOCK = 1
-    MEMOLOG_TYPE_MSG = 2
-    MEMOLOG_TYPE_TRIGGER = 3
-    MEMOLOG_TYPE_VERSION = 4
+    MEMOLOG_TYPE_INVALID = 0  #: Invalid MEMOLOG event type
+    MEMOLOG_TYPE_CLOCK = 1  #: The event type used in kvmLogRtcClockEx
+    MEMOLOG_TYPE_MSG = 2  #: The event type used in kvmLogMsgEx
+    MEMOLOG_TYPE_TRIGGER = 3  #: The event type used in kvmLogTriggerEx
+    MEMOLOG_TYPE_VERSION = 4  #: The event type used in kvmLogVersionEx
 
     _fields_ = [('event', memoLogMrtEx)]
 
     def createMemoEvent(self):
+        """Convert event to `LogEvent`."""
         type = self.event.raw.evType
 
         if type == self.MEMOLOG_TYPE_CLOCK:
@@ -411,7 +413,7 @@ class memoLogEventEx(ct.Structure):
                 eanLo=self.event.ver.eanLo,
             )
         else:
-            raise Exception("createMemoEvent: Unknown event type :%d" % type)
+            raise CanlibException(f"createMemoEvent: Unknown event type :{type}")
 
         return memoEvent
 
@@ -466,7 +468,7 @@ class memoLogEventEx(ct.Structure):
             serialNumber = self.event.ver.serialNumber
             eanHi = self.event.ver.eanHi
             eanLo = self.event.ver.eanLo
-            text = "EAN:%02x-%05x-%05x-%x, " % (
+            text = "EAN:{:02x}-{:05x}-{:05x}-{:x}, ".format(
                 eanHi >> 12,
                 ((eanHi & 0xFFF) << 8) | (eanLo >> 24),
                 (eanLo >> 4) & 0xFFFFF,

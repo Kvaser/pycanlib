@@ -18,7 +18,7 @@ Holds a definition using default and key-value pairs.
 """
 
 
-class AttributeDefinition(object):
+class AttributeDefinition:
     """Factory for creating different types of attribute definitions.
 
     This class is also the base class and thus contains all common properties.
@@ -27,7 +27,7 @@ class AttributeDefinition(object):
     def __new__(cls, db, handle, definition=None):
         """Create attribute definition class depending on type."""
         if cls != AttributeDefinition:
-            obj = super(AttributeDefinition, cls).__new__(cls)
+            obj = super().__new__(cls)
             return obj
         type = ct.c_int()
         dll.kvaDbGetAttributeDefinitionType(handle, ct.byref(type))
@@ -41,7 +41,7 @@ class AttributeDefinition(object):
             cls_ = EnumDefinition
         else:
             type = enums.AttributeType(type.value)
-            raise NotImplementedError('{} not implemented'.format(type.name))
+            raise NotImplementedError(f'{type.name} not implemented')
 
         return cls_.__new__(cls_, db, handle, definition)
 
@@ -79,16 +79,14 @@ class AttributeDefinition(object):
 
 
 class FloatDefinition(AttributeDefinition):
-    """Definition of a float attribute."""
+    """Definition of a float attribute.
 
+    Args:
+        db (`Dbc`): Database that holds attribute definitions
+        definition (`MinMaxDefinition`): Min, max and default values
+    """
     def __init__(self, db, handle, definition=None):
-        """Holds a float attribute definition.
-
-        Args:
-            db (:obj:`Dbc`): Database that holds attribute definitions
-            definition (:obj:`MinMaxDefinition`): Min, max and default values
-        """
-        super(FloatDefinition, self).__init__(db, handle)
+        super().__init__(db, handle)
         # self._ah = None
         if definition is not None:
             self.definition = definition
@@ -109,16 +107,14 @@ class FloatDefinition(AttributeDefinition):
 
 
 class IntegerDefinition(AttributeDefinition):
-    """Definition of an integer attribute."""
+    """Definition of an integer attribute.
 
+    Args:
+        db (`Dbc`): Database that holds attribute definitions
+        definition (`MinMaxDefinition`): Min, max and default values
+    """
     def __init__(self, db, handle, definition=None):
-        """Define an integer attribute.
-
-        Args:
-            db (:obj:`Dbc`): Database that holds attribute definitions
-            definition (:obj:`MinMaxDefinition`): Min, max and default values
-        """
-        super(IntegerDefinition, self).__init__(db, handle)
+        super().__init__(db, handle)
         if definition is not None:
             self.definition = definition
 
@@ -138,16 +134,14 @@ class IntegerDefinition(AttributeDefinition):
 
 
 class StringDefinition(AttributeDefinition):
-    """Definition of a string attribute."""
+    """Definition of a string attribute.
 
+    Args:
+        db (`Dbc`): Database that holds attribute definitions
+        definition (`DefaultDefinition`): default value
+    """
     def __init__(self, db, handle, definition=None):
-        """Define a string attribute.
-
-        Args:
-            db (:obj:`Dbc`): Database that holds attribute definitions
-            definition (:obj:`DefaultDefinition`): default value
-        """
-        super(StringDefinition, self).__init__(db, handle)
+        super().__init__(db, handle)
         if definition is not None:
             self.definition = definition
 
@@ -166,16 +160,15 @@ class StringDefinition(AttributeDefinition):
 
 
 class EnumDefinition(AttributeDefinition):
-    """Definition of an enum attribute."""
+    """Definition of an enum attribute.
 
+    Args:
+        db (`Dbc`): Database that holds attribute definitions
+        definition (`EnumDefaultDefinition`): default value and enums
+
+    """
     def __init__(self, db, handle, definition=None):
-        """Define an enum attribute.
-
-        Args:
-            db (:obj:`Dbc`): Database that holds attribute definitions
-            definition (:obj:`EnumDefaultDefinition`): default value and enums
-        """
-        super(EnumDefinition, self).__init__(db, handle)
+        super().__init__(db, handle)
         if definition is not None:
             self.definition = definition
 

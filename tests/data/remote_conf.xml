@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <KVASER>
-<VERSION>4.3</VERSION>
+<VERSION>4.4</VERSION>
 <PRODUCTFAMILY>blackbird</PRODUCTFAMILY>
 <DEVICE_ACCESS
 level="PUBLIC"

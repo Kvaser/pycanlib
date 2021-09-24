@@ -8,9 +8,9 @@ messages, some source of CAN messages, and the same database that the source is
 using to generate the messages.
 
 In this example the channel is opened with flag canOPEN_ACCEPT_LARGE_DLC (optional).
-This enables a DLC larger than 8 bytes (up to 15 for classic CAN). If 
+This enables a DLC larger than 8 bytes (up to 15 for classic CAN). If
 canOPEN_ACCEPT_LARGE_DLC is excluded, generated frames with DLC > 8, will attain
-a DLC of 8 on the receiving end, which may compromise the DLC equivalence 
+a DLC of 8 on the receiving end, which may compromise the DLC equivalence
 check.
 
 The source of the messages may be e.g. the pinger.py example script.
@@ -37,16 +37,16 @@ def printframe(db, frame):
     try:
         bmsg = db.interpret(frame)
     except kvadblib.KvdNoMessage:
-        print("<<< No message found for frame with id %s >>>" % frame.id)
+        print(f"<<< No message found for frame with id {frame.id} >>>")
         return
 
     if not bmsg._message.dlc == bmsg._frame.dlc:
         print(
-            "<<< Could not interpret message because DLC does not match for frame with id %s >>>"
-            % frame.id
+            "<<< Could not interpret message because DLC does not match for"
+            f" frame with id {frame.id} >>>"
         )
-        print("\t- DLC (database): %s" % bmsg._message.dlc)
-        print("\t- DLC (received frame): %s" % bmsg._frame.dlc)
+        print(f"\t- DLC (database): {bmsg._message.dlc}")
+        print(f"\t- DLC (received frame): {bmsg._frame.dlc}")
         return
 
     msg = bmsg._message
@@ -54,7 +54,7 @@ def printframe(db, frame):
     print('┏', msg.name)
 
     if msg.comment:
-        print('┃', '"%s"' % msg.comment)
+        print('┃', f'"{msg.comment}"')
 
     for bsig in bmsg:
         print('┃', bsig.name + ':', bsig.value, bsig.unit)

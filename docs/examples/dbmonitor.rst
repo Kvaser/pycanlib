@@ -8,7 +8,7 @@ Description
 ===========
 
 Any CAN messages received on the specified channel will be looked up in the
-database using `canlib.kvadblib.Dbc.interpret`, which allows the script to
+database using `~canlib.kvadblib.Dbc.interpret`, which allows the script to
 print the "phys" value of each signal instead of just printing the raw data (as
 :doc:`./monitor` does). The script also prints the message's name and
 comment (if available), as well as the signals name and unit.

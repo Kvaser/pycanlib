@@ -1,12 +1,12 @@
-class BoundSignal(object):
+class BoundSignal:
     def __init__(self, signal, frame):
         self.frame = frame
         self.signal = signal
 
     def __str__(self):
-        txt = "<{}: name={!r}, phys={!r}>".format(self.__class__.__name__, self.name, self.phys)
+        txt = f"<{self.__class__.__name__}: name={self.name!r}, phys={self.phys!r}>"
         if self.unit:
-            txt += ", unit:{}".format(self.unit)
+            txt += f", unit:{self.unit}"
         return txt
 
     @property

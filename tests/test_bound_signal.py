@@ -128,13 +128,13 @@ def print_frame(db, frame):
     try:
         bmsg = db.interpret(frame)
     except kvadblib.KvdNoMessage:
-        print("<<< No message found for frame with id %s >>>" % frame.id)
+        print(f"<<< No message found for frame with id {frame.id} >>>")
         return
     msg = bmsg._message
 
     print('/', msg.name)
     if msg.comment:
-        print('|', '"%s"' % msg.comment)
+        print('|', f'"{msg.comment}"')
     for bsig in bmsg:
         print('|', bsig.name + ':', bsig.value, bsig.unit)
     print('\\')

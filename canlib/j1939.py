@@ -66,23 +66,14 @@ class Pdu(BaseModel):
 
     Base class with attributes common to `Pdu1` and `Pdu2`
 
-    Attributes:
-        p (`int`): priority
-        edp (`int`):  extended data page
-        dp (`int`):  Data page
-        pf (`int`):  PDU format
-        ps (`int`):  PDU specific
-        sa (`int`):  Source address
-        ~.data (`List[int]`): Optional, data field
-
     """
-    p: int  # priority
-    edp: int  # extended data page
-    dp: int  # data page
-    pf: int  # PDU format
-    ps: int  # PDU specific
-    sa: int  # source address
-    data: Optional[List[int]]  # data field
+    p: int  #: priority
+    edp: int  #: extended data page
+    dp: int  #: data page
+    pf: int  #: PDU format
+    ps: int  #: PDU specific
+    sa: int  #: source address
+    data: Optional[List[int]]  #: data field
 
     def __repr__(self):
         return (f"p={self.p}, edp={self.edp}, dp={self.dp},"
@@ -97,13 +88,9 @@ class Pdu1(Pdu):
 
     `pgn` = Extended Data Page + Data Page + PDU Format + "00"
 
-    Attributes:
-        da (`int`): Equal to `Pdu.ps`
-        pgn (`int`): Parameter Group Number
-
     """
-    da: Optional[int]  # destination address
-    pgn: Optional[int]  # parameter group number
+    da: Optional[int]  #: destination address, `Pdu.ps`
+    pgn: Optional[int]  #: parameter group number
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -121,13 +108,9 @@ class Pdu2(Pdu):
 
       `pgn` = Extended Data Page + Data Page + PDU Format + Group Extension
 
-    Attributes:
-        ge (`int`): Group extension, equal to `Pdu.ps`
-        pgn (`int`): Parameter Group Number
-
     """
-    ge: Optional[int]  # group extension
-    pgn: Optional[int]  # parameter group number
+    ge: Optional[int]  #: group extension, equal to `Pdu.ps`
+    pgn: Optional[int]  #: parameter group number
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -155,10 +138,10 @@ def pdu_from_can_id(can_id):
     edp = (can_id & (0b1 << 25)) >> 25
     dp = (can_id & (0b1 << 24)) >> 24
     if pf < 239:
-        pgn = pf
+        # pgn = pf
         return Pdu1(p=p, edp=edp, dp=dp, pf=pf, ps=ps, sa=sa)
     else:
-        pgn = (pf << 8) + ps
+        # pgn = (pf << 8) + ps
         return Pdu2(p=p, edp=edp, dp=dp, pf=pf, ps=ps, sa=sa)
 
 

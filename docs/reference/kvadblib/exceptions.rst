@@ -50,6 +50,13 @@ KvdNoMessage
    :undoc-members:
    :show-inheritance:
 
+KvdNoSignal
+~~~~~~~~~~~
+.. autoexception:: canlib.kvadblib.KvdNoSignal
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 KvdNoNode
 ~~~~~~~~~
 .. autoexception:: canlib.kvadblib.KvdNoNode

@@ -9,7 +9,7 @@ dll.kvmInitialize()
 
 
 def dllversion():
-    """Get the kvmlib version number as a `VersionNumber`"""
+    """Get the kvmlib version number as a `canlib.VersionNumber`"""
     major = ct.c_int()
     minor = ct.c_int()
     build = ct.c_int()

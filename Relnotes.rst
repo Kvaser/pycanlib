@@ -7,6 +7,28 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.19.205  (13-SEP-2021)
+===========================================================================
+* General:
+
+  - Updated docstrings, mainly of lower level classes.
+
+* `canlib.dllLoader`:
+
+  - Setting the environment variable `READTHEDOCS` == `True` inhibits loading
+    of shared libraries. Used e.g. when building documentation on ReadTheDocs.
+
+* `canlib.kvamemolibxml`:
+
+  - The functions `~canlib.kvamemolibxml.xmlGetLastError`,
+    `~canlib.kvamemolibxml.xmlGetValidationWarning` and
+    `~canlib.kvamemolibxml.xmlGetValidationError` now returns enum classes when
+    possible.
+
+* `canlib.kvrlib`:
+
+    - Minor readability updates for `kvrDeviceInfo.__str__`
+
 New Features and Fixed Problems in V1.18.846  (25-MAY-2021)
 ===========================================================================
 * `canlib.canlib`:

@@ -191,10 +191,10 @@ def calc_sjw(tq, target_sync_jump_width):
     Note: Minimum sjw_tq returned is 1.
 
     Returns:
-        `namedtuple`(sjw_tq, sync_jump_width)
+        The returned named tuple is a ``(sjw_tq, sync_jump_width)`` consisting of:
 
-    sjw_tq: Size of sync jump width in number of time quanta
-    sync_jump_width: Size of sync jump width in percentage (%)
+        #. ``sjw_tq`` (`int`): Size of sync jump width in number of time quanta,
+        #. ``sync_jump_width`` (`number`): Size of sync jump width in percentage (%))
 
     .. versionadded:: 1.16
 
@@ -341,7 +341,7 @@ class ClockInfo:
             )
         else:
             raise ValueError(
-                "Clock info version '{v}' is unknown, perhaps update canlib?".format(v=version)
+                f"Clock info version '{version}' is unknown, perhaps update canlib?"
             )
 
     def __init__(self, numerator, denominator, power_of_ten, accuracy):
@@ -489,12 +489,12 @@ class BusParamsTq:
         return self.sjw / self.tq * 100
 
 
-class BitrateSetting(object):
+class BitrateSetting:
     """Class that holds bitrate setting.
 
     Args:
         freq: Bitrate in bit/s.
-        tseg1: Number of quanta from (but not including) the Sync Segment to
+        tseg1: Number of quanta from (but not including) the Sync Segment to \
             the sampling point.
         tseg2: Number of quanta from the sampling point to the end of the bit.
         sjw: The Synchronization Jump Width.
@@ -532,12 +532,12 @@ class BitrateSetting(object):
         return not self == other
 
     def __str__(self):
-        txt = "freq    : %8d\n" % self.freq
-        txt += "tseg1   : %8d\n" % self.tseg1
-        txt += "tseg2   : %8d\n" % self.tseg2
-        txt += "sjw     : %8d\n" % self.sjw
-        txt += "nosamp  : %8d\n" % self.nosamp
-        txt += "syncMode: %8d\n" % self.syncMode
+        txt = f"freq    : {self.freq:8}\n"
+        txt += f"tseg1   : {self.tseg1:8}\n"
+        txt += f"tseg2   : {self.tseg2:8}\n"
+        txt += f"sjw     : {self.sjw:8}\n"
+        txt += f"nosamp  : {self.nosamp:8}\n"
+        txt += f"syncMode: {self.syncMode:8}\n"
         return txt
 
     @classmethod
@@ -557,7 +557,7 @@ def calc_tolerance(nominal, data=None):
         data (`BusParamsTq`, optional): Bus parameters for data phase (in CAN FD)
 
     Returns:
-        `namedtuple`(df1, df2, df3, df4, df5)
+        `namedtuple`: (df1, df2, df3, df4, df5)
 
     .. versionadded:: 1.16
 

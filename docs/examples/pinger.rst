@@ -11,7 +11,7 @@ Description
   There must be some process reading the messages for ``pinger.py`` to work
   (see e.g. :doc:`./dbmonitor`).
 
-`ping_loop` will first extract a random list of messages (see :ref:`randomness`), and then enter a loop that creates a new `canlib.kvadblib.FrameBox` before adding some random signals with random values (the quantity specified by the `quantity`/``--quantity`` argument).
+`ping_loop` will first extract a random list of messages (see :ref:`randomness`), and then enter a loop that creates a new `~canlib.kvadblib.FrameBox` before adding some random signals with random values (the quantity specified by the `quantity`/``--quantity`` argument).
 
 Adding random signals is done with `set_random_framebox_signal`, which picks a random signal from the framebox, and `get_random_value` which inspects the given signal and provides a random value based on the signal's definition.
 

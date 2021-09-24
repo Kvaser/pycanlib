@@ -9,10 +9,9 @@ from ..device import Device
 from ..frame import Frame
 from . import constants as const
 from . import iopin, wrapper
-from .busparams import (BitrateSetting, BusParamsTq, to_BitrateSetting,
-                        to_BusParamsTq)
-from .channeldata import ChannelData, HandleData
-from .enums import (Bitrate, BitrateFD, DeviceMode, Driver, MessageFlag, Open,
+from .busparams import BusParamsTq
+from .channeldata import HandleData
+from .enums import (DeviceMode, Driver, MessageFlag, Open,
                     ScriptRequest, ScriptStatus, ScriptStop, Stat)
 from .envvar import EnvVar
 from .exceptions import CanError
@@ -66,7 +65,7 @@ def openChannel(channel, flags=0, bitrate=None, data_bitrate=None):
 
     Args:
         channel (`int`): CANlib channel number
-        flags (`int`): Flags, a combination of the `canlib.canlib.Open` flag values.
+        flags (`int`): Flags, a combination of the `~canlib.canlib.Open` flag values.
             Default is zero, i.e. no flags.
 
         bitrate (`~busparams.BusParamsTq` or `~canlib.canlib.Bitrate` or `~canlib.canlib.BitrateFD`):
@@ -122,10 +121,11 @@ class ScriptText(str):
 
     It also has the following attributes:
 
-    Attributes:
+    Args:
+        text (`str`): Text content.
         slot (`int`): Which script-slot the text came from.
         time (`int`): Timestamp of when the text was printed.
-        ScriptText.flags (`canlib.canlib.Stat`): Any flags associated with the text.
+        flags (`~canlib.canlib.Stat`): Any status flags associated with the text.
 
     .. versionadded:: 1.7
 
@@ -140,7 +140,7 @@ class ScriptText(str):
         return obj
 
 
-class Channel(object):
+class Channel:
     """Helper class that represents a CANlib channel.
 
     This class wraps the canlib class and tries to implement a more Pythonic
@@ -149,6 +149,9 @@ class Channel(object):
     Channels are automatically closed on garbage collection, and can
     also be used as context managers in which case they close as soon as the
     context exits.
+
+    Attributes:
+        envvar (`.EnvVar`): Used to access *t* program environment variables
 
     """
 
@@ -235,9 +238,9 @@ class Channel(object):
 
     @property
     def channel_data(self):
-        """`HandleData`: ``canGetHandleData`` helper object for this channel
+        """`~.channeldata.HandleData`: ``canGetHandleData`` helper object for this channel
 
-        See the documentation for `ChannelData`/`HandleData` for how it can be
+        See the documentation for `ChannelData`/`~.channeldata.HandleData` for how it can be
         used to perform all functionality of the C function
         ``canGetHandleData``.
 
@@ -338,17 +341,16 @@ class Channel(object):
         controller.
 
         The library provides default values for tseg1, tseg2, sjw and noSamp
-        when freq is a `~canlib.canlib.Bitrate`, e.g. `canlib.Bitrate.BITRATE_1M`,
-        or a `~canlib.canlib.BitrateFD` value, e.g. `canlib.BitrateFD.BITRATE_1M_80P`.
+        when freq is a `~canlib.canlib.Bitrate`, e.g. `.Bitrate.BITRATE_1M`.
 
         If freq is any other value, no default values are supplied by the
         library.
 
         If you are using multiple handles to the same physical channel, for
-        example if you are implementing a multithreaded application, you must call
-        busOff() once for each handle. The same applies to busOn() - the
-        physical channel will not go off bus until the last handle to the
-        channel goes off bus.
+        example if you are implementing a multithreaded application, you must
+        call `~.Channel.busOn()` once for each handle. The same applies to
+        `~.Channel.busOff()` - the physical channel will not go off bus until
+        the last handle to the channel goes off bus.
 
         Args:
             freq: Bitrate in bit/s.
@@ -356,12 +358,12 @@ class Channel(object):
                 to the sampling point.
             tseg2: Number of quanta from the sampling point to the end of
                 the bit.
-            sjw: The Synchronization Jump Width, can be 1,2,3, or 4.
+            sjw: The Synchronization Jump Width, can be 1, 2, 3, or 4.
             nosamp: The number of sampling points, only 1 is supported.
             syncMode: Unsupported and ignored.
 
         .. versionchanged:: 1.17
-            Now accepts `canlib.canlib.Bitrate` and `canlib.canlib.BitrateFD` enumerations.
+            Now accepts `~canlib.canlib.Bitrate` enumerations.
 
         """
         dll.canSetBusParams(self.handle, freq, tseg1, tseg2, sjw, noSamp, syncmode)
@@ -381,7 +383,7 @@ class Channel(object):
             *tseg2*: Number of quanta from the sampling point to the
             end of the bit.
 
-            *sjw*: The Synchronization Jump Width, can be 1,2,3, or 4.
+            *sjw*: The Synchronization Jump Width, can be 1, 2, 3, or 4.
 
             *noSamp*: The number of sampling points, only 1 is supported.
 
@@ -422,7 +424,7 @@ class Channel(object):
 
         The library provides default values for tseg1_brs, tseg2_brs and
         sjw_brs when freq is a `~canlib.canlib.BitrateFD` value, e.g.
-        `canlib.BitrateFD.BITRATE_1M_80P`.
+        `.BitrateFD.BITRATE_1M_80P`.
 
         If freq is any other value, no default values are supplied by the
         library.
@@ -439,15 +441,13 @@ class Channel(object):
             sjw_brs: The Synchronization Jump Width.
 
         .. versionchanged:: 1.17
-            Now accepts `canlib.canlib.BitrateFD` enumerations.
+            Now accepts `~canlib.canlib.BitrateFD` enumerations.
 
         """
         if not self.is_can_fd():
             raise TypeError(
-                (
                     "setBusParamsFd() is only supported on channels "
                     "opened with the CAN_FD or CAN_FD_NONISO flags."
-                )
             )
         dll.canSetBusParamsFd(self.handle, freq_brs, tseg1_brs, tseg2_brs, sjw_brs)
 
@@ -480,10 +480,8 @@ class Channel(object):
         """
         if not self.is_can_fd():
             raise TypeError(
-                (
                     "getBusParamsFd() is only supported on channels "
                     "opened with the CAN_FD or CAN_FD_NONISO flags."
-                )
             )
         freq_brs = ct.c_long()
         tseg1_brs = ct.c_uint()
@@ -697,7 +695,7 @@ class Channel(object):
             from thread A, it will be "received" by thread B.
 
             This behaviour can be changed by setting `local_txecho` to `False`
-            (using `canlib.canlib.IOControl`):
+            (using `~canlib.canlib.IOControl`):
 
             >>> from canlib import canlib
             >>> ch = canlib.openChannel(channel=0)
@@ -738,15 +736,15 @@ class Channel(object):
         Args:
             id_: The identifier of the CAN message to send.
             msg: An array or bytearray of the message data
-            flag: A combination of `canlib.canlib.MessageFlag`. Use this
+            flag: A combination of `~canlib.canlib.MessageFlag`. Use this
                 parameter e.g. to send extended (29-bit) frames.
             dlc: The length of the message in bytes. For Classic CAN dlc can
-                be at most 8, unless `canlib.canlib.Open.ACCEPT_LARGE_DLC` is
+                be at most 8, unless `.Open.ACCEPT_LARGE_DLC` is
                 used. For CAN FD dlc can be one of the following 0-8, 12, 16,
-                20, 24, 32, 48, 64. Optional, if omitted, dlc is calculated
-                from the msg array.
+                20, 24, 32, 48, 64. Optional, if omitted, *dlc* is calculated
+                from the *msg* array.
 
-        """
+        """  # noqa: RST306
         if not isinstance(msg, (bytes, str)):
             if not isinstance(msg, bytearray):
                 msg = bytearray(msg)
@@ -817,7 +815,7 @@ class Channel(object):
             timeout: The timeout, in milliseconds. 0xFFFFFFFF gives an infinite
                 timeout.
 
-        """
+        """  # noqa: RST306
         if not isinstance(msg, (bytes, str)):
             if not isinstance(msg, bytearray):
                 msg = bytearray(msg)
@@ -852,7 +850,7 @@ class Channel(object):
             from thread A, it will be "received" by thread B.
 
             This behaviour can be changed by setting `local_txecho` to `False`
-            (using `canlib.canlib.IOControl`):
+            (using `~canlib.canlib.IOControl`):
 
             >>> from canlib import canlib
             >>> ch = canlib.openChannel(channel=0)
@@ -864,6 +862,10 @@ class Channel(object):
 
         Returns:
             `canlib.Frame`
+
+        Raises:
+            `~canlib.canlib.CanNoMsg`: No CAN message is currently available.
+
         """
         # msg will be replaced by class when CAN FD is supported
         msg = ct.create_string_buffer(self._MAX_MSG_SIZE)
@@ -945,8 +947,8 @@ class Channel(object):
             completes before the answer is returned from the hardware.  The
             time between a call to `requestChipStatus` and the point in time
             where the chip status is actually available via a call to
-            `canlib.Channel.readStatus` is not defined. The
-            `canlib.Channel.readStatus` always returns the latest data reported
+            `.Channel.readStatus` is not defined. The
+            `.Channel.readStatus` always returns the latest data reported
             by the hardware.
 
         """
@@ -982,12 +984,12 @@ class Channel(object):
         Use `.clear_error_counters` via `.Channel.iocontrol` to clear
         the counters.
 
-        Returns (`.ErrorCounters`) : A named tuple containing:
-            *rx*: Receive error counter
+        Returns:
+            The returned tuple is a ``(rx, tx, overrun)`` named tuple of:
 
-            *tx*: Transmit error counter
-
-            *overrun*: Number of overrun errors.
+            #. ``rx`` (`int`): Receive error counter
+            #. ``tx`` (`int`): Transmit error counter
+            #. ``overrun`` (`int`): Number of overrun errors.
 
         .. versionadded:: 1.11
 
@@ -1004,7 +1006,7 @@ class Channel(object):
         return error_counters
 
     def scriptSendEvent(
-        self, slotNo=0, eventType=const.kvEVENT_TYPE_KEY, eventNo=ord('a'), data=0
+        self, slotNo=0, eventType=const.kvEVENT_TYPE_KEY, eventNo=None, data=0
     ):
         """Send specified event to specified t script
 
@@ -1012,6 +1014,8 @@ class Channel(object):
         script running in a specific slot.
 
         """
+        if eventNo is None:
+            ord('a')
         dll.kvScriptSendEvent(
             self.handle, ct.c_int(slotNo), ct.c_int(eventType), ct.c_int(eventNo), ct.c_uint(data)
         )
@@ -1087,7 +1091,7 @@ class Channel(object):
         """Turn Leds on or off.
 
         Args:
-            action (`int`): One of `canlib.canlib.LEDAction`, defining
+            action (`int`): One of `~canlib.canlib.LEDAction`, defining
                           which LED to turn on or off.
             timeout_ms (`int`): Specifies the time, in milliseconds, during which
                               the action is to be carried out. When the timeout
@@ -1096,22 +1100,22 @@ class Channel(object):
         """
         dll.kvFlashLeds(self.handle, action, timeout_ms)
 
-    @deprecation.deprecated.favour("ChannelData(Channel.index).device_name")
+    @deprecation.deprecated.favour("ChannelData.device_name")
     def getChannelData_Name(self):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `ChannelData`; ``ChannelData(Channel.index).device_name``
+           Use `ChannelData`; ``ChannelData.device_name``
 
         """
         return wrapper.getChannelData_Name(self.index)
 
-    @deprecation.deprecated.favour("ChannelData(Channel.index).custom_name")
+    @deprecation.deprecated.favour("ChannelData.custom_name")
     def getChannelData_Cust_Name(self):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `ChannelData`; ``ChannelData(Channel.index).custom_name``
+           Use `ChannelData`; ``ChannelData.custom_name``
 
         """
         try:
@@ -1121,32 +1125,32 @@ class Channel(object):
             return ""
         return ""
 
-    @deprecation.deprecated.favour("ChannelData(Channel.index).chan_no_on_card")
+    @deprecation.deprecated.favour("ChannelData.chan_no_on_card")
     def getChannelData_Chan_No_On_Card(self):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `ChannelData`; ``ChannelData(Channel.index).chan_no_on_card``
+           Use `ChannelData`; ``ChannelData.chan_no_on_card``
 
         """
         return wrapper.getChannelData_Chan_No_On_Card(self.index)
 
-    @deprecation.deprecated.favour("ChannelData(Channel.index).card_number")
+    @deprecation.deprecated.favour("ChannelData.card_number")
     def getChannelData_CardNumber(self):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `ChannelData`; ``ChannelData(Channel.index).card_number``
+           Use `ChannelData`; ``ChannelData.card_number``
 
         """
         return wrapper.getChannelData_CardNumber(self.index)
 
-    @deprecation.deprecated.favour("ChannelData(Channel.index).card_upc_no")
+    @deprecation.deprecated.favour("ChannelData.card_upc_no")
     def getChannelData_EAN(self):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `ChannelData`; ``ChannelData(Channel.index).card_upc_no``
+           Use `ChannelData`; ``ChannelData.card_upc_no``
 
         """
         return wrapper.getChannelData_EAN(self.index)
@@ -1155,32 +1159,32 @@ class Channel(object):
     def getChannelData_EAN_short(self):
         return wrapper.getChannelData_EAN_short(self.index)
 
-    @deprecation.deprecated.favour("ChannelData(Channel.index).card_serial_no")
+    @deprecation.deprecated.favour("ChannelData.card_serial_no")
     def getChannelData_Serial(self):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `ChannelData`; ``ChannelData(Channel.index).card_serial_no``
+           Use `ChannelData`; ``ChannelData.card_serial_no``
 
         """
         return wrapper.getChannelData_Serial(self.index)
 
-    @deprecation.deprecated.favour("ChannelData(Channel.index).driver_name")
+    @deprecation.deprecated.favour("ChannelData.driver_name")
     def getChannelData_DriverName(self):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `ChannelData`; ``ChannelData(Channel.index).driver_name``
+           Use `ChannelData`; ``ChannelData.driver_name``
 
         """
         return wrapper.getChannelData_DriverName(self.index)
 
-    @deprecation.deprecated.favour("ChannelData(Channel.index).card_firmware_rev")
+    @deprecation.deprecated.favour("ChannelData.card_firmware_rev")
     def getChannelData_Firmware(self):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `ChannelData`; ``ChannelData(Channel.index).card_firmware_rev``
+           Use `ChannelData`; ``ChannelData.card_firmware_rev``
 
         """
         return wrapper.getChannelData_Firmware(self.index)
@@ -1372,7 +1376,7 @@ class Channel(object):
             `ScriptText`
 
         Raises:
-            `canlib.canlib.CanNoMsg`: No more text is currently available.
+            `~canlib.canlib.CanNoMsg`: No more text is currently available.
 
         .. versionadded:: 1.7
 
@@ -1398,9 +1402,9 @@ class Channel(object):
 
         Arguments:
             slot (`int`): The script slot to subscribe/unsubscribe from.
-            request(`canlib.canlib.ScriptRequest`): Whether to subscribe or unsubscribe.
+            request(`~canlib.canlib.ScriptRequest`): Whether to subscribe or unsubscribe.
 
-        Text printed with ``printf()`` by a t-script that you are subscribed to
+        Text printed with ``printf()`` by a t-program that you are subscribed to
         is saved and can be retrieved with `Channel.scriptGetText`.
 
         .. versionadded:: 1.7
@@ -1457,9 +1461,9 @@ class Channel(object):
         interpret random memory as machine language.
 
         Arguments:
-            function (`canlib.canlib.KVCALLBACK_T`): A ctypes wrapped Python function
+            function (`~canlib.canlib.KVCALLBACK_T`): A ctypes wrapped Python function
 
-            event (`canlib.canlib.Notify`): A combination of flags to indicate
+            event (`~canlib.canlib.Notify`): A combination of flags to indicate
                 what events to trigger on
 
         .. versionadded:: 1.7
@@ -1542,7 +1546,7 @@ class Channel(object):
             implemented in all products.
 
         Args:
-            mode (`int`): One of `canlib.canlib.DeviceMode`, defining which
+            mode (`int`): One of `~canlib.canlib.DeviceMode`, defining which
                         mode to use.
 
         """
@@ -1611,11 +1615,11 @@ class Channel(object):
         return iopin.get_io_pin(channel=self, index=index)
 
     def is_can_fd(self):
-        """Return True if the channel has been opened with the
+        """Return `True` if the channel has been opened with the
         `~Open.CAN_FD` or `~Open.CAN_FD_NONISO` flags.
 
         Returns:
-            True if CAN FD, False otherwise.
+            `True` if CAN FD, `False` otherwise.
 
         .. versionadded: 1.17
 

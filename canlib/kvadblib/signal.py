@@ -5,8 +5,7 @@ from collections import namedtuple
 
 from .attribute import Attribute
 from .bound_signal import BoundSignal
-from .enums import (AttributeOwner, SignalByteOrder, SignalMultiplexMode,
-                    SignalType)
+from .enums import (AttributeOwner, SignalByteOrder, SignalType)
 from .exceptions import KvdNoAttribute, KvdWrongOwner
 from .wrapper import dll
 
@@ -15,7 +14,7 @@ ValueScaling = namedtuple('ValueScaling', 'factor offset')
 ValueSize = namedtuple('ValueSize', 'startbit length')
 
 
-class Signal(object):
+class Signal:
     """Database signal, holds meta data about a signal"""
 
     def __init__(
@@ -37,6 +36,8 @@ class Signal(object):
         self._db = db  # used to lookup attribute definitions
         self._handle = sh
         self.message = message  # Parent message
+        # Any property that is set at creation time needs to be written to the signal object.
+        # qqqmac loop through attributes instead of this "list"?
         if byte_order is not None:
             self.byte_order = byte_order
         if mode is not None:
@@ -65,7 +66,8 @@ class Signal(object):
     def __ne__(self, other):
         return not self == other
 
-    def __repr__(self):
+    def __str__(self):
+        # __repr__ should never do any calls to the dll, so this needs to be done in __str__
         return (
             "Signal(name={!r}, type={!r}, byte_order={!r}, mode={!r}, size={!r}, "
             "scaling={!r}, limits={!r}, unit={!r}, comment={!r})".format(
@@ -275,7 +277,7 @@ class Signal(object):
         """Set the signals startbit and length.
 
         Args:
-            value (:obj:`ValueSize`
+            value (`ValueSize`
 
         """
         dll.kvaDbSetSignalValueSize(self._handle, value.startbit, value.length)
@@ -322,7 +324,7 @@ class Signal(object):
         """Get message min and max values.
 
         Args:
-            value (:obj:`ValueLimits`)
+            value (`ValueLimits`)
 
         """
         dll.kvaDbSetSignalValueLimits(self._handle, value.min, value.max)
@@ -357,15 +359,13 @@ class EnumSignal(Signal):
         byte_order=None,
         mode=None,
         size=None,
-        scaling=ValueScaling(
-            factor=1, offset=0
-        ),  # Value tables in vector does not support scaling.
+        scaling=None,
         limits=None,
         unit=None,
         comment=None,
-        enums={},
+        enums=None,
     ):
-        super(EnumSignal, self).__init__(
+        super().__init__(
             db,
             message=message,
             sh=sh,
@@ -379,7 +379,8 @@ class EnumSignal(Signal):
             unit=unit,
             comment=comment,
         )
-        self.add_enum_definition(enums)
+        if enums is not None:
+            self.add_enum_definition(enums)
 
     def _enum_handles(self):
         """Return enum generator"""
@@ -428,7 +429,7 @@ class EnumSignal(Signal):
         self.add_enum_definition(enums)
 
     def __eq__(self, other):
-        sup = super(EnumSignal, self).__eq__(other)
+        sup = super().__eq__(other)
         if sup is NotImplemented:
             return sup
         else:

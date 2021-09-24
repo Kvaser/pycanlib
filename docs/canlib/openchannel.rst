@@ -6,7 +6,7 @@ devices, the next call is likely to be a call to `~canlib.canlib.openChannel`,
 which returns a `~canlib.canlib.Channel` object for the specific CAN
 circuit. This object is then used for subsequent calls to the library. The
 `~canlib.canlib.openChannel` function's first argument is the number of the
-desired channel, the second argument is modifier flags `canlib.canlib.Open`.
+desired channel, the second argument is modifier flags `~canlib.canlib.Open`.
 
 `~canlib.canlib.openChannel` may raise several different exceptions, one of
 which is `~canlib.canlib.CanNotFound`. This means that the channel specified in
@@ -18,7 +18,7 @@ the first parameter was not found, or that the flags passed to
 Open as CAN
 -----------
 
-No special `canlib.canlib.Open` modifier flag is needed in the flags argument to `~canlib.canlib.openChannel` when opening a channel in CAN mode.
+No special `~canlib.canlib.Open` modifier flag is needed in the flags argument to `~canlib.canlib.openChannel` when opening a channel in CAN mode.
 
     >>> from canlib import canlib
     >>> canlib.openChannel(channel=0, flags=canlib.Open.EXCLUSIVE)
@@ -131,10 +131,10 @@ which returns a `~canlib.canlib.busparams.BusParamsTq` object:
 
 For users that are not interested in specifying individual bit timing parameters,
 CANlib also provides a set of default parameter settings for the most common
-bus speeds through the `canlib.canlib.canBITRATE_xxx` constants. The predefined
+bus speeds through the `~canlib.canlib.Bitrate` class. The predefined
 bitrate constants may be set directly in the call to `~canlib.canlib.openChannel`::
 
-    >>> ch = canlib.openChannel(channel=0, bitrate=canlib.canBITRATE_500K)
+    >>> ch = canlib.openChannel(channel=0, bitrate=canlib.Bitrate.BITRATE_500K)
 
 .. list-table:: Bit timing parameters for some of the most common bus speeds on a CAN device with an 80 MHz oscillator [1]_
    :widths: 10 10 10 10 10 10 10 10 10
@@ -150,7 +150,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - prescaler
      - Sample point
      - Bitrate
-   * - canBITRATE_10K
+   * - `~canlib.canlib.Bitrate.BITRATE_10K`
      - 16
      - 4
      - 4
@@ -159,7 +159,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 500
      - 75%
      - 10 kbit/s
-   * - canBITRATE_50K
+   * - `~canlib.canlib.Bitrate.BITRATE_50K`
      - 16
      - 4
      - 4
@@ -168,7 +168,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 100
      - 75%
      - 50 kbit/s
-   * - canBITRATE_62K
+   * - `~canlib.canlib.Bitrate.BITRATE_62K`
      - 16
      - 4
      - 4
@@ -177,7 +177,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 80
      - 75%
      - 62 kbit/s
-   * - canBITRATE_83K
+   * - `~canlib.canlib.Bitrate.BITRATE_83K`
      - 8
      - 2
      - 2
@@ -186,7 +186,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 120
      - 75%
      - 83 kbit/s
-   * - canBITRATE_100K
+   * - `~canlib.canlib.Bitrate.BITRATE_100K`
      - 16
      - 4
      - 4
@@ -195,7 +195,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 50
      - 75%
      - 100 kbit/s
-   * - canBITRATE_125K
+   * - `~canlib.canlib.Bitrate.BITRATE_125K`
      - 16
      - 4
      - 4
@@ -204,7 +204,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 40
      - 75%
      - 125 kbit/s
-   * - canBITRATE_250K
+   * - `~canlib.canlib.Bitrate.BITRATE_125K`
      - 8
      - 2
      - 2
@@ -213,7 +213,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 40
      - 75%
      - 250 kbit/s
-   * - canBITRATE_500K
+   * - `~canlib.canlib.Bitrate.BITRATE_500K`
      - 8
      - 2
      - 2
@@ -222,7 +222,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 20
      - 75%
      - 500 kbit/s
-   * - canBITRATE_1M
+   * - `~canlib.canlib.Bitrate.BITRATE_1M`
      - 8
      - 2
      - 2
@@ -271,18 +271,21 @@ for both the arbitration and data phases need to be set. This is done by a call 
 
 For users that are not interested in specifying individual bit timing parameters,
 CANlib also provides a set of default parameter settings for the most common
-bus speeds through the `canlib.canlib.canFD_BITRATE_xxx` constants. The predefined
+bus speeds through the `~canlib.canlib.BitrateFD` class. The predefined
 bitrates may be set directly in the call to `~canlib.canlib.openChannel`::
 
     >>> ch = canlib.openChannel(
     ...     channel=0,
     ...     flags=canlib.Open.CAN_FD,
-    ...     bitrate=canlib.canlib.canFD_BITRATE_500K_80P,
-    ...     data_bitrate=canlib.canFD_BITRATE_1M_80P,
+    ...     bitrate=canlib.BitrateFD.BITRATE_500K_80P,
+    ...     data_bitrate=canlib.BitrateFD.BITRATE_1M_80P,
     ... )
 
-For bus speeds other than the predefined `canlib.canlib.canFD_BITRATE_xxx` constants,
+For CAN FD bus speeds other than the predefined `~canlib.canlib.BitrateFD`,
 bit timing parameters have to be specified manually.
+
+..
+   bit timing parameters have to be specified manually using XXX qqqmac
 
 .. list-table:: Available predefined bitrate constants with corresponding bit timing parameters for a CAN FD device with an 80 MHz oscillator [1]_
    :widths: 5 5 5 5 5 5 5 5 5
@@ -298,7 +301,7 @@ bit timing parameters have to be specified manually.
      - prescaler
      - Sample point
      - Bitrate
-   * - canFD_BITRATE_500K_80P
+   * - `~canlib.canlib.BitrateFD.BITRATE_500K_80P`
      - 40
      - 8
      - 8
@@ -307,7 +310,7 @@ bit timing parameters have to be specified manually.
      - 4
      - 80%
      - 500 kbit/s
-   * - canFD_BITRATE_1M_80P
+   * - `~canlib.canlib.BitrateFD.BITRATE_1M_80P`
      - 40
      - 8
      - 8
@@ -316,7 +319,7 @@ bit timing parameters have to be specified manually.
      - 2
      - 80%
      - 1 Mbit/s
-   * - canFD_BITRATE_2M_80P
+   * - `~canlib.canlib.BitrateFD.BITRATE_2M_80P`
      - 20
      - 15
      - 4
@@ -325,7 +328,7 @@ bit timing parameters have to be specified manually.
      - 2
      - 80%
      - 2 Mbit/s
-   * - canFD_BITRATE_4M_80P
+   * - `~canlib.canlib.BitrateFD.BITRATE_4M_80P`
      - 10
      - 7
      - 2
@@ -334,7 +337,7 @@ bit timing parameters have to be specified manually.
      - 2
      - 80%
      - 4 Mbit/s
-   * - canFD_BITRATE_8M_60P
+   * - `~canlib.canlib.BitrateFD.BITRATE_8M_60P`
      - 5
      - 2
      - 2
@@ -353,9 +356,9 @@ CAN Driver Modes
 ----------------
 
 Use `~canlib.canlib.Channel.setBusOutputControl` to set the bus driver
-mode. This is usually set to `canlib.canlib.Driver.NORMAL` to obtain the
+mode. This is usually set to `~canlib.canlib.Driver.NORMAL` to obtain the
 standard push-pull type of driver. Some controllers also support
-`canlib.canlib.Driver.SILENT` which makes the controller receive only, not
+`~canlib.canlib.Driver.SILENT` which makes the controller receive only, not
 transmit anything, not even ACK bits. This might be handy for e.g. when
 listening to a CAN bus without interfering.
 
@@ -365,7 +368,7 @@ listening to a CAN bus without interfering.
     ...     ch.setBusOutputControl(canlib.Driver.SILENT)
     ...     ...
 
-`canlib.canlib.Driver.NORMAL` is set by default.
+`~canlib.canlib.Driver.NORMAL` is set by default.
 
 
 Legacy Functions

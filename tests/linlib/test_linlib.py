@@ -13,7 +13,7 @@ def check_messages(channel, number, print_as=None):
     """
     if print_as:
         print(str(print_as) + " received:")
-    for i in range(number):
+    for _ in range(number):
         frame = channel.read(timeout=100)
         print(frame)
         assert frame.dlc > 0
@@ -32,7 +32,7 @@ def test_version():
         pass
 
 
-class TestNamedtuples(object):
+class TestNamedtuples:
     # All instantiations here have small integers, regardless of the type they
     # should have.
 
@@ -251,7 +251,7 @@ def test_writeSync(master, slave):
     master.busOn()
     slave.busOn()
 
-    for i in range(10):
+    for _ in range(10):
         master.writeMessage(Frame(id_=1, data=[0, 1, 2, 3]))
     master.writeSync(100)
     # Having writeSync() means more messages get through, but not all. So
@@ -269,7 +269,7 @@ def test_lin_channel_flags(lin_no):
     # Flags are remembered, so we can't test this now...
     # assert channeldata.channel_flags == 0
 
-    print('Opening channel {} as LIN master'.format(lin_no))
+    print(f'Opening channel {lin_no} as LIN master')
     master = linlib.openMaster(lin_no)
     assert channeldata.channel_flags == (
         canlib.ChannelFlags.IS_OPEN
@@ -281,7 +281,7 @@ def test_lin_channel_flags(lin_no):
         canlib.ChannelFlags.IS_LIN_MASTER | canlib.ChannelFlags.IS_LIN
     )
 
-    print('Opening channel {} as LIN slave'.format(lin_no))
+    print(f'Opening channel {lin_no} as LIN slave')
     slave = linlib.openSlave(lin_no)
     assert channeldata.channel_flags == (
         canlib.ChannelFlags.IS_OPEN | canlib.ChannelFlags.IS_LIN_SLAVE | canlib.ChannelFlags.IS_LIN

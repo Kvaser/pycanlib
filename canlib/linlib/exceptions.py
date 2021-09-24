@@ -51,16 +51,14 @@ class LinError(DllException):
     @staticmethod
     def _get_error_text(status):
         msg = error_text.get(status, None) or "Unknown error text"
-        msg += ' (%d)' % status
+        msg += f' ({status})'
         return msg
 
 
 class LinGeneralError(LinError):
     """A linlib error that does not (yet) have its own Exception
 
-    Warning:
-
-        Do not explicitly catch this error, instead catch `LinError`. Your
+    .. warning:: Do not explicitly catch this error, instead catch `LinError`. Your
         error may at any point in the future get its own exception class, and
         so will no longer be of this type. The actual status code that raised
         any `LinError` can always be accessed through a `status` attribute.
@@ -69,7 +67,7 @@ class LinGeneralError(LinError):
 
     def __init__(self, status):
         self.status = status
-        super(LinGeneralError, self).__init__()
+        super().__init__()
 
 
 class LinNoMessageError(LinError):

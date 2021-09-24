@@ -31,7 +31,7 @@ def get_default_discovery_addresses(broadcast=True, stored=False):
 
     If both arguments are ``False``, a `ValueError` will be raised.
 
-    Retruns a `list` of `canlib.kvrlib.Address` objects.
+    Retruns a `list` of `Address` objects.
 
     """
     num = _ASSUMED_NUMBER_OF_DEFAULT_ADDRESSES
@@ -73,9 +73,9 @@ def get_default_discovery_addresses(broadcast=True, stored=False):
 
 
 def openDiscovery():
-    """Creates and returns a `canlib.kvrlib.Discovery` object
+    """Creates and returns a `Discovery` object
 
-    Device discovery is normally done using `canlib.kvrlib.discover_info_set`.
+    Device discovery is normally done using `discover_info_set`.
 
     """
     handle = ct.c_int32()
@@ -89,9 +89,9 @@ def set_clear_stored_devices_on_exit(val):
 
 
 def store_devices(devices):
-    """Store a collection of `canlib.kvrlib.DeviceInfo` objects in the registry
+    """Store a collection of `DeviceInfo` objects in the registry
 
-    See `canlib.kvrlib.DeviceInfoSet` for a simpler way of dealing with device
+    See `DeviceInfoSet` for a simpler way of dealing with device
     infos and the registry.
 
     Note:
@@ -104,9 +104,9 @@ def store_devices(devices):
 
 
 def start_discovery(delay, timeout, addresses=None, report_stored=True):
-    """Start and return a `canlib.kvrlib.Discovery`
+    """Start and return a `Discovery`
 
-    Device discovery is normally done using `canlib.kvrlib.discover_info_set`.
+    Device discovery is normally done using `discover_info_set`.
 
     The returned object should usually be used as a context handler::
 
@@ -125,24 +125,23 @@ def start_discovery(delay, timeout, addresses=None, report_stored=True):
 
 
 def stored_devices():
-    """Read the devices stored in the registry as a tuple of `canlib.kvrlib.DeviceInfo` objects"""
+    """Read the devices stored in the registry as a tuple of `DeviceInfo` objects"""
     with start_discovery(0, 0, report_stored=True) as disc:
         stored = tuple(dev for dev in disc.results() if dev.availability & Availability.STORED)
 
     return stored
 
 
-class Discovery(object):
+class Discovery:
     """A kvrlib "Discovery" process
 
     Most of the time the discovery process can be handled by
-    `canlib.kvrlib.discover_info_set`, which returns the results of the
-    discovery as a `canlib.kvrlib.DeviceInfoSet`.
+    `.discover_info_set`, which returns the results of the discovery as a
+    `.DeviceInfoSet`.
 
     Even when interacted with directly, instnances of this class are normally
-    not instantiated directly, but created using
-    `canlib.kvrlib.start_discovery`, or sometimes using
-    `canlib.kvrlib.openDiscovery`.
+    not instantiated directly, but created using `.start_discovery`, or
+    sometimes using `.openDiscovery`.
 
     Instances of this class can be used as context handlers, in which case the
     discovery will be closed when the context is exited. The discovery will
@@ -169,19 +168,18 @@ class Discovery(object):
         Note:
             This attribute is write-only.
 
-        This attribute should be a list of `canlib.kvrlib.Address` objects.
+        This attribute should be a list of `.Address` objects.
 
-        If the `Discovery` object was created by
-        `canlib.kvrlib.start_discovery`, the addresses are automatically
-        set. Otherwise, they must be assigned before `Discovery.start` can be
-        called.
+        If the `.Discovery` object was created by `.start_discovery`, the
+        addresses are automatically set. Otherwise, they must be assigned
+        before `.Discovery.start` can be called.
 
         """
     )
 
     @addresses.setter
     def addresses(self, val):
-        address_list = (kvrAddress * len(val))(*[a.to_c() for a in val])
+        address_list = (kvrAddress * len(val))(*(a.to_c() for a in val))
         dll.kvrDiscoverySetAddresses(self.handle, address_list, len(val))
 
     def close(self):
@@ -215,7 +213,7 @@ class Discovery(object):
         """Run the discovery
 
         If the `Discovery` object was created by
-        `canlib.kvrlib.start_discovery`, the discovery has already been run,
+        `.start_discovery`, the discovery has already been run,
         and this function does not need to be called.
 
         After the discovery has been run, its results can be retrieved using
@@ -237,10 +235,10 @@ class Discovery(object):
         return self
 
 
-class DeviceInfo(object):
+class DeviceInfo:
     """Information about a device that can be written to the registry
 
-    See `canlib.kvrlib.DeviceInfoSet` for information about how to get
+    See `.DeviceInfoSet` for information about how to get
     `DeviceInfo` objects, process them, and then write them to the registry.
 
     """
@@ -261,7 +259,7 @@ class DeviceInfo(object):
 
     @property
     def accessibility(self):
-        """`canlib.kvrlib.Accessibility`: The accessibility of this device"""
+        """`~canlib.kvrlib.Accessibility`: The accessibility of this device"""
         return Accessibility(self.device_info.accessibility)
 
     @accessibility.setter
@@ -272,17 +270,17 @@ class DeviceInfo(object):
 
     @property
     def availability(self):
-        """`canlib.kvrlib.Availability`: The availability of this device"""
+        """`~canlib.kvrlib.Availability`: The availability of this device"""
         return Availability(self.device_info.availability)
 
     @property
     def base_station_id(self):
-        """`canlib.kvrlib.Address`: Address of the base station"""
+        """`~canlib.kvrlib.Address`: Address of the base station"""
         return Address.from_c(self.device_info.base_station_id)
 
     @property
     def client_address(self):
-        """`canlib.kvrlib.Address`: Address of connected client"""
+        """`~canlib.kvrlib.Address`: Address of connected client"""
         return Address.from_c(self.device_info.client_address)
 
     @client_address.setter
@@ -306,7 +304,7 @@ class DeviceInfo(object):
 
     @property
     def device_address(self):
-        """`canlib.kvrlib.Address`: Address of remote device"""
+        """`~canlib.kvrlib.Address`: Address of remote device"""
         return Address.from_c(self.device_info.device_address)
 
     @device_address.setter
@@ -317,7 +315,7 @@ class DeviceInfo(object):
 
     @property
     def ean(self):
-        """`canlib.ean.EAN`: EAN of device"""
+        """`~canlib.ean.EAN`: EAN of device"""
         ean = EAN.from_hilo((self.device_info.ean_hi, self.device_info.ean_lo))
         return ean
 
@@ -328,7 +326,7 @@ class DeviceInfo(object):
 
     @property
     def firmware_version(self):
-        """`canlib.versionnumber.VersionNumber`: Firmware version"""
+        """`~canlib.versionnumber.VersionNumber`: Firmware version"""
         version = VersionNumber(
             self.device_info.fw_major_ver,
             self.device_info.fw_minor_ver,
@@ -399,12 +397,11 @@ class DeviceInfo(object):
 
     @property
     def service_status(self):
-        """`canlib.kvrlib.ServiceStatus`: A tuple with the service status of the device
+        """`~canlib.kvrlib.ServiceStatus`: A tuple with the service status of the device
 
         The returned tuple has the format ``(state, start_info, text)``, where
-        ``state`` is a `canlib.kvrlib.ServiceState`, ``start_info`` is a
-        `canlib.kvrlib.StartInfo`, and ``text`` is a `str` with local
-        connection status.
+        ``state`` is a `.ServiceState`, ``start_info`` is a `.StartInfo`, and
+        ``text`` is a `str` with local connection status.
 
         """
         c_state = ct.c_int32()
@@ -429,7 +426,7 @@ class DeviceInfo(object):
 
     @property
     def usage(self):
-        """`canlib.kvrlib.DeviceUsage`: Usage status (Free/Remote/USB/Config)"""
+        """`~canlib.kvrlib.DeviceUsage`: Usage status (Free/Remote/USB/Config)"""
         return DeviceUsage(self.device_info.usage)
 
     def info(self):

@@ -34,9 +34,10 @@ class CanError(DllException):
             msg_buf = ct.create_string_buffer(80)
             dll.canGetErrorText(status, msg_buf, ct.sizeof(msg_buf))
             msg = msg_buf.value.decode('utf-8')
-        except:
+        # The important thing is to give original error code.
+        except Exception:
             msg = "Unknown error text"
-        msg += ' (%d)' % status
+        msg += f' ({status})'
         return msg
 
 
@@ -52,7 +53,7 @@ class CanGeneralError(CanError):
 
     def __init__(self, status):
         self.status = status
-        super(CanGeneralError, self).__init__()
+        super().__init__()
 
 
 @_remember
@@ -153,7 +154,7 @@ class EnvvarValueError(EnvvarException):
     def __init__(self, envvar, type_, value):
         msg = "invalid literal for envvar ({envvar}) with" " type {type_}: {value}"
         msg = msg.format(envvar=envvar, type_=type_, value=value)
-        super(EnvvarValueError, self).__init__(msg)
+        super().__init__(msg)
 
 
 class EnvvarNameError(EnvvarException):
@@ -165,7 +166,7 @@ class EnvvarNameError(EnvvarException):
     def __init__(self, envvar):
         msg = "envvar names must not start with an underscore: {envvar}"
         msg = msg.format(envvar=envvar)
-        super(EnvvarNameError, self).__init__(msg)
+        super().__init__(msg)
 
 
 class TxeFileIsEncrypted(CanlibException):

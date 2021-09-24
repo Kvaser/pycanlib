@@ -20,7 +20,7 @@ from .enums import (AttributeOwner, AttributeType, Error, MessageFlag,
                     SignalType)
 from .exceptions import (KvdBufferTooSmall, KvdDbFileParse, KvdErrInParameter,
                          KvdError, KvdInUse, KvdNoAttribute, KvdNoMessage,
-                         KvdNoNode, KvdNotFound, KvdOnlyOneAllowed,
+                         KvdNoNode, KvdNoSignal, KvdNotFound, KvdOnlyOneAllowed,
                          KvdWrongOwner)
 from .framebox import FrameBox, SignalNotFound
 from .message import Message

@@ -2,25 +2,11 @@ import ctypes as ct
 
 from ..cenum import CEnum, CFlag
 
-# In 32-bit Python 2, CFlag enums use C `long`, which is too short to contain
-# `EXT`, so fall back on a non-enum in that case
-try:
 
-    class MessageFlag(CFlag):
-        EXT = 0x80000000  # Message is an extended CAN message
-        J1939 = 0x00000001  # Message uses J1939 protocol, currently not used
-        WAKEUP = 0x00000002  # Message is a wakeup frame, currently not used
-
-
-except:
-
-    class MessageFlag(object):
-        EXT = 0x80000000  # Message is an extended CAN message
-        J1939 = 0x00000001  # Message uses J1939 protocol, currently not used
-        WAKEUP = 0x00000002  # Message is a wakeup frame, currently not used
-
-        def __new__(self, val):
-            return val
+class MessageFlag(CFlag):
+    EXT = 0x80000000  #: Message is an extended CAN message
+    J1939 = 0x00000001  #: Message uses J1939 protocol
+    WAKEUP = 0x00000002  #: Message is a wakeup frame, currently not used
 
 
 class ProtocolProperties(ct.Structure):
@@ -41,7 +27,7 @@ class ProtocolType(CEnum):
     AFDX = 7
     J1708 = 8
     CANFD = 9
-    UNKNOWN = 10
+    UNKNOWN = 10  #: Unknown or not specified protocol
 
 
 class SignalByteOrder(CEnum):
@@ -50,11 +36,11 @@ class SignalByteOrder(CEnum):
 
 
 class SignalType(CEnum):
-    INVALID = 0
-    SIGNED = 1
-    UNSIGNED = 2
-    FLOAT = 3
-    DOUBLE = 4
+    INVALID = 0  #: Invalid representation
+    SIGNED = 1  #: Signed integer
+    UNSIGNED = 2  #: Unsigned integer
+    FLOAT = 3  #: Float, strictly 32 bit long
+    DOUBLE = 4  #: Double, strictly 64 bit long
     _ENUM_SEPARATOR = 100
     ENUM_SIGNED = 101
     ENUM_UNSIGNED = 102
@@ -62,8 +48,8 @@ class SignalType(CEnum):
 
 class SignalMultiplexMode(CEnum):
     SIGNAL = 0
-    MUX_INDEPENDENT = -1
-    MUX_SIGNAL = -2
+    MUX_INDEPENDENT = -1  #: Multiplex mode value of an independent signal
+    MUX_SIGNAL = -2  #: Multiplex mode value of a multiplexer signal
 
 
 class AttributeType(CEnum):
@@ -75,29 +61,30 @@ class AttributeType(CEnum):
 
 
 class AttributeOwner(CEnum):
-    INVALID = 0
-    DB = 1
-    MESSAGE = 2
-    NODE = 3
-    SIGNAL = 4
-    ENV = 5
+    INVALID = 0  #: Invalid owner
+    DB = 1  #: Database owner
+    MESSAGE = 2  #: Message owner
+    NODE = 3  #: Node owner
+    SIGNAL = 4  #: Signal owner
+    ENV = 5  #: Environment owner
 
 
 class Error(CEnum):
-    FAIL = -1
-    NO_DATABASE = -2
-    PARAM = -3
-    NO_MSG = -4
-    NO_SIGNAL = -5
-    INTERNAL = -6
-    DB_FILE_OPEN = -7
-    DATABASE_INTERNAL = -8
-    NO_NODE = -9
-    NO_ATTRIB = -10
+    """kvaDbErr_xxx"""
+    FAIL = -1  #: General failure.
+    NO_DATABASE = -2  #: No database was found.
+    PARAM = -3  #: One or more of the parameters in call is erronous.
+    NO_MSG = -4  #: No message was found.
+    NO_SIGNAL = -5  #: No signal was found.
+    INTERNAL = -6  #: An internal error occured in the library.
+    DB_FILE_OPEN = -7  #: Could not open the database file.
+    DATABASE_INTERNAL = -8  #: An internal error occured in the database handler.
+    NO_NODE = -9  #: Could not find the database node.
+    NO_ATTRIB = -10  #: No attribute found
     ONLY_ONE_ALLOWED = -11
-    WRONG_OWNER = -12
-    IN_USE = -13
-    BUFFER_TOO_SMALL = (
-        -14
-    )  # The buffer provided was not large enough to contain the requested data.
-    DB_FILE_PARSE = -15  # Could not parse the database file
+    """An identical kvaDbLib structure already exists (and only one database at a time can be used)."""
+    WRONG_OWNER = -12  #: Wrong owner for attribute
+    IN_USE = -13  #: An item is in use
+    BUFFER_TOO_SMALL = -14
+    """The buffer provided was not large enough to contain the requested data."""
+    DB_FILE_PARSE = -15  #: Could not parse the database file

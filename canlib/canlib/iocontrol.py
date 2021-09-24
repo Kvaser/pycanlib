@@ -8,12 +8,6 @@ Property = dict
 Function = namedtuple('Function', 'item arg ret doc')
 
 
-import sys
-
-if sys.version_info < (3,):
-    range = xrange
-
-
 def _get_tx_interval(ioc):
     return ioc.raw(
         item=IOControlItem.TX_INTERVAL,
@@ -22,13 +16,8 @@ def _get_tx_interval(ioc):
     )
 
 
-# In Python 2, xrange requires its arguments to fit into a C long (sys.maxint, which is 32bit on 64bit windows)
-# https://stackoverflow.com/questions/42256542/python-overflow-error-int-too-large-to-convert-to-c-long
-#
-try:
-    _tx_interval_range = range(0, 0xFFFFFFFF)
-except OverflowError:
-    _tx_interval_range = range(0, sys.maxint)
+_tx_interval_range = range(0, 0xFFFFFFFF)
+
 
 # wintypes does not exist on Linux
 try:
@@ -252,7 +241,7 @@ ATTRIBUTES = {
 # "canIOCTL_LIN_MODE", 45, ???
 
 
-class IOControl(object):
+class IOControl:
     # There's an unusual amount of work to create a docstring, so you can skip
     # it by setting Python's optimization level (with the -O flag).
     if __debug__:
@@ -341,7 +330,7 @@ class IOControl(object):
             attr = ATTRIBUTES[name]
         except KeyError:
             raise AttributeError(
-                "{cls} has no attribute {name}".format(cls=self.__class__.__name__, name=name)
+                f"{self.__class__.__name__} has no attribute {name}"
             )
 
         if isinstance(attr, Property) or 'setitem' in attr:
@@ -371,7 +360,7 @@ class IOControl(object):
                     )
                 if val not in values:
                     raise ValueError(
-                        "{rec!r} received, expected a value in {exp!r}".format(rec=val, exp=values)
+                        f"{val!r} received, expected a value in {values!r}"
                     )
 
                 self.raw(item=item, value=val, ctype=ctype)
@@ -399,11 +388,11 @@ class IOControl(object):
 
         if ptype and not isinstance(val, ptype):
             raise TypeError(
-                "{rec} received, expected {exp}".format(rec=type(val).__name__, exp=ptype.__name__)
+                f"{type(val).__name__} received, expected {ptype.__name__}"
             )
         if values and val not in values:
             raise ValueError(
-                "{rec!r} received, expected a value in {exp!r}".format(rec=val, exp=values)
+                f"{val!r} received, expected a value in {values!r}"
             )
 
         self.raw(item=item, value=val, ctype=ctype)

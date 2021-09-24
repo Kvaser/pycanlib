@@ -9,6 +9,27 @@ from .wrapper import dll
 def reader_formats():
     """Return a generator of all reader formats.
 
+    You may list available Readers using::
+
+        >>> from canlib import kvlclib
+        >>> for format in kvlclib.reader_formats():
+        ...     print(format)
+        KME24 (.kme): Reader, Kvaser binary format (KME 2.4)
+        KME25 (.kme25): Reader, Kvaser binary format (KME 2.5)
+        KME40 (.kme40): Reader, Kvaser binary format (KME 4.0)
+        KME50 (.kme50): Reader, Kvaser binary format (KME 5.0)
+        MDF (.log): Reader, CAN frames in Vector Mdf
+        MDF_4X (.mf4): Reader, CAN frames in MDF v4.1 for Vector CANalyzer
+        PLAIN_ASC (.txt): Reader, CAN frames in plain text format
+        VECTOR_ASC (.asc): Reader, CAN frames in Vector ASCII format
+        VECTOR_BLF_FD (.blf): Reader, CAN frames in Vector BLF format
+        CSV (.csv): Reader, CAN frames in CSV format
+           ...
+
+    NOTE:
+
+        CANlib before v5.37 incorrectly reported ``.mke`` as the file suffix for KME 2.4.
+
     .. versionadded:: 1.7
 
     """
@@ -20,15 +41,15 @@ def reader_formats():
         dll.kvlcGetNextReaderFormat(previous_id, ct.byref(id_))
 
 
-class ReaderFormat(object):
+class ReaderFormat:
     """Helper class that encapsulates a Reader.
 
-    You may list available Readers using::
-
-        for format in kvlclib.reader_formats():
-            print(format)
+    You may use `reader_formats()` to list available Readers.
 
     .. versionadded:: 1.7
+
+    .. versionchanged:: 1.19
+       Updated formating in `__str__`.
 
     """
 
@@ -52,13 +73,11 @@ class ReaderFormat(object):
         self.description = text.value.decode('utf-8')
 
     def __repr__(self):
-        text = "ReaderFormat({!r})".format(self.id_)
+        text = f"ReaderFormat({self.id_!r})"
         return text
 
     def __str__(self):
-        text = "%4d: %s (.%s)" % (self.id_, self.name, self.extension)
-        text += " Reader"
-        text += ", %s" % self.description
+        text = f"{self.id_.name} (.{self.extension}): Reader, {self.description}"
         return text
 
     def isPropertySupported(self, rd_property):
@@ -67,7 +86,7 @@ class ReaderFormat(object):
         Retuns True if the property is supported by input format.
 
         Args:
-            rd_property (`canlib.kvlclib.Property`): Reader property
+            rd_property (`Property`): Reader property
         """
         supported = ct.c_int()
 

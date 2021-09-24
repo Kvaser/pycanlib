@@ -2,39 +2,40 @@ from ..cenum import CEnum
 
 
 class Error(CEnum):
-    FAIL = -1
-    PARAM = -3
-    LOGFILEOPEN = -8
-    NOSTARTTIME = -9
-    NOLOGMSG = -10
-    LOGFILEWRITE = -11
-    EOF = -12
-    NO_DISK = -13
-    LOGFILEREAD = -14
-    QUEUE_FULL = -20
-    CRC_ERROR = -21
-    SECTOR_ERASED = -22
-    FILE_ERROR = -23
-    DISK_ERROR = -24
-    DISKFULL_DIR = -25
-    DISKFULL_DATA = -26
-    SEQ_ERROR = -27
-    FILE_SYSTEM_CORRUPT = -28
-    UNSUPPORTED_VERSION = -29
-    NOT_IMPLEMENTED = -30
-    FATAL_ERROR = -31
-    ILLEGAL_REQUEST = -32
-    FILE_NOT_FOUND = -33
-    NOT_FORMATTED = -34
-    WRONG_DISK_TYPE = -35
-    TIMEOUT = -36
-    DEVICE_COMM_ERROR = -37
-    OCCUPIED = -38
-    USER_CANCEL = -39
-    FIRMWARE = -40
-    CONFIG_ERROR = -41
-    WRITE_PROT = -42
-    RESULT_TOO_BIG = -43
+    OK = 0  #: OK!
+    FAIL = -1  #: Generic error.
+    PARAM = -3  #: Error in supplied parameters.
+    LOGFILEOPEN = -8  #: Can't find/open log file.
+    NOSTARTTIME = -9  #: Start time not found.
+    NOLOGMSG = -10  #: No log message found.
+    LOGFILEWRITE = -11  #: Error writing log file.
+    EOF = -12  #: End of file found.
+    NO_DISK = -13  #: No disk found.
+    LOGFILEREAD = -14  #: Error while reading log file.
+    QUEUE_FULL = -20  #: Queue is full.
+    CRC_ERROR = -21  #: CRC check failed.
+    SECTOR_ERASED = -22  #: Sector unexpectadly erased.
+    FILE_ERROR = -23  #: File I/O error.
+    DISK_ERROR = -24  #: General disk error.
+    DISKFULL_DIR = -25  #: Disk full (directory).
+    DISKFULL_DATA = -26  #: Disk full (data).
+    SEQ_ERROR = -27  #: Unexpected sequence.
+    FILE_SYSTEM_CORRUPT = -28  #: File system corrupt.
+    UNSUPPORTED_VERSION = -29  #: Unsupported version.
+    NOT_IMPLEMENTED = -30  #: Not implemented.
+    FATAL_ERROR = -31  #: Fatal error.
+    ILLEGAL_REQUEST = -32  #: Illegal request.
+    FILE_NOT_FOUND = -33  #: File not found.
+    NOT_FORMATTED = -34  #: Disk not formatted.
+    WRONG_DISK_TYPE = -35  #: Wrong disk type.
+    TIMEOUT = -36  #: Timeout.
+    DEVICE_COMM_ERROR = -37  #: Device communication error.
+    OCCUPIED = -38  #: Device occupied.
+    USER_CANCEL = -39  #: User abort.
+    FIRMWARE = -40  #: Firmware error.
+    CONFIG_ERROR = -41  #: Configuration error.
+    WRITE_PROT = -42  #: Disk is write protected.
+    RESULT_TOO_BIG = -43  #: Result is too big for an out-parameter.
 
 
 class Device(CEnum):
@@ -44,8 +45,8 @@ class Device(CEnum):
 
     """
 
-    MHYDRA = 0
-    MHYDRA_EXT = 1
+    MHYDRA = 0  #: Kvaser Memorator (2nd generation)
+    MHYDRA_EXT = 1  #: Kvaser Memorator (2nd generation) with extended data capabilities.
 
 
 class FileType(CEnum):
@@ -55,10 +56,10 @@ class FileType(CEnum):
 
     """
 
-    KME24 = 0  # Deprecated format, use KME40
-    KME25 = 1  # Deprecated format, use KME40
-    KME40 = 2
-    KME50 = 3
+    KME24 = 0  #: Deprecated format, use KME40
+    KME25 = 1  #: Deprecated format, use KME40
+    KME40 = 2  #: Kvaser binary format (KME 4.0)
+    KME50 = 3  #: Kvaser binary format (KME 5.0)
 
 
 class LoggerDataFormat(CEnum):
@@ -68,9 +69,8 @@ class LoggerDataFormat(CEnum):
 
     """
 
-    MAJOR_CAN = 3  # Used in Kvaser Memorator (2nd generation)
-    MAJOR_CAN64 = 5  # Used in Kvaser Memorator (2nd generation) with
-    # extended data capabilities.
+    MAJOR_CAN = 3  #: Used in Kvaser Memorator (2nd generation)
+    MAJOR_CAN64 = 5  #: Used in Kvaser Memorator (2nd generation) with extended data capabilities.
 
 
 class LogFileType(CEnum):
@@ -80,19 +80,21 @@ class LogFileType(CEnum):
 
     """
 
-    ERR = 0  # A log file containing only error frames with frames before and after.
-    ALL = 1  # A log file containing all frames.
+    ERR = 0  #: A log file containing only error frames with frames before and after.
+    ALL = 1  #: A log file containing all frames.
 
 
 class SoftwareInfoItem(CEnum):
     """kvm_SWINFO_xxx
 
     Different types of version information that can be extracted using
-    kvmDeviceGetSoftwareInfo().
+    kvmDeviceGetSoftwareInfo(), used internally by `.Memorator`.
 
     """
 
-    KVMLIB = 1
-    DRIVER = 2
-    FIRMWARE = 3
-    CONFIG_VERSION_NEEDED = 5
+    KVMLIB = 1  #: Returns the version of kvmlib.
+    DRIVER = 2  #: Returns the used driver version information.
+    FIRMWARE = 3  #: Returns the device firmware version information.
+    DRIVER_PRODUCT = 4  #: Obsolete. Returns the product version information.
+    CONFIG_VERSION_NEEDED = 5  #: Returns the version of the binary format the device requires (param.lif).
+    CPLD_VERSION = 6  #: Obsolete.

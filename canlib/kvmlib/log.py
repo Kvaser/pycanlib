@@ -6,20 +6,18 @@ from .logfile import LogFile
 from .wrapper import dll
 
 
-class UnmountedLog(object):
+class UnmountedLog:
     """The log area of a Memorator before mounting
 
-    Before the log area of a `canlib.kvmlib.Memorator` object has been mounted,
-    its `log` attribute is set to an instance of this class.
+    Before the log area of a `.Memorator` object has been mounted, its `log`
+    attribute is set to an instance of this class.
 
     This class has all the functionality available even when the log area has
     not been mounted -- this functionality is still present after the log area
-    has been mounted (or if the area is always mounted -- see
-    `canlib.kvmlib.Kmf`).
+    has been mounted (or if the area is always mounted -- see `.Kmf`).
 
     The number of log files can be read as the ``len()`` of this object
-    (``container`` is either a `canlib.kvmlib.Memorator` or `canlib.kvmlib.Kmf`
-    object)::
+    (``container`` is either a `.Memorator` or `.Kmf` object)::
 
         num_log_files = len(container.log)
 
@@ -48,16 +46,14 @@ class UnmountedLog(object):
 class MountedLog(UnmountedLog):
     """The log area of a Memorator once mounted
 
-    Once a `canlib.kvmlib.Memorator` object has been mounted, its `log`
-    attribute is set to an instance of this class. This is the preferred way of
-    using this class.
+    Once a `.Memorator` object has been mounted, its `log` attribute is set to
+    an instance of this class. This is the preferred way of using this class.
 
-    For `canlib.kvmlib.Kmf` objects, the `log` attribute is always an instance
-    of this class as they are by definition mounted.
+    For `.Kmf` objects, the `log` attribute is always an instance of this class
+    as they are by definition mounted.
 
-    In the following examples ``container`` can be either a
-    `canlib.kvmlib.Memorator` object that has been mounted, or a
-    `canlib.kvmlib.Kmf` object.
+    In the following examples ``container`` can be either a `.Memorator` object
+    that has been mounted, or a `.Kmf` object.
 
     The files within the log can be accessed via indexing::
 
@@ -72,8 +68,8 @@ class MountedLog(UnmountedLog):
 
             container.log.validate()
 
-    Also see the super class `canlib.kvmlib.UnmountedLog` for functionality
-    this class has inherited.
+    Also see the super class `.UnmountedLog` for functionality this class has
+    inherited.
 
     .. versionadded:: 1.6
 
@@ -86,7 +82,7 @@ class MountedLog(UnmountedLog):
 
     def __init__(self, memorator, ldf_version):
         # We assume this object will not out-live the memorator object
-        super(MountedLog, self).__init__(memorator)
+        super().__init__(memorator)
         self.ldf_version = ldf_version
 
     def __getitem__(self, index):

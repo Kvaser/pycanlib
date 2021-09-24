@@ -27,7 +27,7 @@ def create_outfile_name(name, fmt):
     tmp_dir = create_tmp_dir()
     fname = os.path.join(tmp_dir, name + "." + fmt.extension)
     if os.path.exists(fname):
-        print("removing %s" % fname)
+        print(f"removing {fname}")
         os.remove(fname)
     return fname
 
@@ -36,7 +36,7 @@ def create_outfile_name(name, fmt):
 def test_import_kvlclib():
     fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_PLAIN_ASC)
     kvlc = kvlclib.Kvlclib(create_outfile_name("apa", fmt), fmt)
-    print("Python kvlclib version: v%s" % kvlc.getVersion())
+    print(f"Python kvlclib version: v{kvlc.getVersion()}")
     kvlc.deleteConverter()
 
 
@@ -57,7 +57,7 @@ def test_setInputFile_Plain_TXT(datadir):
             kvlc.convertEvent()
             if kvlc.IsOutputFilenameNew():
                 n_new_file_name += 1
-                print("New output filename: %s" % kvlc.getOutputFilename())
+                print(f"New output filename: {kvlc.getOutputFilename()}")
                 print("About %d events left to convert..." % kvlc.eventCount())
         except kvlclib.KvlcEndOfFile:
             assert kvlc.IsOverrunActive() == 0
@@ -94,8 +94,8 @@ def test_setInputFile_Vector_ASC(datadir):
             kvlc.convertEvent()
             if kvlc.IsOutputFilenameNew():
                 n_new_file_name += 1
-                print("New output filename: %s" % kvlc.getOutputFilename())
-                print("About %d events left to convert..." % kvlc.eventCount())
+                print(f"New output filename: {kvlc.getOutputFilename()}")
+                print(f"About {kvlc.eventCount()} events left to convert...")
         except kvlclib.KvlcEndOfFile:
             assert kvlc.IsOverrunActive() == 0
             if kvlc.IsOverrunActive():

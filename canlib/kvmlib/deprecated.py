@@ -10,7 +10,7 @@ from .exceptions import KvmNoLogMsg, kvm_error
 from .wrapper import dll
 
 
-class kvmVersion(object):
+class kvmVersion:
     """
     Class that holds kvmlib version number.
 
@@ -28,7 +28,7 @@ class kvmVersion(object):
         return "%d.%d.%d" % (self.major, self.minor, self.build)
 
 
-class KvmLib(object):
+class KvmLib:
     """Deprecated wrapper class for the Kvaser kvmlib.
 
     .. deprecated:: 1.6
@@ -355,9 +355,9 @@ class KvmLib(object):
             self.dll.kvmKmeReadEvent(self.kmeHandle, logevent)
         except (KvmNoLogMsg):
             return None
-        hexstring = ''.join(['%02x' % b for b in logevent.event.raw.data])
+        hexstring = ''.join([f'{b:02x}' for b in logevent.event.raw.data])
         n = 4
-        grouped_hexstring = [hexstring[i : i + n] for i in range(0, len(hexstring), n)]
+        grouped_hexstring = [hexstring[i:i + n] for i in range(0, len(hexstring), n)]
         print('Read Dr event:', ' '.join(grouped_hexstring))
         memoEvent = logevent.createMemoEvent()
         return memoEvent

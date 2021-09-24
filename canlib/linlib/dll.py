@@ -76,7 +76,7 @@ class LINLibDll(dllLoader.MyDll):
     }
 
     def __init__(self, ct_dll):
-        super(LINLibDll, self).__init__(ct_dll, **self.function_prototypes)
+        super().__init__(ct_dll, **self.function_prototypes)
 
     def default_errcheck(self, result, func, arguments):
         """Error function used in ctype calls for LINlib DLL."""

@@ -1,15 +1,15 @@
 from .bound_signal import BoundSignal
 
 
-class BoundMessage(object):
+class BoundMessage:
     """A CAN data object that manipulates data through signals."""
 
     def __init__(self, message, frame):
         """Create an object representing a message bound to a frame
 
         Args:
-            message (:obj:`kvadblib.Message`): The message to be bound
-            frame (:obj:`Frame`): The frame containing CAN data
+            message (`kvadblib.Message`): The message to be bound
+            frame (`Frame`): The frame containing CAN data
 
         """
         self._message = message
@@ -41,4 +41,4 @@ class BoundMessage(object):
         msg_name = None
         if self._message is not None:
             msg_name = self._message.name
-        return "Frame: message_name:{}, data:{}".format(msg_name, self._data)
+        return f"Frame: message_name:{msg_name}, data:{self._data}"

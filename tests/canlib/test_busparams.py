@@ -410,6 +410,7 @@ def test_to_BusParamsTq(channel_no):
     assert canlib.busparams.to_BusParamsTq(clk_freq, bsD, prescaler=2, data=True) == bpD
     ch.close()
 
+
 @pytest.mark.feature(features.canfd)
 def test_to_BitrateSetting(channel_no):
     """Test converting bus parameters using to_BitrateSetting()"""
@@ -424,6 +425,7 @@ def test_to_BitrateSetting(channel_no):
     assert canlib.busparams.to_BitrateSetting(clk_freq, ch.get_bus_params_tq()[0]) == bsA
     assert canlib.busparams.to_BitrateSetting(clk_freq, ch.get_bus_params_tq()[1]) == bsD
     ch.close()
+
 
 @pytest.mark.feature(features.canfd)
 def test_predefined_bitrates(channel_no):
@@ -446,6 +448,8 @@ def test_predefined_bitrates(channel_no):
     assert bp2.sync_jump_width() == bpD.sync_jump_width()
     ch.close()
 
+
+@pytest.mark.feature(features.canfd)
 def test_BusParam_set_and_get(channel_no):
     ch = canlib.openChannel(channel_no, canlib.Open.CAN_FD)
     expectedA = (500000, 63, 16, 16)
@@ -461,3 +465,16 @@ def test_BusParam_set_and_get(channel_no):
     assert (freq_a, tseg1_a, tseg2_a, sjw_a) == expectedA
     assert ch.getBusParamsFd() == expectedD
     ch.close()
+
+
+def test_printing_bitrate():
+    bs = canlib.busparams.BitrateSetting(freq=10, tseg1=11, tseg2=12, sjw=13)
+    bs_text = str(bs)
+    assert bs_text == """\
+freq    :       10
+tseg1   :       11
+tseg2   :       12
+sjw     :       13
+nosamp  :        1
+syncMode:        0
+"""

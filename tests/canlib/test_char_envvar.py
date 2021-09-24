@@ -23,7 +23,7 @@ def send_DataVal_on_can(ch, data):
     frame = Frame(id_=133, data=[0, 0, 0, 0, 0, 0, 16, 0])
     ch.write(frame)
     for i in range(0, len(data), chunk_size):
-        frame = Frame(id_=134, data=data[i : i + chunk_size])
+        frame = Frame(id_=134, data=data[i:i + chunk_size])
         ch.writeWait(frame, timeout=500)
     frame = Frame(id_=135, data=[])
     ch.writeWait(frame, timeout=500)

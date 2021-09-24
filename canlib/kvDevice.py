@@ -1,10 +1,9 @@
-from __future__ import print_function
-
 import re
 import time
 import traceback
 
 from . import canlib, deprecation, kvMemoConfig, kvmlib
+from .exceptions import CanlibException
 
 
 class kvDevice:
@@ -44,7 +43,7 @@ class kvDevice:
 
     @staticmethod
     def ean_hi_lo2ean(ean_hi, ean_lo):
-        return "%02x-%05x-%05x-%x" % (
+        return "{:02x}-{:05x}-{:05x}-{:x}".format(
             ean_hi >> 12,
             ((ean_hi & 0xFFF) << 8) | (ean_lo >> 24),
             (ean_lo >> 4) & 0xFFFFF,
@@ -198,8 +197,8 @@ class kvDevice:
         # mode
         self.channel.kvDeviceSetMode(canlib.kvDEVICE_MODE_LOGGER)
         if self.channel.kvDeviceGetMode() != canlib.kvDEVICE_MODE_LOGGER:
-            raise Exception(
-                "ERROR: Could not set device in virtual logger" " mode. Is CAN power applied?."
+            raise CanlibException(
+                "Could not set device in virtual logger mode. Is CAN power applied?."
             )
 
     def setModeNormal(self):
@@ -207,7 +206,7 @@ class kvDevice:
         # mode
         self.channel.kvDeviceSetMode(canlib.kvDEVICE_MODE_INTERFACE)
         if self.channel.kvDeviceGetMode() != canlib.kvDEVICE_MODE_INTERFACE:
-            raise Exception("ERROR: Could not set device in normal mode.")
+            raise CanlibException("Could not set device in normal mode.")
 
     def defaultHostname(self):
         ean_part = '%x' % kvDevice.ean2ean_lo(self._ean)
@@ -259,9 +258,8 @@ class kvDevice:
             if (not (self.channel is None)) or ((time.time() - startTime) > timeout):
                 break
         if self.channel is None:
-            raise Exception(
-                "ERROR: Could not find device %s %s (timeout: %d"
-                " s)." % (self._ean, self._serial, timeout)
+            raise CanlibException(
+                f"Could not find device {self._ean} {self._serial} (timeout: {timeout} s)."
             )
 
     def write(self, frame):
@@ -339,26 +337,26 @@ class kvDevice:
                 return False
 
     def __hash__(self):
-        return hash("%s %s" % (self._ean, self._serial))
+        return hash(f"{self._ean} {self._serial}")
 
     def __str__(self):
-        text = 'Device: %s\n' % self._name
-        text = text + 'EAN           : %s\n' % self._ean
-        text = text + 'S/N           : %s\n' % self._serial
+        text = f'Device: {self._name}\n'
+        text = text + f'EAN           : {self._ean}\n'
+        text = text + f'S/N           : {self._serial}\n'
         if self._fw is not None:
             fwVersion = "v%d.%d.%d" % self._fw
         else:
             fwVersion = "None"
-        text = text + 'FW            : %s\n' % fwVersion
-        text = text + 'Card          : %s\n' % self._card
-        text = text + 'Drv           : %s\n' % self._driver
-        text = text + 'Card channel  : %s\n' % self._cardChannel
-        text = text + 'Canlib channel: %s\n' % self._channel
+        text = text + f'FW            : {fwVersion}\n'
+        text = text + f'Card          : {self._card}\n'
+        text = text + f'Drv           : {self._driver}\n'
+        text = text + f'Card channel  : {self._cardChannel}\n'
+        text = text + f'Canlib channel: {self._channel}\n'
         return text
 
 
 if __name__ == '__main__':
     devices = kvDevice.allDevices()
-    print("List all %d devices..." % (len(devices)))
+    print(f"List all {len(devices)} devices...")
     for dev in devices:
         print("\n", dev)

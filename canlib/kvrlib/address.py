@@ -8,14 +8,14 @@ class Address(namedtuple('_Address', "type address")):
     """An IP or MAC address
 
     Attributes:
-        Address.type (`canlib.kvrlib.AddressType`): Address type.
+        type (`~canlib.kvrlib.AddressType`): Address type.
         address (`list[int]`): A list of integers, the numbers in the address.
 
     """
 
     @classmethod
     def from_c(cls, c_addr):
-        """Create an `Address` object from a `canlib.kvrlib.kvrAddress` object"""
+        """Create an `Address` object from a `~canlib.kvrlib.kvrAddress` object"""
         addr_type = AddressType(c_addr.type)
         address = [int(n) for n in c_addr.address]
         # qqqdaca mostly guessing, make sure these are correct
@@ -31,9 +31,9 @@ class Address(namedtuple('_Address', "type address")):
         return cls(type=addr_type, address=address)
 
     def to_c(self):
-        """Create a `canlib.kvrlib.kvrAddress` from this object"""
+        """Create a `~canlib.kvrlib.kvrAddress` from this object"""
         c_addr = kvrAddress(self.type)
-        c_addr.address[0 : len(self.address)] = self.address
+        c_addr.address[0:len(self.address)] = self.address
         return c_addr
 
     def __str__(self):
@@ -49,4 +49,4 @@ class Address(namedtuple('_Address', "type address")):
         else:
             addr = ' '.join(str(x) for x in self.address if x != 0)
 
-        return '<Address {addr} ({t})>'.format(addr=addr, t=self.type.name)
+        return f'<Address {addr} ({self.type.name})>'

@@ -2,7 +2,7 @@ from .enums import EnvVarType
 from .exceptions import EnvvarNameError
 
 
-class DataEnvVar(object):
+class DataEnvVar:
     """Represent an environment variable declared as char"""
 
     def __init__(self, channel, handle, name, size):
@@ -30,7 +30,7 @@ class DataEnvVar(object):
             # value = self._channel.script_envvar_get_data(self._handle, len=size, start=key.start)
             # Workaround:
             value = self._channel.script_envvar_get_data(self._handle, len=self._size, start=0)
-            value = value[key.start : key.stop]
+            value = value[key.start: key.stop]
 
             if key.step is not None:
                 raise NotImplementedError('step is not yet implemented in read')
@@ -53,7 +53,7 @@ class DataEnvVar(object):
             data = self._channel.script_envvar_get_data(self._handle, len=self._size, start=0)
             pre_data = data[: int(key.start or 0)]
             if key.stop is not None:
-                post_data = data[key.stop :]
+                post_data = data[key.stop:]
             else:
                 post_data = b''
             data = pre_data + value + post_data
@@ -65,7 +65,7 @@ class DataEnvVar(object):
             # qqqmac fb:25388, BLB-1104
             # self._channel.script_envvar_set_data(self._handle, value, len=1, start=key)
             data = self._channel.script_envvar_get_data(self._handle, len=self._size, start=0)
-            data = data[:key] + value + data[key + 1 :]
+            data = data[:key] + value + data[key + 1:]
             self._channel.script_envvar_set_data(self._handle, data, len=self._size, start=0)
 
     def __str__(self):
@@ -73,10 +73,10 @@ class DataEnvVar(object):
         return value.decode('utf-8')  # qqqmac should we have a proper decode method?
 
 
-class EnvVar(object):
+class EnvVar:
     """Used to access environment variables"""
 
-    class Attrib(object):
+    class Attrib:
         def __init__(self, handle=None, type_=None, size=None):
             self.handle = handle
             self.type_ = type_

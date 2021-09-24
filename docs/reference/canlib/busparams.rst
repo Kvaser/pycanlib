@@ -14,6 +14,12 @@ calc_busparamstq()
 .. autofunction:: canlib.canlib.busparams.calc_busparamstq
 
 
+calc_sjw()
+--------------
+
+.. autofunction:: canlib.canlib.busparams.calc_sjw
+
+
 to_BusParamsTq()
 ----------------
 

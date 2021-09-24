@@ -8,7 +8,7 @@ When the CAN controller is on bus, it is receiving messages and is sending
 acknowledge bits in response to all correctly received messages. A controller
 that is off bus is not taking part in the bus communication at all.
 
-When you have a `canlib.canlib.Channel` object, use
+When you have a `~canlib.canlib.Channel` object, use
 `~canlib.canlib.Channel.busOn` to go on bus and `~canlib.canlib.Channel.busOff`
 to go off bus.
 
@@ -39,7 +39,7 @@ Reading Messages
 Incoming messages are placed in a queue in the driver. In most cases the
 hardware does message buffering as well. You can read the first message in the
 queue by calling `~canlib.canlib.Channel.read`, which will raise the exception
-`canlib.canlib.CanNoMsg` if there was no message available.
+`~canlib.canlib.CanNoMsg` if there was no message available.
 
 The `~canlib.Frame.flags` attribute of the `~canlib.Frame` returned by
 `~canlib.canlib.Channel.read` contains a combination of the
@@ -98,13 +98,13 @@ Acceptance Filters
 
 You can set filters to reduce the number of received messages. CANlib supports
 setting of the hardware filters on the CAN interface board. This is done with
-the `canlib.canlib.Channel.canAccept` function.
+the `~canlib.canlib.Channel.canAccept` function.
 
 You set an acceptance code and an acceptance mask which together determine
 which CAN identifiers are accepted or rejected.
 
 If you want to remove an acceptance filter, call
-`canlib.canlib.Channel.canAccept` with the mask set to
+`~canlib.canlib.Channel.canAccept` with the mask set to
 `~canlib.AcceptFilterFlag.NULL_MASK`.
 
 To set the mask to 0xF0 and the code to 0x60::
@@ -139,7 +139,7 @@ How acceptance filters can be used in a smaller project::
 
 Code and Mask Format
 ^^^^^^^^^^^^^^^^^^^^
-Explanation of the code and mask format used by the `canlib.canlib.Channel.canAccept` function:
+Explanation of the code and mask format used by the `~canlib.canlib.Channel.canAccept` function:
 
     A binary 1 in a mask means "the corresponding bit in the code is relevant"
     A binary 0 in a mask means "the corresponding bit in the code is not relevant"
@@ -155,16 +155,16 @@ In other words, the message is accepted if ((code XOR id) AND mask) == 0.
     standard and extended CAN identifiers. On some boards
     the acceptance filtering is done by the CAN hardware; on other boards
     (typically those with an embedded CPU,) the acceptance filtering is done by
-    software. `canlib.canlib.Channel.canAccept` behaves in the same way for all
+    software. `~canlib.canlib.Channel.canAccept` behaves in the same way for all
     boards, however.
 
 
 Sending Messages
 ----------------
 
-You transmit messages by calling `canlib.canlib.Channel.write`. Outgoing CAN messages are buffered
+You transmit messages by calling `~canlib.canlib.Channel.write`. Outgoing CAN messages are buffered
 in a transmit queue and sent on a First-In First-Out basis. You can use
-`canlib.canlib.Channel.writeSync` to wait until the messages in the queue have been sent.
+`~canlib.canlib.Channel.writeSync` to wait until the messages in the queue have been sent.
 
 Sending a CAN message::
 

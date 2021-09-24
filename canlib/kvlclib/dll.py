@@ -50,7 +50,7 @@ class KvlclibDll(dllLoader.MyDll):
         # set default values for function_prototypes
         self.default_restype = ct.c_int
         self.default_errcheck = self._error_check
-        super(KvlclibDll, self).__init__(ct_dll, **self.function_prototypes)
+        super().__init__(ct_dll, **self.function_prototypes)
 
     def _error_check(self, result, func, arguments):
         __tracebackhide__ = True

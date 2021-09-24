@@ -324,7 +324,7 @@ def test_create_db_messages(tmpdir):
     # assert message == MLDA
 
     name = message.qualified_name
-    assert name == '{}.{}'.format(db.name, message.name)
+    assert name == f'{db.name}.{message.name}'
 
     filename = str(tmpdir / 'db_messages.dbc')
     db.write_file(filename)
@@ -352,7 +352,7 @@ def test_create_db_messages(tmpdir):
 
     print(rdb)
     for message in rdb:
-        print('  Message name: {}'.format(message.name))
+        print(f'  Message name: {message.name}')
         print(" " * 4, message)
         assert len(list(message)) == 0
     rdb.close()
@@ -424,7 +424,7 @@ def test_create_db_signals(tmpdir):
     signal = message.new_signal(**SLDD._asdict())
 
     name = signal.qualified_name
-    assert name == '{}.{}.{}'.format(db.name, message.name, signal.name)
+    assert name == f'{db.name}.{message.name}.{signal.name}'
 
     signal = message.get_signal(name=SLDA.name)
     assert signal == SLDA
@@ -445,14 +445,14 @@ def test_create_db_signals(tmpdir):
     with kvadblib.Dbc(filename=filename) as rdb:
         print("\n", rdb)
         for message in rdb:
-            print('  {}'.format(message.name))
+            print(f'  {message.name}')
             for signal in message:
-                print('    {}'.format(signal.name))
+                print(f'    {signal.name}')
         print("\n", rdb)
         for message in rdb.messages():
-            print('  {}'.format(message.name))
+            print(f'  {message.name}')
             for signal in message.signals():
-                print('    {}'.format(signal.name))
+                print(f'    {signal.name}')
 
 
 def test_db_message():
@@ -497,7 +497,7 @@ def test_db_node():
     node = db.new_node(name=NLDA.name, comment=NLDA.comment)
     assert node == NLDA
     node.comment = 'Another comment'
-    assert str(node) == ("Node(name='{}, comment=Another comment')".format(NLDA.name))
+    assert str(node) == f"Node(name='{NLDA.name}, comment=Another comment')"
 
     print("\n Nodes so far:")
     for node in db.nodes():
@@ -968,19 +968,19 @@ def test_empty_db(tmpdir):
 
     with kvadblib.Dbc(filename=filename) as db:
         assert len(list(db.nodes())) == 0
-        for node in db.nodes():
+        for _node in db.nodes():
             assert True, "no nodes should be found in database"
 
         # No messages are defined
         assert len(db) == 0
-        for message in db:
+        for _message in db:
             assert True, "no messages should be found in database"
 
         # One message is defined
         message = db.new_message(name=MLDA.name, id=MLDA.id)
         assert len(db) == 1
         assert len(message) == 0
-        for signal in db:
+        for _signal in db:
             assert True, "no signals should be found in message"
 
         message.new_signal(name=SLDA.name)

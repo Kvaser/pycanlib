@@ -1,7 +1,7 @@
 class VersionNumber(tuple):
     """A tuple-subclass representing a version number
 
-    Version numbers can be created with from one to three positional arguments,
+    Version numbers can be created using one to three positional arguments,
     representing the major, minor, and build number respectively::
 
         v1 = VersionNumber(1)
@@ -51,7 +51,7 @@ class VersionNumber(tuple):
                 )
 
         numbers = (n for n in (major, minor, release, build) if n is not None)
-        obj = super(VersionNumber, cls).__new__(cls, numbers)
+        obj = super().__new__(cls, numbers)
         return obj
 
     def __str__(self):
@@ -59,10 +59,10 @@ class VersionNumber(tuple):
 
     def __repr__(self):
         attrs = (
-            '{name}={val}'.format(name=name, val=getattr(self, name))
+            f'{name}={getattr(self, name)}'
             for name in ('major', 'minor', 'release', 'build')
         )
-        return '{cls}({attrs})'.format(cls=self.__class__.__name__, attrs=', '.join(attrs))
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
     @property
     def major(self):
@@ -109,14 +109,14 @@ class BetaVersionNumber(VersionNumber):
     def __eq__(self, other):
         if not isinstance(other, BetaVersionNumber):
             return False
-        return super(BetaVersionNumber, self).__eq__(other) and self.beta == other.beta
+        return super().__eq__(other) and self.beta == other.beta
 
     # For Python 2
     def __ne__(self, other):
         return not self == other
 
     def __str__(self):
-        txt = super(BetaVersionNumber, self).__str__() + ' Beta'
+        txt = super().__str__() + ' Beta'
         return txt
 
     @property

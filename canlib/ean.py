@@ -1,4 +1,4 @@
-import sys  # python 2 checking
+from . import deprecation
 
 PRODUCT_EAN_LENGTH = 7
 
@@ -49,7 +49,7 @@ class IllegalEAN(ValueError):
     pass
 
 
-class EAN(object):
+class EAN:
     r"""Helper object for dealing with European Article Numbers
 
     Depending on the format the ean is in, `EAN` objects are created in
@@ -129,6 +129,7 @@ class EAN(object):
         return cls(digits)
 
     @classmethod
+    @deprecation.deprecated.favour("the EAN constructor directly")
     def from_string(cls, ean_string):
         """Create an EAN object from a specially formatted string
 
@@ -141,17 +142,6 @@ class EAN(object):
     @classmethod
     def from_hilo(cls, hilo):
         """Create an EAN object from a pair of 32-bit integers, (eanHi, eanLo)"""
-        # Python 2 does not have int.to_bytes. And also has longs.
-        if sys.version_info < (3, 0):
-            hi, lo = hilo
-            conc = (hi << 32) + lo
-            digits = []
-            for i in xrange(16):
-                v = conc & 0xF
-                digits.append(int(v))
-                conc = conc >> 4
-            return cls(reversed(digits[:-3]))
-
         high, low = hilo
         # we get three extra digits in 'high'
         high = tuple(bcd_digits(high.to_bytes(4, byteorder='little')))[:-3]
@@ -185,13 +175,11 @@ class EAN(object):
             self._internal = self._parse_str(source)
         elif isinstance(source, int):
             self._internal = self._parse_int(source)
-        elif sys.version_info < (3, 0) and isinstance(source, long):
-            self._internal = self._parse_int(source)
         else:
             # Assumed to be a iterable
             internal = tuple(source)
             if len(internal) != self.num_digits:
-                raise IllegalEAN("Wrong length of EAN sequence (%d)" % len(internal))
+                raise IllegalEAN(f"Wrong length of EAN sequence ({len(internal)})")
             elif not all(isinstance(d, int) for d in internal):
                 raise IllegalEAN("EAN sequence must contain only ints")
             else:
@@ -220,9 +208,6 @@ class EAN(object):
 
     def __str__(self):
         num_only = map(str, self._internal)
-        if sys.version_info < (3, 0):
-            # In python 2, map returns a list
-            num_only = iter(num_only)
         out = ''.join(next(num_only) if s == '#' else s for s in self.fmt)
         if __debug__:
             # check that all digits where printed
@@ -231,23 +216,13 @@ class EAN(object):
         return out
 
     def __repr__(self):
-        return "<{cls}: {s}>".format(cls=self.__class__.__name__, s=str(self))
+        return f"<{self.__class__.__name__}: {str(self)}>"
 
     def __hash__(self):
         return hash(str(self))
 
     def bcd(self):
         """Return a binary-coded bytes object with this EAN"""
-        if sys.version_info < (3, 0):
-            # python 2
-            bcd = ''
-            digits = iter((0,) + self._internal)
-            for d1 in digits:
-                d0 = next(digits)
-                bcd += chr(d1 * 16 + d0)
-            bcd = bcd[::-1]
-            return bcd
-
         digits_string = ''.join(str(d) for d in self._internal)
         # fromhex requires an even number of digits
         bcd = bytes.fromhex('0' + digits_string)

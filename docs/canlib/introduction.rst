@@ -16,7 +16,7 @@ Let's start with a simple example::
   ch = canlib.openChannel(
       channel=0,
       flags=canlib.Open.EXCLUSIVE,
-      bitrate=canlib.canBITRATE_250K
+      bitrate= canlib.can_BITRATE_250K,
   )
 
   # Set the CAN bus driver type to NORMAL.
@@ -45,11 +45,11 @@ canlib Core API Calls
 The following calls can be considered the "core" of canlib as they are essential
 for almost any program that uses the CAN bus:
 
-* `canlib.canlib.openChannel` and `canlib.canlib.Channel.close`
+* `~canlib.canlib.openChannel` and `~canlib.canlib.Channel.close`
 
-* `canlib.canlib.Channel.busOn` and `canlib.canlib.Channel.busOff`
+* `~canlib.canlib.Channel.busOn` and `~canlib.canlib.Channel.busOff`
 
-* `canlib.canlib.Channel.read`
+* `~canlib.canlib.Channel.read`
 
-* `canlib.canlib.Channel.write` and `canlib.canlib.Channel.writeSync`
+* `~canlib.canlib.Channel.write` and `~canlib.canlib.Channel.writeSync`
 

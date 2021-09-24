@@ -13,11 +13,11 @@ defined in the variable `_messages`. This is a list of `Message` namedtuples
 that describes all the messages to be put in the database:
 
 * Their `name`, `id`, and `dlc` fields are passed to
-  `canlib.kvadblib.Dbc.new_message`.
+  `~canlib.kvadblib.Dbc.new_message`.
 
 * Their `signals` attribute is a list of `Signal` or `EnumSignal`
   namedtuples. All their fields will be passed to
-  `canlib.kvadblib.Dbc.new_signal`.
+  `~canlib.kvadblib.Dbc.new_signal`.
 
 
 Sample Output

@@ -18,8 +18,8 @@ def test_kme(datadir, tmpdir):
     ml_src.kmeOpenFile(str(src_name), filetype=kme_type)
     ml_dst.kmeCreateFile(str(dst_name), filetype=kme_type)
     num_events = ml_src.kmeCountEvents()
-    print('{} contains about {} events.'.format(src_name, num_events))
-    for i in range(num_events):
+    print(f'{src_name} contains about {num_events} events.')
+    for _ in range(num_events):
         logevent = ml_src.kmeReadEventLogFormat()
         if logevent is None:
             break

@@ -115,17 +115,17 @@ def attr_replaced(original, replacement):
 
     def fget(self):
         manual_warn(
-            "Accessing {o} is deprecated, use {r} instead".format(o=original, r=replacement)
+            f"Accessing {original} is deprecated, use {replacement} instead"
         )
         return getattr(self, replacement)
 
     def fset(self, val):
         manual_warn(
-            "Accessing {o} is deprecated, use {r} instead".format(o=original, r=replacement)
+            f"Accessing {original} is deprecated, use {replacement} instead"
         )
         setattr(self, replacement, val)
 
-    doc = "Deprecated name for `%s`" % replacement
+    doc = f"Deprecated name for `{replacement}`"
 
     return property(fget=fget, fset=fset, doc=doc)
 
@@ -144,10 +144,7 @@ def class_replaced(original, new, replacement=None):
 
     def init_moved_class(self, *args, **kwargs):
         manual_warn(
-            "{old} is deprecated, please use {new} instead".format(
-                old=original,
-                new=replacement,
-            )
+            f"{original} is deprecated, please use {replacement} instead"
         )
         return new.__init__(self, *args, **kwargs)
 
@@ -157,16 +154,14 @@ def class_replaced(original, new, replacement=None):
 
     docparagraph = textwrap.fill(docparagraph, width=79, subsequent_indent="    ")
 
-    docstring = "Deprecated name for `{new}`\n\n{para}\n\n    ".format(
-        para=docparagraph, new=replacement
-    )
+    docstring = f"Deprecated name for `{replacement}`\n\n{docparagraph}\n\n    "
 
     newcls = type(original, (new, object), {'__init__': init_moved_class, '__doc__': docstring})
 
     return newcls
 
 
-class deprecated(object):
+class deprecated:
     """Decorator for deprecating functions
 
     Also provides several class methods for alternate ways to wrap functions

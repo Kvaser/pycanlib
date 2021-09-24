@@ -10,7 +10,7 @@ from .exceptions import KvdBufferTooSmall
 
 
 # qqqmac replace with global version class
-class kvadbVersion(object):
+class kvadbVersion:
     """
     Class that holds kvadblib version number.
 
@@ -25,7 +25,7 @@ class kvadbVersion(object):
         """
         Presents the version number as 'major.minor.build'.
         """
-        return "%d.%d.%d" % (self.major, self.minor, self.build)
+        return f"{self.major}.{self.minor}.{self.build}"
 
 
 def bytes_to_dlc(num_bytes, protocol):

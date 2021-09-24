@@ -45,7 +45,7 @@ def extract_signals_phys(db, frame):
         return {}
 
     if (bmsg._message.dlc != bmsg._frame.dlc):
-        print("\t<<< Could not interpret message because DLC does not match for frame with id %s >>>" % frame.id)
+        print(f"\t<<< Could not interpret message because DLC does not match for frame with id {frame.id} >>>")
         print(f"\t\t- DLC (database): {bmsg._message.dlc} vs DLC (received frame): {bmsg._frame.dlc}")
         return {}
 

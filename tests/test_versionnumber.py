@@ -63,7 +63,7 @@ def test_VersionNumber_init(v_class):
     )
     for kwargs in invalid_kwargs:
         with pytest.raises(TypeError):
-            print(v_class(**kwargs), '(%s)' % kwargs)
+            print(v_class(**kwargs), f'({kwargs})')
 
     # python 2 does not support keyword-only arguments
     with pytest.raises(TypeError):

@@ -1,3 +1,4 @@
+import sys
 import ctypes as ct
 from collections import namedtuple
 
@@ -16,7 +17,13 @@ def _get_tx_interval(ioc):
     )
 
 
-_tx_interval_range = range(0, 0xFFFFFFFF)
+# In Python 2, xrange requires its arguments to fit into a C long (sys.maxint, which is 32bit on 64bit windows)
+# https://stackoverflow.com/questions/42256542/python-overflow-error-int-too-large-to-convert-to-c-long
+# In 32 bit Python 3.6, using range(0, 4294967295),  we got "OverflowError: Python int too large to convert to C ssize_t"
+try:
+    _tx_interval_range = range(0, 0xFFFFFFFF)
+except OverflowError:
+    _tx_interval_range = range(0, sys.maxint)
 
 
 # wintypes does not exist on Linux
@@ -32,7 +39,8 @@ ATTRIBUTES = {
         setitem=IOControlItem.SET_TIMER_SCALE,
         ctype=ct.c_uint32,
         ptype=int,
-        __doc__="An `int` with the time-stamp clock resolution in microseconds.",
+        __doc__="An `int` with the time-stamp clock resolution in microseconds."
+                " Used e.g. in `.Channel.read()`. Default is 1000, i.e. 1 ms.",
     ),
     'txack': Property(
         getitem=IOControlItem.GET_TXACK,

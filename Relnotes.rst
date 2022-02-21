@@ -7,40 +7,92 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.20.360  (15-FEB-2022)
+===========================================================================
+* General:
+
+  - Python 3.10 is now officially supported.
+
+  - Fixed `canlib.connected_devices()` to ignore removed devices, instead of
+    raising an exception.
+
+  - Added `.canlib.exceptions.CanGeneralError` to documentation, noting that
+    this should *not* be caught explicitly.
+
+  - Extracted tutorial sample code into standalone files, updated bus
+    parameters in CAN FD code to work with U100.
+
+* `.canlib`:
+
+  - Removed internal attribute `Channel.flags`, use
+    `.canlib.ChannelData.channel_flags` instead.
+
+  - Corrected return value of `~canlib.canlib.Channel.is_can_fd` when channel
+    was opened explicitly using `~canlib.canlib.Open.NO_INIT_ACCESS`. Now
+    also always returns a `bool`.
+
+  - Added `.ChannelData.bus_param_limits` (wraps canCHANNELDATA_BUS_PARAM_LIMITS)
+
+  - Added t Programming chapter to documentation.
+
+  - Corrected name of bitrate constant inside table in "Set CAN Bitrate" chapter.
+
+* `.linlib`:
+
+  - Deprecated `~.linlib.Channel.getCanHandle`, use `~.linlib.Channel.get_can_channel`
+    instead.
+
+* `.kvlclib`:
+
+  - `.kvlclib.WriterFormat.getPropertyDefault` and
+    `.kvlclib.ReaderFormat.getPropertyDefault` now returns `None` if property do
+    not support get/set, as e.g. `~.kvlclib.Property.SIGNAL_BASED`.
+  - Added support for experimental format KME60
+  - Clarified usage of `.kvlclib.Converter.addDatabaseFile()`.
+
+* `.kvadblib`:
+
+  - Added support for Attribute Definition of type HEX,
+    `.kvadblib.AttributeType.HEX`.
+  - Comment and Unit on a signal now converts cp1252 coding to utf-8.
+  - Added support for experimental format KME60
+
+
 New Features and Fixed Problems in V1.19.205  (13-SEP-2021)
 ===========================================================================
 * General:
 
   - Updated docstrings, mainly of lower level classes.
+  - Modernized code, mainly conversions to f-strings.
 
-* `canlib.dllLoader`:
+* `.canlib.dllLoader`:
 
   - Setting the environment variable `READTHEDOCS` == `True` inhibits loading
     of shared libraries. Used e.g. when building documentation on ReadTheDocs.
 
-* `canlib.kvamemolibxml`:
+* `.canlib.kvamemolibxml`:
 
   - The functions `~canlib.kvamemolibxml.xmlGetLastError`,
     `~canlib.kvamemolibxml.xmlGetValidationWarning` and
     `~canlib.kvamemolibxml.xmlGetValidationError` now returns enum classes when
     possible.
 
-* `canlib.kvrlib`:
+* `.canlib.kvrlib`:
 
     - Minor readability updates for `kvrDeviceInfo.__str__`
 
 New Features and Fixed Problems in V1.18.846  (25-MAY-2021)
 ===========================================================================
-* `canlib.canlib`:
+* `.canlib.canlib`:
 
   - Added LEDs 4 through 11 to `canlib.canlib.LEDAction` (needs CANlib v5.19+).
 
-* `canlib.kvadblib`:
+* `.canlib.kvadblib`:
 
   - Default value of EnumAttribute is now returned as `int`
   - Added wrapper for kvaDbGetMsgByPGNEx
 
-* `canlib.kvlclib`:
+* `.canlib.kvlclib`:
 
   - Added wrapper for kvlcFeedLogEvent
 
@@ -49,7 +101,7 @@ New Features and Fixed Problems in V1.18.846  (25-MAY-2021)
 
 New Features and Fixed Problems in V1.17.748  (16-FEB-2021)
 ===========================================================================
-* `canlib.canlib`:
+* `.canlib.canlib`:
 
   - Corrected `~canlib.canlib.Channel.set_bus_params_tq` regarding type of flag
     attribute.
@@ -63,14 +115,14 @@ New Features and Fixed Problems in V1.17.748  (16-FEB-2021)
   - Added enum member BITRATE_8M_80P to `~canlib.canlib.BitrateFD` and constant
     canlib.canFD_BITRATE_8M_80P.
 
-* `canlib.kvlclib`
+* `.canlib.kvlclib`
 
   - Added exception `~canlib.kvlclib.KvlcFileExists`.
 
 
 New Features and Fixed Problems in V1.16.588  (09-SEP-2020)
 ===========================================================================
-* `canlib.canlib`:
+* `.canlib.canlib`:
 
   - Added support for new bus parameter API in CANlib v.5.34. See section
     :ref:`set_can_bitrate` for more information.
@@ -82,7 +134,7 @@ New Features and Fixed Problems in V1.16.588  (09-SEP-2020)
     keyword arguments
   - Added new Open flag `canlib.canlib.Open.NOFLAG` for parameter `flags`.
 
-* `canlib.kvadblib`:
+* `.canlib.kvadblib`:
 
   - Corrected `~canlib.kvadblib.Dbc.interpret` when looking for CAN messages
     with extended id.
@@ -93,7 +145,7 @@ New Features and Fixed Problems in V1.16.588  (09-SEP-2020)
     If using messages with extended id:s, `~canlib.kvadblib.MessageFlags.EXT`
     should be set on `flags`.
 
-* `canlib.kvlclib`:
+* `.canlib.kvlclib`:
 
   - The `file_format` parameter in `canlib.kvlclib.Converter.setInputFile` now
     accepts `~canlib.kvlclib.ReaderFormat` as well.
@@ -114,7 +166,7 @@ New Features and Fixed Problems in V1.14.428  (02-APR-2020)
 
 New Features and Fixed Problems in V1.13.390  (24-FEB-2020)
 ===========================================================================
-* `canlib.canlib`:
+* `.canlib.canlib`:
 
   - Added `~canlib.canlib.HandleData` to wrap canGetHandleData. Also added
     `~canlib.canlib.Channel.channel_data` as a helper function.
@@ -125,7 +177,7 @@ New Features and Fixed Problems in V1.13.390  (24-FEB-2020)
     if the `channel_number` attribute was larger than the total number of
     available CANlib channels, regardles of if the device was connected or not.
 
-* `canlib`:
+* `.canlib`:
 
   - Corrected `~canlib.Frame` comparison (!=) with other types, e.g. None
 

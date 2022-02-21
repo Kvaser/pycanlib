@@ -5,6 +5,7 @@ import time
 
 from .. import deprecation
 from . import constants as const
+from .enums import FileType
 from .events import memoLogEventEx
 from .exceptions import KvmNoLogMsg, kvm_error
 from .wrapper import dll
@@ -464,7 +465,7 @@ class KvmLib:
         self.handle = None
 
     @deprecation.deprecated.favour("kvmlib.openKme")
-    def kmeOpenFile(self, filename, filetype=const.kvmFILE_KME40):
+    def kmeOpenFile(self, filename, filetype=FileType.KME40):
         if self.kmeHandle is not None:
             self.kmeCloseFile()
         status_p = ct.c_int32()
@@ -491,7 +492,7 @@ class KvmLib:
         return type.value
 
     @deprecation.deprecated.favour("kvmlib.createKme")
-    def kmeCreateFile(self, filename, filetype=const.kvmFILE_KME40):
+    def kmeCreateFile(self, filename, filetype=FileType.KME40):
         if self.kmeHandle is not None:
             self.kmeCloseFile()
         status_p = ct.c_int32()

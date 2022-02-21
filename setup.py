@@ -3,7 +3,7 @@ from setuptools import Command, find_packages, setup
 pytest = "pytest >=3.3.0"
 pytest_cov = "pytest-cov >=2.5.1"
 pandas = "pandas >=1.2.3"
-sphinx = "sphinx >=1.6.5, < 2.0.0"
+sphinx = "sphinx >=1.6.5"
 sphinx_rtd_theme = "sphinx_rtd_theme >=0.2.4"
 
 
@@ -72,6 +72,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
     keywords='development',
     packages=find_packages(exclude=['tests']),

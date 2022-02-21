@@ -216,7 +216,7 @@ class EAN:
         return out
 
     def __repr__(self):
-        return f"<{self.__class__.__name__}: {str(self)}>"
+        return f"{self.__class__.__name__}('{str(self)}')"
 
     def __hash__(self):
         return hash(str(self))

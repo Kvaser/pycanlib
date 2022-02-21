@@ -117,6 +117,8 @@ class WriterFormat:
                 buf = wr_property['type']
                 wr_property = wr_property['value']
             else:
+                if _PROPERTY_TYPE[wr_property] is None:
+                    return None
                 buf = _PROPERTY_TYPE[wr_property]()
         dll.kvlcGetWriterPropertyDefault(self.id_, wr_property, ct.byref(buf), ct.sizeof(buf))
         return buf.value

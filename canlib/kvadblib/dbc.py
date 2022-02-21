@@ -68,7 +68,8 @@ class Dbc:
         if name:
             name = name.encode('utf-8')
         if filename:
-            filename = filename.encode('utf-8')
+            # use str() here to allow for Path objects as filename
+            filename = str(filename).encode('utf-8')
         try:
             dll.kvaDbCreate(self._handle, name, filename)
         except KvdDbFileParse:

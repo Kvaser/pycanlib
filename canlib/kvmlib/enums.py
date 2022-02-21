@@ -60,6 +60,7 @@ class FileType(CEnum):
     KME25 = 1  #: Deprecated format, use KME40
     KME40 = 2  #: Kvaser binary format (KME 4.0)
     KME50 = 3  #: Kvaser binary format (KME 5.0)
+    KME60 = 4  #: Kvaser binary format (KME 6.0) (Experimental)
 
 
 class LoggerDataFormat(CEnum):

@@ -191,7 +191,11 @@ class Signal:
         """`str`: Get the signal comment."""
         buf = ct.create_string_buffer(255)
         dll.kvaDbGetSignalComment(self._handle, buf, ct.sizeof(buf))
-        return buf.value.decode('utf-8')
+        try:
+            comment = buf.value.decode('utf-8')
+        except UnicodeDecodeError:
+            comment = buf.value.decode('cp1252')
+        return comment
 
     @comment.setter
     def comment(self, value):
@@ -304,7 +308,11 @@ class Signal:
         """`str`: Get the signal unit"""
         buf = ct.create_string_buffer(255)
         dll.kvaDbGetSignalUnit(self._handle, buf, ct.sizeof(buf))
-        return buf.value.decode('utf-8')
+        try:
+            unit = buf.value.decode('utf-8')
+        except UnicodeDecodeError:
+            unit = buf.value.decode('cp1252')
+        return unit
 
     @unit.setter
     def unit(self, value):

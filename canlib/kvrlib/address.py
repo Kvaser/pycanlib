@@ -7,7 +7,7 @@ from .structures import kvrAddress
 class Address(namedtuple('_Address', "type address")):
     """An IP or MAC address
 
-    Attributes:
+    Args:
         type (`~canlib.kvrlib.AddressType`): Address type.
         address (`list[int]`): A list of integers, the numbers in the address.
 

@@ -95,7 +95,7 @@ class Memorator(KmfSystem):
 
     See the documentation of `.MountedLog` for all available operations.
 
-    Attributes:
+    Args:
 
         channel_number (`int`): The channel number that was used to connect to
             this memorator.

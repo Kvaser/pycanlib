@@ -1,2 +1,3 @@
 include README.rst
 include Relnotes.rst
+include LICENSE

@@ -11,7 +11,7 @@ from . import constants as const
 from . import iopin, wrapper
 from .busparams import BusParamsTq
 from .channeldata import HandleData
-from .enums import (DeviceMode, Driver, MessageFlag, Open,
+from .enums import (ChannelFlags, DeviceMode, Driver, MessageFlag,
                     ScriptRequest, ScriptStatus, ScriptStop, Stat)
 from .envvar import EnvVar
 from .exceptions import CanError
@@ -96,19 +96,20 @@ def openChannel(channel, flags=0, bitrate=None, data_bitrate=None):
 
     """
     ch = Channel(channel, flags)
-    if not ch.is_can_fd() and data_bitrate is not None:
+    is_can_fd = ch.is_can_fd()
+    if not is_can_fd and data_bitrate is not None:
         ch.close()
         raise TypeError("data_bitrate requires CAN FD flag.")
 
     if bitrate is not None:
-        if ch.is_can_fd() and data_bitrate is None:
+        if is_can_fd and data_bitrate is None:
             ch.close()
             raise ValueError("data_bitrate must be specified for CAN FD channels.")
         if isinstance(bitrate, BusParamsTq):
             ch.set_bus_params_tq(bitrate, data_bitrate)
         else:
             ch.setBusParams(bitrate)
-            if ch.is_can_fd():
+            if is_can_fd:
                 ch.setBusParamsFd(data_bitrate)
 
     return ch
@@ -166,14 +167,20 @@ class Channel:
         "Firmware version: {}.{}.{}"
     )
 
+    @classmethod
+    def _from_handle(cls, handle):
+        obj = cls.__new__(cls)
+        super().__init__(obj)
+        obj.index = None
+        obj.handle = handle
+        obj.envvar = EnvVar(obj)
+        obj._device = None
+        return obj
+
     def __init__(self, channel_number, flags=0):
         self.index = channel_number
         # Initialize handle here in case canOpenChannel triggers an exception.
         self.handle = -1
-        if flags == 0:
-            self.flags = Open.NOFLAG
-        else:
-            self.flags = flags
         self.handle = dll.canOpenChannel(channel_number, flags)
         self.envvar = EnvVar(self)
         self._device = None
@@ -429,8 +436,8 @@ class Channel:
         If freq is any other value, no default values are supplied by the
         library.
 
-        For finding out whether a channel is opened using `~Open.CAN_FD`
-        or `~Open.CAN_FD_NONISO` flags, see `~Channel.is_can_fd`
+        For finding out if a channel was opened as CAN FD, use
+        `~Channel.is_can_fd()`
 
         Args:
             freq_brs: Bitrate in bit/s.
@@ -446,8 +453,8 @@ class Channel:
         """
         if not self.is_can_fd():
             raise TypeError(
-                    "setBusParamsFd() is only supported on channels "
-                    "opened with the CAN_FD or CAN_FD_NONISO flags."
+                "setBusParamsFd() is only supported on channels "
+                "opened with the CAN_FD or CAN_FD_NONISO flags."
             )
         dll.canSetBusParamsFd(self.handle, freq_brs, tseg1_brs, tseg2_brs, sjw_brs)
 
@@ -463,8 +470,8 @@ class Channel:
         If freq is any other value, no default values are supplied by the
         library.
 
-        For finding out whether a channel is opened using `~Open.CAN_FD`
-        or `~Open.CAN_FD_NONISO` flags, see `~Channel.is_can_fd()`
+        For finding out if a channel was opened as CAN FD, use
+        `~Channel.is_can_fd()`
 
         Returns: A tuple containing:
             *freq_brs*: Bitrate in bit/s.
@@ -480,8 +487,8 @@ class Channel:
         """
         if not self.is_can_fd():
             raise TypeError(
-                    "getBusParamsFd() is only supported on channels "
-                    "opened with the CAN_FD or CAN_FD_NONISO flags."
+                "getBusParamsFd() is only supported on channels "
+                "opened with the CAN_FD or CAN_FD_NONISO flags."
             )
         freq_brs = ct.c_long()
         tseg1_brs = ct.c_uint()
@@ -587,11 +594,12 @@ class Channel:
         .. versionadded:: 1.17
 
         """
-        if self.is_can_fd() and freq_d is None:
+        is_can_fd = self.is_can_fd()
+        if is_can_fd and freq_d is None:
             raise ValueError("Data bitrate must be specified for CAN FD channels.")
 
         nominal = CanBusParamsTq()
-        if self.is_can_fd():
+        if is_can_fd:
             data = CanBusParamsTq()
             dll.kvBitrateToBusParamsFdTq(
                 self.handle,
@@ -841,6 +849,9 @@ class Channel:
         Reads a message from the receive buffer. If no message is available,
         the function waits until a message arrives or a timeout occurs.
 
+        The unit of the returned `.Frame.timestamp` is configurable using
+        `Channel.iocontrol.timer_scale`, default is 1 ms.
+
         Note:
 
             If you are using the same channel via multiple handles, the default
@@ -906,6 +917,9 @@ class Channel:
         will be removed in the receive buffer. If no message with the specified
         identifier is available, the function returns immediately with an error
         code.
+
+        The unit of the returned `.Frame.timestamp` is configurable using
+        `Channel.iocontrol.timer_scale`, default is 1 ms.
 
         Returns:
             `canlib.Frame`
@@ -1624,5 +1638,5 @@ class Channel:
         .. versionadded: 1.17
 
         """
-
-        return self.flags & Open.CAN_FD or self.flags & Open.CAN_FD_NONISO
+        flags = self.channel_data.channel_flags
+        return ChannelFlags.IS_CANFD in flags

@@ -19,7 +19,7 @@ def envvar_t(script_no_pair):
         envvar_t.print_output()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def pycan_ch(script_no_pair):
     channel_number = script_no_pair[1]
     with canlib.openChannel(channel_number, bitrate=BITRATE, flags=CHANNEL_FLAGS) as pycan_ch:

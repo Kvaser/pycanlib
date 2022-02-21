@@ -48,6 +48,16 @@ class CanBusParamsTq(ct.Structure):
             prop=self.prop,
         )
 
+    def _asdict(self):
+        return {
+            'tq': self.tq,
+            'phase1': self.phase1,
+            'phase2': self.phase2,
+            'sjw': self.sjw,
+            'prescaler': self.prescaler,
+            'prop': self.prop,
+        }
+
 
 class CanBusStatistics(ct.Structure):
     """Result from reading bus statistics using `canlib.canlib.Channel.get_bus_statistics`.
@@ -72,4 +82,14 @@ class CanBusStatistics(ct.Structure):
         ('errFrame', ct.c_ulong),
         ('busLoad', ct.c_ulong),
         ('overruns', ct.c_ulong),
+    ]
+
+
+class CanBusParamLimits(ct.Structure):
+    _fields_ = [
+        ('version', ct.c_int),  # Version of struct, currently 2
+        ('arbitration_min', CanBusParamsTq),
+        ('arbitration_max', CanBusParamsTq),
+        ('data_min', CanBusParamsTq),
+        ('data_max', CanBusParamsTq),
     ]

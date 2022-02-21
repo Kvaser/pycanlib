@@ -10,6 +10,7 @@ from .attribute import Attribute
 from .attributedef import (AttributeDefinition, DefaultDefinition,
                            EnumDefaultDefinition, EnumDefinition,
                            FloatDefinition, IntegerDefinition,
+                           HexDefinition,
                            MinMaxDefinition, StringDefinition)
 from .bound_message import BoundMessage
 from .bound_signal import BoundSignal

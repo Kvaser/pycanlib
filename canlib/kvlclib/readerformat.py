@@ -103,6 +103,8 @@ class ReaderFormat:
         if rd_property is None:
             buf = ct.c_bool()
         else:
+            if _PROPERTY_TYPE[rd_property] is None:
+                return None
             buf = _PROPERTY_TYPE[rd_property]()
         dll.kvlcGetReaderPropertyDefault(self.id_, rd_property, ct.byref(buf), ct.sizeof(buf))
         return buf.value

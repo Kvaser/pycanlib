@@ -381,6 +381,112 @@ class ClockInfo:
         return self.numerator / self.denominator * 10 ** self.power_of_ten
 
 
+class BusParamTqLimits:
+    """Hold min and max values for both arbitration and data phase.
+
+    The ``tq`` field is ignored during validation since
+    `.ChannelData.bus_param_limits` always returns zero for this field.
+
+    If ``prop`` is zero for both ``min`` and ``max`` values, the ``phase1``
+    limit applies to (``phase1`` + ``prop``). This is used when a device
+    does not distinguish between phase segment one and the propagation
+    segment.
+
+    Example usage:
+
+        >>> ch = canlib.openChannel(channel=0)
+        >>> limits = canlib.ChannelData(channel_number=0).bus_param_limits
+        >>> limits.arbitration_max._asdict()
+        {'tq': 0, 'phase1': 32, 'phase2': 32, 'sjw': 32, 'prescaler': 1024, 'prop': 64}
+        >>> bp_tq = canlib.busparams.BusParamsTq(tq=121, phase1=100, phase2=10, sjw=10,
+        ... prescaler=10, prop=10)
+        >>> limits.validate(bp_tq)
+        ValueError: The following does not match:
+          Arbitration phase1: 1 <= 100 <= 32
+
+    NOTE: This class is preliminary and may change!
+
+    .. versionadded:: 1.20
+
+    """
+    def __init__(self, arbitration_min, arbitration_max, data_min, data_max):
+        self.arbitration_min = arbitration_min
+        self.arbitration_max = arbitration_max
+        self.data_min = data_min
+        self.data_max = data_max
+
+    def __str__(self):
+        txt = (f"BusParamTqLimits(arbitration_min={self.arbitration_min._asdict()},"
+               f" arbitration_max={self.arbitration_max._asdict()},"
+               f" data_min={self.data_min._asdict()}, data_max={self.data_max._asdict()}")
+        return txt
+
+    def _validation_error_text(self, value, minimum, maximum):
+        """Validate that minimum <= value <= maximum
+
+        Returns empty string if validation suceeds, otherwise returns a string
+        with the comparison done.
+
+        """
+        if minimum <= value <= maximum:
+            message = ""
+        else:
+            message = f"{minimum} <= {value} <= {maximum}"
+        return message
+
+    def validate(self, bus_param, data_param=None):
+        """Validates busparameters for arbitration and data
+
+        Raises a `ValueError` if busparameters for arbritation and data is not
+        within current limits. The failed validation is provided as an explanation::
+
+            ValueError: The following does not match:
+              Arbitration phase1: 11 <= 1 <= 21
+
+        """
+        error_message = ""
+        params = ["phase1", "phase2", "sjw", "prescaler", "prop"]
+        if self.arbitration_min.prop == self.arbitration_max.prop == 0:
+            is_prop_limit_zero = True
+        else:
+            is_prop_limit_zero = False
+        if bus_param is not None:
+            for attribute in params:
+                value = getattr(bus_param, attribute)
+                if is_prop_limit_zero and attribute == "phase1":
+                    value += bus_param.prop
+                if is_prop_limit_zero and attribute == "prop":
+                    continue
+
+                message = self._validation_error_text(
+                    value=value,
+                    minimum=getattr(self.arbitration_min, attribute),
+                    maximum=getattr(self.arbitration_max, attribute),
+                )
+                if message:
+                    error_message += f"\n  Arbitration {attribute}: {message}"
+        if self.data_min.prop == self.data_max.prop == 0:
+            is_prop_limit_zero = True
+        else:
+            is_prop_limit_zero = False
+        if data_param is not None:
+            for attribute in params:
+                value = getattr(data_param, attribute)
+                if is_prop_limit_zero and attribute == "phase1":
+                    value += data_param.prop
+                if is_prop_limit_zero and attribute == "prop":
+                    continue
+                message = self._validation_error_text(
+                    value=value,
+                    minimum=getattr(self.data_min, attribute),
+                    maximum=getattr(self.data_max, attribute),
+                )
+                if message:
+                    error_message += f"\n  Data {attribute}: {message}"
+        if error_message:
+            raise ValueError("The following does not match:" + error_message)
+
+
 class BusParamsTq:
     """Holds parameters for busparameters in number of time quanta.
 

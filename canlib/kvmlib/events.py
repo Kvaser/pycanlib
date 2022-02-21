@@ -161,8 +161,8 @@ class RTCEvent(LogEvent):
             calendar_time = int(self.calendartime.timestamp())  # only whole seconds
         except AttributeError:
             calendar_time = int(
-                    time.mktime(self.calendartime.timetuple())
-                    + self.calendartime.microsecond / 1000000.0
+                time.mktime(self.calendartime.timetuple())
+                + self.calendartime.microsecond / 1000000.0
             )
 
         rtc = memoLogRtcClockEx(
@@ -424,7 +424,7 @@ class memoLogEventEx(ct.Structure):
         if type == self.MEMOLOG_TYPE_CLOCK:
             cTime = self.event.rtc.calendarTime
             text = "t:%11f " % (self.event.rtc.timeStamp / 1000000000.0)
-            text += "DateTime: %s (%d)\n" % (datetime.datetime.fromtimestamp(cTime), cTime)
+            text += "DateTime: %s (%d)" % (datetime.datetime.fromtimestamp(cTime), cTime)
 
         if type == self.MEMOLOG_TYPE_MSG:
             timestamp = self.event.msg.timeStamp
@@ -457,7 +457,7 @@ class memoLogEventEx(ct.Structure):
             text += "type: 0x%x, " % (ttype)
             text += "trigNo: 0x%02x, " % (trigNo)
             text += "pre-trigger: %d, " % (preTrigger)
-            text += "post-trigger: %d)\n" % (postTrigger)
+            text += "post-trigger: %d)" % (postTrigger)
 
         if type == self.MEMOLOG_TYPE_VERSION:
             lioMajor = self.event.ver.lioMajor

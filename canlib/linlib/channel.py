@@ -1,7 +1,8 @@
 import ctypes as ct
 from collections import namedtuple
 
-from .. import VersionNumber
+from .. import deprecation, VersionNumber
+from .. import canlib
 from ..frame import LINFrame
 from .enums import ChannelType, MessageFlag, Setup
 from .structures import MessageInfo
@@ -126,8 +127,29 @@ class Channel:
             dll.linClose(self.handle)
             self.handle = None
 
+    def get_can_channel(self):
+        """Return the CAN Channel used by this LIN Channel
+
+        Note:
+
+            Since the returned `.canlib.Channel` is owned and controlled
+            by linlib, this function should be used with great care.
+
+        .. versionadded:: 1.20
+
+        """
+        can_hnd = ct.c_uint()
+        dll.linGetCanHandle(self.handle, ct.byref(can_hnd))
+        return canlib.Channel._from_handle(can_hnd.value)
+
+    @deprecation.deprecated.favour("get_can_channel")
     def getCanHandle(self):
-        """Return the CAN handle given an open LIN handle"""
+        """Return the CAN handle given an open LIN handle
+
+        .. deprecated:: 1.20
+           Use `.get_can_channel` instead.
+
+        """
         can_handle = ct.c_uint()
         dll.linGetCanHandle(self.handle, ct.byref(can_handle))
         return can_handle.value

@@ -49,6 +49,14 @@ BusParamsTq
     :undoc-members:
 
 
+BusParamTqLimits
+----------------
+
+.. autoclass:: canlib.canlib.busparams.BusParamTqLimits
+    :members:
+    :undoc-members:
+
+
 BitrateSetting
 ~~~~~~~~~~~~~~
 .. autoclass:: canlib.canlib.busparams.BitrateSetting

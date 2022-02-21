@@ -7,7 +7,7 @@ tmp_dir = "tmp"
 
 def setup_infile(datadir, converter):
     inf = os.path.join(datadir, "logfile001.kme50")
-    converter.setInputFile(inf, kvlclib.FILE_FORMAT_KME50)
+    converter.setInputFile(inf, kvlclib.FileFormat.KME50)
 
 
 def setup_properties(converter):

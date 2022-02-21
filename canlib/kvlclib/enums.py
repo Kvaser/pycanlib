@@ -43,6 +43,7 @@ class FileFormat(CEnum):
     KME40 = 7  #: Input and output file format.
     VECTOR_BLF = 8  #: Output file format.
     KME50 = 9  #: Input and output file format.
+    KME60 = 10  # Input and output file format.
     CSV_SIGNAL = 100  #: Output file format.
     MDF = 101  #: Output file format.
     MATLAB = 102  #: Output file format.
@@ -53,6 +54,8 @@ class FileFormat(CEnum):
     MDF_4X = 107  #: Output file format.
     MDF_4X_SIGNAL = 108  #: Output file format.
     VECTOR_BLF_FD = 109  #: Input and output format.
+    DIADEM = 110  #: Output file format.
+    RPCIII = 111  #: Output file format.
     XCP = 200  #: Output file format.
     FAMOS_XCP = 201  #: Output file format.
     DEBUG = 1000  #: Reserved for debug.
@@ -63,10 +66,18 @@ class ChannelMask(CFlag):
 
     The `ChannelMask` is used in `Converter.addDatabaseFile` to indicate which channels to use.
 
+    Multiple channels may be specified using `|`, e.g. to specify channel one and three use::
+
+        channel_one_and_three = ChannelMask.ONE | ChannelMask.THREE
+
+    .. versionchanged:: 1.20
+        Added `ALL` as a convenience.
+
     """
 
-    ONE = 0x01
-    TWO = 0x02
-    THREE = 0x04
-    FOUR = 0x08
-    FIVE = 0x10
+    ONE = 0x01  #: Mask for first channel
+    TWO = 0x02  #: Mask for second channel
+    THREE = 0x04  #: Mask for third channel
+    FOUR = 0x08  #: Mask for fourth channel
+    FIVE = 0x10  #: Mask for fifth channel
+    ALL = 0xffff  #: Mask for all channels

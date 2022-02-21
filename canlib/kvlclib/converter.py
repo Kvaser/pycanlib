@@ -22,7 +22,7 @@ class Converter:
     converter object.
 
     Args:
-        filename (string): Name of output file
+        filename (`str`): Name of output file
         file_format (`.FileFormat` | `.WriterFormat` ): A supported output format
 
     Note:
@@ -53,6 +53,10 @@ class Converter:
         events against all entries in the database and write signals to the
         output file.
 
+        Args:
+            filename (`str`): Path to database file (.dbc)
+            channel_mask (`ChannelMask`): Channels to use database on
+
         """
         filename = os.path.realpath(filename)
         ct_filename = ct.c_char_p(filename.encode('utf-8'))
@@ -65,6 +69,10 @@ class Converter:
 
         Note that the output format must support the property
         `.Property.ATTACHMENTS`.
+
+        Args:
+            filename (`str`): Path to file to be attached
+
         """
         filename = os.path.realpath(filename)
         ct_filename = ct.c_char_p(filename.encode('utf-8'))
@@ -91,10 +99,10 @@ class Converter:
     def feedNextFile(self):
         """Prepare for new file
 
-        Notify the converter that next event in kvlcFeedLogEvent() will come
+        Notify the converter that next event in `feedLogEvent()` will come
         from another file. Used when reading log files directly from device.
 
-        E.g. use this function with KVLC_FILE_FORMAT_MEMO_LOG when using
+        E.g. use this function with `FileFormat.MEMO_LOG` when using
         KVMLIB to read events from a Kvaser Memorator connected to USB.
 
         .. versionadded:: 1.18
@@ -138,7 +146,7 @@ class Converter:
         """Get current value for a writer property.
 
         Args:
-            wr_property (`.Property`): Writer property to be set
+            wr_property (`.Property`): Writer property to get
         """
         # Backward compatibility with deprecated kvlclib.PROPERTY_XXX
         if isinstance(wr_property, dict):
@@ -217,6 +225,12 @@ class Converter:
 
     @deprecation.deprecated.replacedby(isOutputFilenameNew)
     def IsOutputFilenameNew(self):
+        """Check if the converter has created a new file.
+
+        .. deprecated:: 1.5
+            Use `isOutputFilenameNew` instead.
+
+        """
         pass
 
     def isOverrunActive(self):
@@ -232,6 +246,12 @@ class Converter:
 
     @deprecation.deprecated.replacedby(isOverrunActive)
     def IsOverrunActive(self):
+        """Get overrun status.
+
+        .. deprecated:: 1.5
+            Use `isOverrunActive` instead.
+
+        """
         pass
 
     def resetOverrunActive(self):
@@ -249,7 +269,8 @@ class Converter:
         Truncation can also happen if `.Property.LIMIT_DATA_BYTES` is
         set to limit the number of data bytes in output.
 
-        Returns True if data has been truncated
+        Returns:
+            True if data has been truncated
 
         """
         truncated = ct.c_int()
@@ -258,6 +279,12 @@ class Converter:
 
     @deprecation.deprecated.replacedby(isDataTruncated)
     def IsDataTruncated(self):
+        """Get truncation status.
+
+        .. deprecated:: 1.5
+            Use `.isDataTruncated` instead.
+
+        """
         pass
 
     def resetStatusTruncated(self):
@@ -289,16 +316,20 @@ class Converter:
 
     @deprecation.deprecated.favour(".format.getPropertyDefault")
     def getPropertyDefault(self, wr_property):
-        """Get default value for a writer property."""
+        """Get default property.
+
+        .. deprecated:: 1.5
+            Use `.WriterFormat.getPropertyDefault` instead.
+
+        """
         return self.format.getPropertyDefault(wr_property)
 
     @deprecation.deprecated.favour(".format.isPropertySupported")
     def isPropertySupported(self, wr_property):
         """Check if specified wr_property is supported by the current format.
 
-        Retuns True if the property is supported by the current format.
+        .. deprecated:: 1.5
+            Use `.WriterFormat.isPropertySupported` instead.
 
-        Args:
-            wr_property (int): Any one of the defined PROPERTY_xxx
         """
         return self.format.isPropertySupported(wr_property)

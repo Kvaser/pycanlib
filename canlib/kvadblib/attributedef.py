@@ -39,6 +39,8 @@ class AttributeDefinition:
             cls_ = StringDefinition
         elif type.value == enums.AttributeType.ENUM:
             cls_ = EnumDefinition
+        elif type.value == enums.AttributeType.HEX:
+            cls_ = HexDefinition
         else:
             type = enums.AttributeType(type.value)
             raise NotImplementedError(f'{type.name} not implemented')
@@ -131,6 +133,19 @@ class IntegerDefinition(AttributeDefinition):
     @definition.setter
     def definition(self, value):
         dll.kvaDbSetAttributeDefinitionInt(self._handle, value.default, value.min, value.max)
+
+
+class HexDefinition(IntegerDefinition):
+    """Definition of an hex attribute.
+
+    Args:
+        db (`Dbc`): Database that holds attribute definitions
+        definition (`MinMaxDefinition`): Min, max and default values
+
+    .. versionadded:: 1.20
+
+    """
+    pass
 
 
 class StringDefinition(AttributeDefinition):

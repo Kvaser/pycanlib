@@ -60,6 +60,15 @@ def test_getChannelData(lin_no):
     assert all(isinstance(n, int) for n in ver_nums)
 
 
+def test_can_channel_data(master):
+    can_ch = master.get_can_channel()
+    assert can_ch.getBusOutputControl() == canlib.Driver.NORMAL
+    dev = can_ch.device()
+    assert "73-30130-" in str(dev.ean)
+    can_chd = can_ch.channel_data
+    assert "Hybrid" in can_chd.devdescr_ascii
+
+
 def test_getTransceiverData(lin_no):
     tdata = linlib.getTransceiverData(lin_no)
     print(tdata)

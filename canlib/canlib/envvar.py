@@ -3,7 +3,29 @@ from .exceptions import EnvvarNameError
 
 
 class DataEnvVar:
-    """Represent an environment variable declared as char"""
+    """Represent an environment variable declared as ``char*`` in t programs.
+
+    This attribute object behaves like an array of bytes:
+
+        >>> ch.envvar.DataVal[100:141]
+        b'ot working? Messages can be sent to and r'
+
+    The size of the array must match what was defined in the t program. One way
+    to do this is to left align the data and fill with zeros:
+
+        >>> data = 'My new data'.encode('utf-8')
+        >>> size = len(ch.envvar.DataVal)
+        >>> ch.envvar.DataVal = data.ljust(size, b'\\0')
+        >>> ch.envvar.DataVal[:15]
+        b'My new data\\x00\\x00\\x00\\x00'
+
+    Another way is to use slicing:
+
+        >>> ch.envvar.DataVal[3:6] = b'old'
+        >>> ch.envvar.DataVal[:15]
+        b'My old data\\x00\\x00\\x00\\x00'
+
+    """
 
     def __init__(self, channel, handle, name, size):
         self._channel = channel
@@ -74,7 +96,33 @@ class DataEnvVar:
 
 
 class EnvVar:
-    """Used to access environment variables"""
+    """Used to access environment variables in t programs.
+
+    The environment variables are accessed as an attribute with the same name
+    as declared in the t program. If we have a running t program, which has
+    defined the following environment variables::
+
+        envvar
+        {
+          int   IntVal;
+          float FloatVal;
+          char  DataVal[512];
+        }
+
+    We access the first two using `EnvVar`:
+
+        >>> ch.envvar.IntVal
+        0
+        >>> ch.envvar.IntVal = 3
+        >>> ch.envvar.IntVal
+        3
+        >>> ch.envvar.FloatVal
+        15.0
+
+
+    The third environment variable, declared as ``char*``, is accessed using `.DataEnvVar`.
+
+    """
 
     class Attrib:
         def __init__(self, handle=None, type_=None, size=None):

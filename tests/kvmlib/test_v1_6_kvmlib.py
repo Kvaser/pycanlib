@@ -12,7 +12,7 @@ def test_kme(datadir, tmpdir):
     ml_src = kvmlib.kvmlib()
     ml_dst = kvmlib.kvmlib()
     src_name = os.path.join(datadir, "short-burst", "logfile003.kme50")
-    kme_type = kvmlib.kvmFILE_KME50
+    kme_type = kvmlib.FileType.KME50
     dst_name = tmpdir.join("test_kme_creation.kmeX")
 
     ml_src.kmeOpenFile(str(src_name), filetype=kme_type)

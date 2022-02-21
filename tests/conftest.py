@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 
 import pytest
 
@@ -18,6 +19,11 @@ else:
 winonly = pytest.mark.skipif(
     not sys.platform.startswith('win'),
     reason="only supported on windows",
+)
+
+linuxonly = pytest.mark.skipif(
+    not sys.platform.startswith('linux'),
+    reason="only supported on linux",
 )
 
 kvdeprecated = pytest.mark.filterwarnings('ignore::canlib.deprecation.KvDeprecationBase')
@@ -212,3 +218,11 @@ def script_no_pair(kvprobe):
 # # mark as a class decorator or to all tests in a module by setting the
 # # pytestmark variable:
 # pytestmark = pytest.mark.filterwarnings('error')
+
+def wait_until(predicate, timeout, period=0.1, *args, **kwargs):
+    end = time.time() + timeout
+    while time.time() < end:
+        if predicate(*args, **kwargs):
+            return True
+        time.sleep(period)
+    return False

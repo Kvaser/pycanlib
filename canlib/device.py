@@ -81,6 +81,11 @@ def connected_devices():
             serial = data.card_serial_no
         except _libs.canlib.CanNotFound:
             return
+        except _libs.canlib.exceptions.CanError as e:
+            if e.status == _libs.canlib.enums.Error.NOCARD:
+                continue
+            else:
+                raise
         else:
             dev = Device(ean=ean, serial=serial)
             dev.last_channel_number = curr_channel
@@ -164,7 +169,7 @@ class Device:
     * `kvmlib.Memorator`-- `Device.memorator`
     * `linlib.Channel` -- `Device.lin_master` and `Device.lin_slave`
 
-    Attributes:
+    Args:
         ean (`canlib.EAN`): The EAN of this device.
         serial (`int`): The serial number of this device.
         last_channel_number (`int`): The channel number this device was last

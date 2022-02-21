@@ -55,6 +55,7 @@ class SignalMultiplexMode(CEnum):
 class AttributeType(CEnum):
     INVALID = 0
     INTEGER = 1
+    HEX = 2
     FLOAT = 3
     ENUM = 4
     STRING = 5

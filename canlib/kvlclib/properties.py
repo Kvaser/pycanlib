@@ -46,6 +46,12 @@ class Property(CEnum):
     NUMBER_OF_DATA_DECIMALS = 31  #: Number of data decimals (0-50)
     COMPRESSION_LEVEL = 32
     """ZLIB compression level for writers that use ZLIB for compression. [-1, 9]."""
+    SAMPLE_AND_HOLD_TIMESTEP = 33
+    """Time step in microseconds.
+
+    Used for format where time is implicit and defined by start time and the
+    selected time step in microseconds. Signal values are interpolated with sample
+    and hold. Used with e.g. DIAdem and RPCIII."""
 
     SIGNAL_BASED = 1001
     """Writes signals and not data frames.
@@ -104,6 +110,7 @@ _PROPERTY_TYPE = {
     Property.FULLY_QUALIFIED_NAMES: ct.c_int,
     Property.NUMBER_OF_DATA_DECIMALS: ct.c_int,
     Property.COMPRESSION_LEVEL: ct.c_int,
+    Property.SAMPLE_AND_HOLD_TIMESTEP: ct.c_int,
     Property.SIGNAL_BASED: None,
     Property.SHOW_SIGNAL_SELECT: None,
     Property.ATTACHMENTS: None,

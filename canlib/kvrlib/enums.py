@@ -176,7 +176,7 @@ class ServiceState(CEnum):
     STARTING = 3  #: Device is starting, other devices may inhibit this device from being started at the moment (e.g. by installing).
     STARTED = 4  #: Device is started
     CONNECTION_DOWN = 5  #: Connection is currently down
-    CONNECTION_UP = 6  #:  Connection is corrently up. The device should be showing up in Kvaser  Hardware and be ready to be used from CANlib.
+    CONNECTION_UP = 6  #: Connection is corrently up. The device should be showing up in Kvaser  Hardware and be ready to be used from CANlib.
     REDISCOVER = 7  #: We've lost the device - rediscover it
     UNWILLING = 8  #: Unwilling, see sub state for reason
     REDISCOVER_PENDING = 9  #: Rediscover is pending

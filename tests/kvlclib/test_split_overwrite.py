@@ -56,6 +56,7 @@ format_prop_support = [
     (kvlclib.FileFormat.KME25, {SIZE_LIMIT: True, TIME_LIMIT: True, SIGNAL_BASED: False}),
     (kvlclib.FileFormat.KME40, {SIZE_LIMIT: True, TIME_LIMIT: True, SIGNAL_BASED: False}),
     (kvlclib.FileFormat.KME50, {SIZE_LIMIT: True, TIME_LIMIT: True, SIGNAL_BASED: False}),
+    (kvlclib.FileFormat.KME60, {SIZE_LIMIT: True, TIME_LIMIT: True, SIGNAL_BASED: False}),
     (kvlclib.FileFormat.MATLAB, {SIZE_LIMIT: False, TIME_LIMIT: True, SIGNAL_BASED: True}),
     (kvlclib.FileFormat.MDF, {SIZE_LIMIT: True, TIME_LIMIT: True, SIGNAL_BASED: False}),
     (kvlclib.FileFormat.MDF_SIGNAL, {SIZE_LIMIT: True, TIME_LIMIT: True, SIGNAL_BASED: True}),

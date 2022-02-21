@@ -17,4 +17,5 @@ programs on supported devices.
     buserrors
     timemeasurement
     usingthreads
+    tprogramming
     iopinhandling

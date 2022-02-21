@@ -9,7 +9,7 @@ tmp_dir = "tmp"
 
 def setup_infile(datadir, kvlc):
     inf = os.path.join(datadir, "logfile001.kme50")
-    kvlc.setInputFile(inf, kvlclib.FILE_FORMAT_KME50)
+    kvlc.setInputFile(inf, kvlclib.FileFormat.KME50)
 
 
 def setup_properties(kvlc):
@@ -34,7 +34,7 @@ def create_outfile_name(name, fmt):
 
 @kvdeprecated
 def test_import_kvlclib():
-    fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_PLAIN_ASC)
+    fmt = kvlclib.WriterFormat(kvlclib.FileFormat.PLAIN_ASC)
     kvlc = kvlclib.Kvlclib(create_outfile_name("apa", fmt), fmt)
     print(f"Python kvlclib version: v{kvlc.getVersion()}")
     kvlc.deleteConverter()
@@ -43,7 +43,7 @@ def test_import_kvlclib():
 # creates file plain.txt in dir. src/canlib/tests/tmp
 @kvdeprecated
 def test_setInputFile_Plain_TXT(datadir):
-    fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_PLAIN_ASC)
+    fmt = kvlclib.WriterFormat(kvlclib.FileFormat.PLAIN_ASC)
     kvlc = kvlclib.Kvlclib(create_outfile_name("plain", fmt), fmt)
     assert kvlc.getProperty(kvlclib.PROPERTY_OVERWRITE) == 0
     assert kvlc.getProperty(kvlclib.PROPERTY_CHANNEL_MASK) == 31
@@ -80,7 +80,7 @@ def test_setInputFile_Plain_TXT(datadir):
 # creates file vector.asc in dir. src/canlib/tests/tmp
 @kvdeprecated
 def test_setInputFile_Vector_ASC(datadir):
-    fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_VECTOR_ASC)
+    fmt = kvlclib.WriterFormat(kvlclib.FileFormat.VECTOR_ASC)
     kvlc = kvlclib.Kvlclib(create_outfile_name("vector", fmt), fmt)
     assert kvlc.getProperty(kvlclib.PROPERTY_OVERWRITE) == 0
     assert kvlc.getProperty(kvlclib.PROPERTY_CHANNEL_MASK) == 31
@@ -116,7 +116,7 @@ def test_setInputFile_Vector_ASC(datadir):
 
 def test_writer_formats():
     """Test one property"""
-    fmt = kvlclib.WriterFormat(kvlclib.FILE_FORMAT_PLAIN_ASC)
+    fmt = kvlclib.WriterFormat(kvlclib.FileFormat.PLAIN_ASC)
     assert fmt.isPropertySupported(kvlclib.PROPERTY_CHANNEL_MASK)
     print(
         "Default value for CHANNEL_MASK is %s"

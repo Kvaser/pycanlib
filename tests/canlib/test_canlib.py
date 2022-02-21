@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 
 import pytest
-from conftest import winonly
+from conftest import winonly,linuxonly
 from kvprobe import features
 
 from canlib import EAN, CanlibException, Device, Frame, VersionNumber, canlib
@@ -190,7 +190,7 @@ def test_channeldata_attribute(channel_no, channeldata_attribute):
     )
     if not sys.platform.startswith('win'):
         if channeldata_attribute in WINONLY:
-            pytest.skip()
+            pytest.skip("Windows only test")
     REMOTE_ONLY = (
         'remote_host_name',
         'remote_operational_mode',
@@ -199,13 +199,18 @@ def test_channeldata_attribute(channel_no, channeldata_attribute):
     )
     channeldata = canlib.ChannelData(channel_no)
     if channeldata_attribute in REMOTE_ONLY:
-        if not channeldata.remote_type:
-            pytest.skip()
+        # BLA-3264
+        try:
+            remote_type = channeldata.remote_type
+        except canlib.exceptions.CanNotImplementedError:
+            pytest.skip("canCHANNELDATA_REMOTE_TYPE is not implemented")
+        if not remote_type:
+            pytest.skip("Not a remote device")
     DEVICE_LIMITS = {'00241-8': ['hw_status', 'feature_ean']}
     product_ean = channeldata.card_upc_no.product()
     if product_ean in DEVICE_LIMITS.keys():
         if channeldata_attribute in DEVICE_LIMITS[product_ean]:
-            pytest.skip()
+            pytest.skip(f"Device {product_ean} does not support {channeldata_attribute}")
 
     name = channeldata_attribute
     try:
@@ -562,17 +567,33 @@ def test_init_access(channel_no):
 
 
 def test_no_init_access(channel_no):
-    with canlib.openChannel(0, flags=canlib.Open.NO_INIT_ACCESS) as ch_with_access:
-        canlib.IOControl(ch_with_access).report_access_errors = True
-        ch_with_access.busOff()
+    # Reset channel CAN mode, this is a workaround for bug BLA-3663?
+    with canlib.openChannel(channel_no) as _:
+        pass
+    with canlib.openChannel(channel_no, flags=canlib.Open.NO_INIT_ACCESS) as ch_without_access:
+        canlib.IOControl(ch_without_access).report_access_errors = True
+        ch_without_access.busOff()
         with pytest.raises(canlib.CanError):
-            ch_with_access.setBusParams(canlib.canBITRATE_50K)
-            ch_with_access.busOn()
-        with canlib.openChannel(0) as ch_without_access:
-            canlib.IOControl(ch_without_access).report_access_errors = True
-            ch_without_access.setBusParams(canlib.canBITRATE_500K)
+            ch_without_access.setBusParams(canlib.canBITRATE_50K)
             ch_without_access.busOn()
+        with canlib.openChannel(channel_no) as ch_with_access:
+            canlib.IOControl(ch_with_access).report_access_errors = True
+            ch_with_access.setBusParams(canlib.canBITRATE_500K)
+            ch_with_access.busOn()
 
+
+@linuxonly
+@pytest.mark.xfail
+@pytest.mark.feature(features.canfd)
+def test_no_init_access_bug_bla_3663(channel_no):
+    # Open a channel in FD mode
+    with canlib.openChannel(channel_no, flags=canlib.Open.CAN_FD) as ch_with_access:
+        with canlib.openChannel(channel_no, flags=canlib.Open.NO_INIT_ACCESS) as ch_without_access:
+            # Due to linux implementation the NO_INIT_ACCESS handle has now
+            # "locked" the channel in CAN_FD mode.
+            ch_with_access.close()
+            with canlib.openChannel(channel_no) as _:
+                pass
 
 # There's currently no way to parametrize with fixtures, so we do
 # a workaround by manually instantiating two tests.

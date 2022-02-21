@@ -29,6 +29,8 @@ class Attribute:
             return EnumAttribute(db, handle)
         elif type.value == AttributeType.STRING:
             return StringAttribute(db, handle)
+        elif type.value == AttributeType.HEX:
+            return HexAttribute(db, handle)
         else:
             type = AttributeType(type.value)
             raise NotImplementedError(f'{type.name} not implemented')
@@ -68,6 +70,15 @@ class IntegerAttribute(Attribute):
 
     def _set_value(self, value):
         dll.kvaDbSetAttributeValueInt(self._handle, value)
+
+
+class HexAttribute(IntegerAttribute):
+    """Attribute of type Hex.
+
+    .. versionadded:: 1.20
+
+    """
+    pass
 
 
 class FloatAttribute(Attribute):

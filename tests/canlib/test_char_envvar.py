@@ -3,7 +3,7 @@
 import pytest
 from conftest import winonly
 
-from canlib import Frame
+from canlib import Frame, canlib
 
 
 def collect_on_hook_DataVal_response(ch):
@@ -30,23 +30,25 @@ def send_DataVal_on_can(ch, data):
 
 
 @winonly
-def test_scriptEnvvarGetData_deprecation(envvar_t, pycan_ch):
-    ehnd, etype, esize = pycan_ch.scriptEnvvarOpen('DataVal')
-    with pytest.deprecated_call():
-        pycan_ch.scriptEnvvarGetData(ehnd, esize)
-    pycan_ch.scriptEnvvarClose(ehnd)
+def test_scriptEnvvarGetData_deprecation(envvar_t):
+    with canlib.openChannel(envvar_t.channel_number) as ch:
+        ehnd, etype, esize = ch.scriptEnvvarOpen('DataVal')
+        with pytest.deprecated_call():
+            ch.scriptEnvvarGetData(ehnd, esize)
+        ch.scriptEnvvarClose(ehnd)
 
 
 @winonly
 def test_scriptEnvvarSetData_deprecation(envvar_t, pycan_ch, char_text_1):
-    ehnd, etype, esize = pycan_ch.scriptEnvvarOpen('DataVal')
-    value = char_text_1
-    with pytest.deprecated_call():
-        pycan_ch.scriptEnvvarSetData(ehnd, value, esize)
-    _ = collect_on_hook_DataVal_response(pycan_ch)
-    # envvar_t.ch.iocontrol.flush_rx_buffer()
-    # pycan_ch.iocontrol.flush_tx_buffer()
-    pycan_ch.scriptEnvvarClose(ehnd)
+    with canlib.openChannel(envvar_t.channel_number) as ch:
+        ehnd, etype, esize = ch.scriptEnvvarOpen('DataVal')
+        value = char_text_1
+        with pytest.deprecated_call():
+            ch.scriptEnvvarSetData(ehnd, value, esize)
+        _ = collect_on_hook_DataVal_response(pycan_ch)
+        # envvar_t.ch.iocontrol.flush_rx_buffer()
+        # pycan_ch.iocontrol.flush_tx_buffer()
+        ch.scriptEnvvarClose(ehnd)
 
 
 @winonly

@@ -1,10 +1,12 @@
 import pytest
+from conftest import winonly
 from kvprobe import features
 
 from canlib import canlib
 from canlib.canlib import iopin
 
 
+@winonly  # BLA-3241
 def test_unconfirmed(iopin_no):
     # A newly opened channel is unconfirmed
     with canlib.openChannel(iopin_no) as iopin_ch:
@@ -38,6 +40,7 @@ def test_unconfirmed(iopin_no):
                     pin.value = 1
 
 
+@winonly  # BLA-3240
 @pytest.mark.feature(features.iopin)
 def test_confirmed(iopin_no):
     with canlib.openChannel(iopin_no) as iopin_ch:
@@ -171,6 +174,7 @@ def test_unvalid_module_pin_names():
         iopin.module_pin_names(module_type)
 
 
+@winonly  # BLA-3241
 @pytest.mark.feature(features.iopin)
 def test_configuration(iopin_no):
     with canlib.openChannel(iopin_no) as iopin_ch:
@@ -183,6 +187,7 @@ def test_configuration(iopin_no):
                 assert config.pin(name=expected_names[i]) == pin
 
 
+@winonly  # BLA-3241
 def test_config_issubset(iopin_no):
     with canlib.openChannel(iopin_no) as iopin_ch:
         config = iopin.Configuration(iopin_ch)

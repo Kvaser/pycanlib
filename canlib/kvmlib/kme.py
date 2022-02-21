@@ -32,6 +32,8 @@ def createKme(path, filetype=FileType.KME50):
     kme_handle = dll.kvmKmeCreateFile(ct_filename, ct.byref(status_p), filetype)
     if filetype == FileType.KME50:
         return Kme50(kme_handle)
+    elif filetype == FileType.KME60:
+        return Kme60(kme_handle)
     else:
         return Kme(kme_handle)
 
@@ -60,6 +62,8 @@ def openKme(path, filetype=FileType.KME50):
 
     if filetype == FileType.KME50:
         return Kme50(kme_handle)
+    elif filetype == FileType.KME60:
+        return Kme60(kme_handle)
     else:
         return Kme(kme_handle)
 
@@ -68,7 +72,7 @@ def kme_file_type(path):
     """Scan KME file and report version
 
     Open and read the file `path` and try to decode what version
-    of KME it contains. Returns type as kvmFILE_xxx.
+    of KME it contains.
 
     Arguments:
 
@@ -114,9 +118,12 @@ class Kme:
             ...
             print(event)
 
-    Note that only KME files of type KME50 may currently be written to.
+    Note that only KME files of type KME50 and KME60 may currently be written to.
 
     .. versionadded:: 1.7
+
+    .. versionchanged:: 1.20
+        Added experimental support for KME60.
 
     """
 
@@ -227,3 +234,12 @@ class Kme50(Kme):
         mle = memoLogEventEx(mrt)
         # _dump_hex("writing event:", mle.event.raw.data)
         dll.kvmKmeWriteEvent(self.handle, ct.byref(mle))
+
+
+class Kme60(Kme50):
+    """Experimental support for Kme60 currently only includes identical events to Kme50.
+
+        .. versionadded:: 1.20
+
+    """
+    pass

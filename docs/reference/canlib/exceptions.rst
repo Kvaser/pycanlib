@@ -9,6 +9,13 @@ CanError
     :undoc-members:
     :show-inheritance:
 
+CanGeneralError
+~~~~~~~~~~~~~~~
+.. autoexception:: canlib.canlib.exceptions.CanGeneralError
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CanNoMsg
 ~~~~~~~~
 .. autoexception:: canlib.canlib.CanNoMsg

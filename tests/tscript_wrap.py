@@ -18,14 +18,11 @@ def start_script(script_fp, ch, slot, out=False, err=False, info=False):
 
 
 def stop_script(ch, slot):
-    try:
-        print("Trying to stop script...")
-        ch.scriptStop(slot)
-    except Exception:
-        print("Could not stop script")
-    else:
-        print("script stopped")
-
+    status = ch.scriptStatus(slot)
+    if canlib.enums.ScriptStatus.LOADED in status:
+        if canlib.enums.ScriptStatus.RUNNING in status:
+            ch.scriptStop(slot)
+        ch.scriptUnload(slot)
 
 class LogLevel(IntEnum):
     DEBUG = 0

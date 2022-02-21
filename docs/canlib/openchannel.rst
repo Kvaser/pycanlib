@@ -204,7 +204,7 @@ bitrate constants may be set directly in the call to `~canlib.canlib.openChannel
      - 40
      - 75%
      - 125 kbit/s
-   * - `~canlib.canlib.Bitrate.BITRATE_125K`
+   * - `~canlib.canlib.Bitrate.BITRATE_250K`
      - 8
      - 2
      - 2
@@ -369,6 +369,15 @@ listening to a CAN bus without interfering.
     ...     ...
 
 `~canlib.canlib.Driver.NORMAL` is set by default.
+
+.. note:: Using `~canlib.canlib.Channel.setBusOutputControl` to set the bus
+   driver mode to `~canlib.canlib.Driver.SILENT` on a device that do not
+   support Silent mode will not result in any error messages or warnings, the
+   CAN Driver Mode will just remain in `~canlib.canlib.Driver.NORMAL` mode.
+
+   A device that supports Silent mode returns
+   `~canlib.canlib.ChannelCap.SILENT_MODE` when asked using
+   `.canlib.ChannelData.channel_cap`.
 
 
 Legacy Functions

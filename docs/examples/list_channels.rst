@@ -1,5 +1,5 @@
-Print Information About All Channels
-####################################
+List channels
+#############
 
 .. literalinclude:: /../examples/list_channels.py
 

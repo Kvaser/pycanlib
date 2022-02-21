@@ -2,7 +2,7 @@ import sys
 import time
 
 import pytest
-from conftest import winonly
+from conftest import winonly, wait_until
 
 from canlib import Frame, canlib
 
@@ -22,15 +22,14 @@ def test_notify_callback_buson(channel_no):
     callback = canlib.dll.KVCALLBACK_T(callback_func)
 
     with canlib.openChannel(channel_no) as ch:
+        ch.busOff()
         ch.set_callback(callback, context=121, event=canlib.Notify.BUSONOFF)
         ch.busOn()
-        time.sleep(0.5)
-        assert callback_has_been_called
+        assert wait_until(lambda: callback_has_been_called, 1.0)
         callback_has_been_called = False
         print('Waiting...')
         ch.busOff()
-        time.sleep(0.5)
-        assert callback_has_been_called
+        assert wait_until(lambda: callback_has_been_called, 1.0)
 
 
 @winonly
@@ -58,21 +57,17 @@ def test_notify_callback_errorstatus(channel_no):
         assert not callback_error_has_been_called
         assert not callback_status_has_been_called
         ch.busOn()
-        time.sleep(0.5)
-        assert callback_status_has_been_called
+        assert wait_until(lambda: callback_status_has_been_called, 1.0)
         with pytest.raises(canlib.CanError) as excinfo:
             ch.writeWait(Frame(id_=4, data=b'10'), timeout=1000)
         assert excinfo.value.status == -7
-        time.sleep(0.5)
-        assert callback_error_has_been_called
+        assert wait_until(lambda: callback_error_has_been_called, 1.0)
         callback_status_has_been_called = False
         print('Waiting...')
         ch.busOff()
-        time.sleep(0.5)
-
         # Fails in Windows fb:24233
         if not sys.platform.startswith('win'):
-            assert callback_status_has_been_called
+            assert wait_until(lambda: callback_status_has_been_called, 1.0)
 
 
 def test_notify_callback_rxtx(channel_no_pair):
@@ -92,27 +87,24 @@ def test_notify_callback_rxtx(channel_no_pair):
 
     callback = canlib.dll.KVCALLBACK_T(callback_func)
 
-    with canlib.openChannel(CHANNEL) as ch:
+    with canlib.openChannel(CHANNEL, bitrate=canlib.Bitrate.BITRATE_1M ) as ch:
         ch.set_callback(callback, context=121, event=canlib.Notify.RX)
+        ch.setBusOutputControl(canlib.Driver.NORMAL)
         ch.busOn()
-        with canlib.openChannel(CHANNEL_TWO) as ch2:
+        with canlib.openChannel(CHANNEL_TWO, bitrate=canlib.Bitrate.BITRATE_1M) as ch2:
+            ch2.setBusOutputControl(canlib.Driver.NORMAL)
             ch2.busOn()
             assert not callback_rx_has_been_called
             assert not callback_tx_has_been_called
             ch2.writeWait(Frame(id_=4, data=b'10'), timeout=1000)
-            time.sleep(0.5)
-            assert callback_rx_has_been_called
+            assert wait_until(lambda: callback_rx_has_been_called, 1.0)
             assert not callback_tx_has_been_called
             frame = ch.read()
-            print(frame)
             callback_rx_has_been_called = False
-
             ch.set_callback(callback, context=120, event=canlib.Notify.NONE)
             ch2.set_callback(callback, context=122, event=canlib.Notify.TX)
             ch2.writeWait(Frame(id_=5, data=b'10'), timeout=1000)
-            time.sleep(0.5)
+            assert wait_until(lambda: callback_tx_has_been_called, 1.0)
             assert not callback_rx_has_been_called
-            assert callback_tx_has_been_called
             frame = ch.read()
-            print(frame)
             ch.set_callback(callback, context=121, event=canlib.Notify.NONE)

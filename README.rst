@@ -123,9 +123,8 @@ Bug reports, contributions, suggestions for improvements, and similar things are
 
 
 What's new
-------------
+----------
 A complete set of release notes are available in the package documentation included in the zip file available at the `Kvaser Download page <https://www.kvaser.com/downloads-kvaser/>`_.
-
 
 
 Links
@@ -133,3 +132,8 @@ Links
 
   * Kvaser CANlib SDK Page: https://www.kvaser.com/developer/canlib-sdk/
   * Description of CANlib SDK library contents: https://www.kvaser.com/developer-blog/get-hardware-kvaser-sdk-libraries/
+
+
+License
+-------
+This project is licensed under the terms of the MIT license.

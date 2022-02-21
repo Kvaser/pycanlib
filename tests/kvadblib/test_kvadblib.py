@@ -23,6 +23,8 @@ MLDB = DummyMessage(
 )
 MLDC = DummyMessage(name='TempMessage03', id=342, flags=0, dlc=8, comment='Temp message 03.')
 
+MLDD = DummyMessage(name='TempMessage04', id=0xC99FEFE, flags=kvadblib.MessageFlag.EXT | kvadblib.MessageFlag.J1939, dlc=8, comment='J1939 message.')
+
 
 SLDA = DummySignal(
     name='S01',
@@ -604,8 +606,10 @@ def verify_db_attribute_number_param(owner, atr_def, definition, no_attributes=0
     assert owner.get_attribute_value(name=name) == values[2]
 
 
-def test_db_attribute_integer_param():
-    db = kvadblib.Dbc(name='Test-Db-5')
+@pytest.mark.parametrize("attribute_type", [kvadblib.AttributeType.INTEGER, kvadblib.AttributeType.HEX])
+def test_db_attribute_integer_param(tmpdir, attribute_type):
+    db_name = f'Test-Db-5-{attribute_type.name}'
+    db = kvadblib.Dbc(name=db_name)
     message = db.new_message(
         name=MLDA.name, id=MLDA.id, flags=MLDA.flags, dlc=MLDA.dlc, comment=MLDA.comment
     )
@@ -616,7 +620,7 @@ def test_db_attribute_integer_param():
     message_atr_def = db.new_attribute_definition(
         name='my_int_msg_attrib',
         owner=kvadblib.AttributeOwner.SIGNAL,  # going to change it shortly, hence misleading variable name
-        type=kvadblib.AttributeType.INTEGER,
+        type=attribute_type,
         definition=ALDA,
     )
 
@@ -631,20 +635,20 @@ def test_db_attribute_integer_param():
     signal_atr_def = db.new_attribute_definition(
         name='my_int_sig_attrib',
         owner=kvadblib.AttributeOwner.SIGNAL,
-        type=kvadblib.AttributeType.INTEGER,
+        type=attribute_type,
         definition=ALDA,
     )
     node_atr_def = db.new_attribute_definition(
         name='my_int_node_attrib',
         owner=kvadblib.AttributeOwner.NODE,
-        type=kvadblib.AttributeType.INTEGER,
+        type=attribute_type,
         definition=ALDA,
     )
 
     db_atr_def = db.new_attribute_definition(
         name='my_int_db_attrib',
         owner=kvadblib.AttributeOwner.DB,
-        type=kvadblib.AttributeType.INTEGER,
+        type=attribute_type,
         definition=ALDA,
     )
 
@@ -676,6 +680,8 @@ def test_db_attribute_integer_param():
     # the atribute definition default value should be returned
     assert message.get_attribute_value(message_atr_def.name) == ALDC.default
 
+    db_filename = str(tmpdir / db_name + '.dbc')
+    db.write_file(db_filename)
     db.close()
 
 
@@ -1201,3 +1207,65 @@ def test_EnumSignal():
     assert isinstance(sig, kvadblib.EnumSignal)
 
     assert sig == msg.get_signal_by_name('ESig')
+
+
+def test_J1939_message_flag():
+    db = kvadblib.Dbc(name='Test-J1939-msg-flag-Db')
+
+    _ = db.new_attribute_definition(
+        name='ProtocolType',
+        owner=kvadblib.AttributeOwner.DB,
+        type=kvadblib.AttributeType.STRING,
+        definition=kvadblib.DefaultDefinition(default='J1939'),
+    )
+
+    enums = {'StandardCAN': 0, 'ExtendedCAN': 1, 'reserved': 2, 'J1939PG': 3}
+    enum_def = kvadblib.EnumDefaultDefinition(default=0, enums=enums)
+    _ = db.new_attribute_definition(
+        name='VFrameFormat',
+        owner=kvadblib.AttributeOwner.MESSAGE,
+        type=kvadblib.AttributeType.ENUM,
+        definition=enum_def,
+    )
+
+    # Add CAN std message
+    message = db.new_message(
+        name=MLDA.name,
+        id=MLDA.id,
+        flags=MLDA.flags,
+        dlc=MLDA.dlc,
+        comment=MLDA.comment,
+    )
+
+    message = db.get_message_by_name('TempMessage01')
+    assert message == MLDA
+    assert message.flags == MLDA.flags
+    assert message.get_attribute_value('VFrameFormat') == enums["StandardCAN"]
+
+    # Add CAN EXT message
+    message = db.new_message(
+        name=MLDB.name,
+        id=MLDB.id,
+        flags=MLDB.flags,
+        dlc=MLDB.dlc,
+        comment=MLDB.comment,
+    )
+
+    message = db.get_message_by_name('TempMessage02')
+    assert message == MLDB
+    assert message.flags == MLDB.flags
+    assert message.get_attribute_value('VFrameFormat') == enums["ExtendedCAN"]
+
+    # Add J1939 message
+    message = db.new_message(
+        name=MLDD.name,
+        id=MLDD.id,
+        flags=MLDD.flags,
+        dlc=MLDD.dlc,
+        comment=MLDD.comment,
+    )
+
+    message = db.get_message_by_name('TempMessage04')
+    assert message == MLDD
+    assert message.flags == MLDD.flags
+    assert message.get_attribute_value('VFrameFormat') == enums["J1939PG"]

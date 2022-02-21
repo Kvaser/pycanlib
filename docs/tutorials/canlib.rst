@@ -13,136 +13,50 @@ The following sections contain sample code for inspiration on how to use Kvaser 
 List connected devices
 ----------------------
 
-This code print some basic information (device name, EAN number and serial number) from all connected devices.
+.. literalinclude:: /../examples/list_devices.py
 
-.. code-block:: python
 
-    from canlib import canlib
+Sample Output:
 
-    num_channels = canlib.getNumberOfChannels()
-    print("Found %d channels" % num_channels)
-    for ch in range(0, num_channels):
-        chdata = canlib.ChannelData(ch)
-        print("%d. %s (%s / %s)" % (ch, chdata.device_name,
-                                    chdata.card_upc_no,
-                                    chdata.card_serial_no))
+.. highlight:: console
+
+::
+
+    CANlib Channel: 0
+    Card Number   : 7
+    Device        : Kvaser Memorator Pro 2xHS v2 (channel 0)
+    Driver Name   : kcany7a
+    EAN           : 73-30130-00819-9
+    Firmware      : 3.24.0.722
+    Serial Number : 12330
+    CANlib Channel: 2
+    Card Number   : 8
+    Device        : Kvaser Memorator Pro 5xHS (channel 0)
+    Driver Name   : kcany8a
+    EAN           : 73-30130-00832-8
+    Firmware      : 3.23.0.646
+    Serial Number : 10028
+    CANlib Channel: 7
+    Card Number   : 0
+    Device        : Kvaser Virtual CAN Driver (channel 0)
+    Driver Name   : kcanv0a
+    EAN           : 00-00000-00000-0
+    Firmware      : 0.0.0.0
+    Serial Number : 0
+
+
+.. highlight:: python
 
 
 Send and receive single frame
 -----------------------------
 
-Here is some basic code to send and receive a single frame.
+.. literalinclude:: /../examples/send_and_receive_can.py
 
-.. code-block:: python
-
-    from canlib import canlib, Frame
-    from canlib.canlib import ChannelData
-
-    def setUpChannel(channel=0,
-                     openFlags=canlib.Open.ACCEPT_VIRTUAL,
-                     outputControl=canlib.Driver.NORMAL):
-        ch = canlib.openChannel(channel, openFlags)
-        print("Using channel: %s, EAN: %s" % (ChannelData(channel).channel_name,
-                                              ChannelData(channel).card_upc_no))
-        ch.setBusOutputControl(outputControl)
-        # Specifying a bus speed of 250 kbit/s. See documentation
-        # for more informationon how to set bus parameters.
-        params = canlib.busparams.BusParamsTq(
-            tq=8,
-            phase1=2,
-            phase2=2,
-            sjw=1,
-            prescaler=40,
-            prop=3
-        )
-        ch.set_bus_params_tq(params)
-        ch.busOn()
-        return ch
-
-
-    def tearDownChannel(ch):
-        ch.busOff()
-        ch.close()
-
-
-    print("canlib version:", canlib.dllversion())
-
-    ch0 = setUpChannel(channel=0)
-    ch1 = setUpChannel(channel=1)
-
-    frame = Frame(
-        id_=100,
-        data=[1, 2, 3, 4],
-        flags=canlib.MessageFlag.EXT
-    )
-    ch1.write(frame)
-
-    while True:
-        try:
-            frame = ch0.read()
-            print(frame)
-            break
-        except (canlib.canNoMsg) as ex:
-            pass
-        except (canlib.canError) as ex:
-            print(ex)
-
-    tearDownChannel(ch0)
-    tearDownChannel(ch1)
 
 
 Send and receive CAN FD frame
 -----------------------------
 
-Here are some minimal code to send and receive a CAN FD frame.
+.. literalinclude:: /../examples/send_and_receive_canfd.py
 
-.. code-block:: python
-
-    from canlib import canlib, Frame
-
-    # Specifying an arbitration phase bus speed of 1 Mbit/s,
-    # and a data phase bus speed of 2 Mbit/s. See documentation
-    # for more information on how to set bus parameters.
-    params_arbitration = canlib.busparams.BusParamsTq(
-        tq=40,
-        phase1=8,
-        phase2=8,
-        sjw=8,
-        prescaler=2,
-        prop=23
-    )
-    params_data = canlib.busparams.BusParamsTq(
-        tq=20,
-        phase1=15,
-        phase2=4,
-        sjw=4,
-        prescaler=2,
-        prop=0
-    )
-
-    # open channel as CAN FD using the flag
-    ch0 = canlib.openChannel(channel=0, flags=canlib.Open.CAN_FD)
-    ch0.setBusOutputControl(drivertype=canlib.Driver.NORMAL)
-    ch0.set_bus_params_tq(params_arbitration, params_data)
-    ch0.busOn()
-
-    ch1 = canlib.openChannel(channel=1, flags=canlib.Open.CAN_FD)
-    ch1.setBusOutputControl(drivertype=canlib.Driver.NORMAL)
-    ch1.set_bus_params_tq(params_arbitration, params_data)
-    ch1.busOn()
-
-    # set FDF flag to send using CAN FD
-    # set BRS flag to send using higher bit rate in the data phase
-    frame = Frame(
-        id_=100,
-        data=range(32),
-        flags=canlib.MessageFlag.FDF | canlib.MessageFlag.BRS
-    )
-    print('Sending', frame)
-    ch0.write(frame)
-
-    frame = ch1.read(timeout=1000)
-    print('Receiving', frame)
-
-    ch0.busOff()
-    ch1.busOff()

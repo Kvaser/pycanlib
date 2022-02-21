@@ -44,10 +44,12 @@ class CanError(DllException):
 class CanGeneralError(CanError):
     """A canlib error that does not (yet) have its own Exception
 
-    WARNING: Do not explicitly catch this error, instead catch `CanError`. Your
-    error may at any point in the future get its own exception class, and so
-    will no longer be of this type. The actual status code that raised any
-    `CanError` can always be accessed through a `status` attribute.
+    WARNING:
+
+        Do not explicitly catch this error, instead catch `CanError`. Your
+        error may at any point in the future get its own exception class, and
+        so will no longer be of this type. The actual status code that raised
+        any `CanError` can always be accessed through a `status` attribute.
 
     """
 

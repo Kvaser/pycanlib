@@ -38,6 +38,12 @@ IntegerDefinition
    :members:
    :undoc-members:
 
+HexDefinition
+~~~~~~~~~~~~~~~~~~~
+.. autoclass:: canlib.kvadblib.HexDefinition
+   :members:
+   :undoc-members:
+
 MinMaxDefinition
 ~~~~~~~~~~~~~~~~~~~
 .. autoclass:: canlib.kvadblib.MinMaxDefinition

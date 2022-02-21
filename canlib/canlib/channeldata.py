@@ -2,11 +2,12 @@ import ctypes as ct
 
 from .. import VersionNumber, deprecation
 from ..ean import EAN
-from .busparams import ClockInfo
+from .busparams import ClockInfo, BusParamTqLimits
 from .enums import (BusTypeGroup, ChannelCap, ChannelCapEx, ChannelDataItem,
                     ChannelFlags, DriverCap, Error, HardwareType, LoggerType,
                     OperationalMode, RemoteType, TransceiverType)
 from .exceptions import CanError, CanNotFound, CanNotImplementedError
+from .structures import CanBusParamLimits
 from .wrapper import dll, getNumberOfChannels
 
 ATTRIBUTES = {
@@ -26,7 +27,7 @@ ATTRIBUTES = {
         item=ChannelDataItem.CHANNEL_FLAGS,
         ctype=ct.c_uint32,
         ptype=ChannelFlags,
-        __doc__="A `ChannelFlags` object with the status of the channel as flags. Not implemented in Linux.",
+        __doc__="A `ChannelFlags` object with the status of the channel as flags.",
     ),
     'card_type': dict(
         item=ChannelDataItem.CARD_TYPE,
@@ -363,7 +364,51 @@ class ChannelData:
         try:
             return buf.value
         except AttributeError:
-            return tuple(buf)
+            if item == ChannelDataItem.BUS_PARAM_LIMITS:
+                return buf
+            else:
+                return tuple(buf)
+
+    @property
+    def bus_param_limits(self):
+        """Get device's bus parameter limits
+
+        Example usage:
+
+            >>> chd = canlib.ChannelData(channel_number=2)
+            >>> limits = chd.bus_param_limits
+            >>> limits.arbitration_min._asdict()
+            {'tq': 0, 'phase1': 1, 'phase2': 1, 'sjw': 1, 'prescaler': 1, 'prop': 0}
+            >>> limits.arbitration_max._asdict()
+            {'tq': 0, 'phase1': 512, 'phase2': 32, 'sjw': 16, 'prescaler': 8192, 'prop': 0}
+            >>> limits.data_min._asdict()
+            {'tq': 0, 'phase1': 1, 'phase2': 1, 'sjw': 1, 'prescaler': 1, 'prop': 0}
+            >>> limits.data_max._asdict()
+            {'tq': 0, 'phase1': 512, 'phase2': 32, 'sjw': 16, 'prescaler': 8192, 'prop': 0}
+
+        The ``tq`` field is always zero, and is reserved for possible other
+        uses in future releases.
+
+        If ``prop`` is zero for both ``min`` and ``max`` values, that means that the device
+        does not distinguish between phase segment one and the propagation
+        segment, i.e. the ``phase1`` limit applies to (``phase1`` + ``prop``).
+
+        Returns:
+            `.busparams.BusParamTqLimits`
+
+        .. versionadded:: 1.20
+
+        """
+        limits = self.raw(item=ChannelDataItem.BUS_PARAM_LIMITS, ctype=CanBusParamLimits)
+        if limits.version != 2:
+            raise NotImplementedError(
+                f"kvBusParamLimits Struct version {limits.version} is not supported."
+            )
+        return BusParamTqLimits(
+            limits.arbitration_min,
+            limits.arbitration_max,
+            limits.data_min,
+            limits.data_max)
 
     @property
     def channel_name(self):
@@ -392,7 +437,6 @@ class ChannelData:
             )
         except CanNotImplementedError:
             ret = ""
-
         return ret
 
 
@@ -433,4 +477,7 @@ class HandleData(ChannelData):
         try:
             return buf.value
         except AttributeError:
-            return tuple(buf)
+            if item == ChannelDataItem.BUS_PARAM_LIMITS:
+                return buf
+            else:
+                return tuple(buf)

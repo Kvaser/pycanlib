@@ -1,6 +1,7 @@
 import datetime
 import filecmp
 import os.path
+from pathlib import Path
 
 import pytest
 from conftest import kvdeprecated
@@ -28,102 +29,99 @@ def print_events(log_file, num=5):
 
 @pytest.mark.feature(features.logger_v2)
 def test_openDevice(channel_no):
-    memo = kvmlib.openDevice(channel_no)
-    print(memo.disk_size)
-    print(memo.disk_usage)
-    print(memo.serial_number)
-    print(memo.rtc)
+    with kvmlib.openDevice(channel_no) as memo:
+        print(memo.disk_size)
+        print(memo.disk_usage)
+        print(memo.serial_number)
+        print(memo.rtc)
 
-    memo.mount()
-    assert memo.mounted
-    assert isinstance(memo.log, kvmlib.MountedLog)
-    memo.reopen()
-    assert not memo.mounted
-    assert isinstance(memo.log, kvmlib.UnmountedLog)
+        memo.mount()
+        assert memo.mounted
+        assert isinstance(memo.log, kvmlib.MountedLog)
+        memo.reopen()
+        assert not memo.mounted
+        assert isinstance(memo.log, kvmlib.UnmountedLog)
 
 
 def test_openKmf(datadir):
     kmf_file = os.path.join(datadir, KMF_FILE_MHYDRA)
-    memo = kvmlib.openKmf(kmf_file)
-    print(memo.disk_usage)
-    print(len(memo.log))
-    assert len(memo.log) == 5
-    for logfile in memo.log:
-        print(logfile)
-        print_events(logfile)
+    with kvmlib.openKmf(kmf_file) as memo:
+        print(memo.disk_usage)
+        print(len(memo.log))
+        assert len(memo.log) == 5
+        for logfile in memo.log:
+            print(logfile)
+            print_events(logfile)
 
 
 @pytest.mark.feature(features.logger_v2)
 def test_swinfo(channel_no):
-    memo = kvmlib.openDevice(channel_no)
-    print(memo.config_version_needed)
-    print(memo.driver_version)
-    print(memo.firmware_version)
-    print(memo.kvmlib_version)
+    with kvmlib.openDevice(channel_no) as memo:
+        print(memo.config_version_needed)
+        print(memo.driver_version)
+        print(memo.firmware_version)
+        print(memo.kvmlib_version)
 
 
 @pytest.mark.feature(features.logger_v2)
 def test_mount(channel_no):
-    memo = kvmlib.openDevice(channel_no)
+    with kvmlib.openDevice(channel_no) as memo:
+        print(memo.log)
+        pre_mount_len = len(memo.log)
+        print(pre_mount_len)
+        assert memo.mounted is False
 
-    print(memo.log)
-    pre_mount_len = len(memo.log)
-    print(pre_mount_len)
-    assert memo.mounted is False
+        memo.mount()
 
-    memo.mount()
+        print(memo.log)
+        post_mount_len = len(memo.log)
+        print(post_mount_len)
+        assert memo.mounted is True
 
-    print(memo.log)
-    post_mount_len = len(memo.log)
-    print(post_mount_len)
-    assert memo.mounted is True
-
-    assert pre_mount_len == post_mount_len
+        assert pre_mount_len == post_mount_len
 
 
 @pytest.mark.feature(features.logger_v2)
 def test_dev_log_file_events(channel_no):
-    memo = kvmlib.openDevice(channel_no, mount=True)
-    print(len(memo.log))
-    num = 0
-    for log_file in memo.log:
-        num += 1
-        print(log_file)
-        print(log_file.creator_serial)
-        print(log_file.end_time)
-        print(log_file.start_time)
+    with kvmlib.openDevice(channel_no, mount=True) as memo:
+        print(len(memo.log))
+        num = 0
+        for log_file in memo.log:
+            num += 1
+            print(log_file)
+            print(log_file.creator_serial)
+            print(log_file.end_time)
+            print(log_file.start_time)
 
-        print_events(log_file)
+            print_events(log_file)
 
-    assert len(memo.log) == num
+        assert len(memo.log) == num
 
 
 @pytest.mark.feature(features.logger_v2)
 def test_dev_read_config(channel_no):
-    memo = kvmlib.openDevice(channel_no)
+    with kvmlib.openDevice(channel_no) as memo:
+        MemoClass = kvmlib.Memorator
+        orig_assumed_size = MemoClass._ASSUMED_CONFIG_SIZE
 
-    MemoClass = kvmlib.Memorator
-    orig_assumed_size = MemoClass._ASSUMED_CONFIG_SIZE
+        try:
+            MemoClass._ASSUMED_CONFIG_SIZE = 1
+            conf = memo.read_config()
 
-    try:
-        MemoClass._ASSUMED_CONFIG_SIZE = 1
-        conf = memo.read_config()
+            MemoClass._ASSUMED_CONFIG_SIZE = len(conf)
+            assert memo.read_config() == conf
 
-        MemoClass._ASSUMED_CONFIG_SIZE = len(conf)
-        assert memo.read_config() == conf
-
-        MemoClass._ASSUMED_CONFIG_SIZE = len(conf) + 100
-        assert memo.read_config() == conf
-    finally:
-        MemoClass._ASSUMED_CONFIG_SIZE = orig_assumed_size
+            MemoClass._ASSUMED_CONFIG_SIZE = len(conf) + 100
+            assert memo.read_config() == conf
+        finally:
+            MemoClass._ASSUMED_CONFIG_SIZE = orig_assumed_size
 
 
 @pytest.mark.feature(features.logger_v2)
 def test_dev_read_write_config(channel_no):
-    memo = kvmlib.openDevice(channel_no)
-
-    conf = memo.read_config()
-    memo.write_config(conf)
+    with kvmlib.openDevice(channel_no) as memo:
+        conf = memo.read_config()
+        memo.write_config(conf)
 
 
 def test_logevent(datadir):
@@ -187,25 +185,24 @@ def test_logevent(datadir):
 
 def test_logfile_iteration_protection(datadir):
     kmf_file = os.path.join(datadir, KMF_FILE_MHYDRA)
-    memo = kvmlib.openKmf(kmf_file)
+    with kvmlib.openKmf(kmf_file) as memo:
+        assert len(memo.log) >= 2, "test requires at least two log files"
 
-    assert len(memo.log) >= 2, "test requires at least two log files"
+        # grab the two log files we're going to use
+        file0 = memo.log[0]
+        file1 = memo.log[1]
 
-    # grab the two log files we're going to use
-    file0 = memo.log[0]
-    file1 = memo.log[1]
+        it = iter(file0)
+        # the log file is neither mounted nor is the container "locked" before one
+        # value has been retrieved -- which is actually a nice feature
+        next(it)
+        assert memo.log._mounted_index == file0.index
 
-    it = iter(file0)
-    # the log file is neither mounted nor is the container "locked" before one
-    # value has been retrieved -- which is actually a nice feature
-    next(it)
-    assert memo.log._mounted_index == file0.index
+        with pytest.raises(kvmlib.LockedLogError):
+            file1._remount()
 
-    with pytest.raises(kvmlib.LockedLogError):
+        it.close()
         file1._remount()
-
-    it.close()
-    file1._remount()
 
 
 @kvdeprecated
@@ -222,29 +219,69 @@ def test_version():
     print(v.major, v.minor)
 
 
-def test_kme_file_type(datadir):
-    filename = os.path.join(datadir, "short-burst", "logfile003.kme")
+data_set = {
+    'KME24': {
+        'filename': Path("short-burst") / "logfile003.kme",
+        'file_type': kvmlib.FileType.KME24,
+    },
+    'KME25': {
+        'filename': Path("short-burst") / "logfile003.kme25",
+        'file_type': kvmlib.FileType.KME25,
+    },
+    'KME40': {
+        'filename': Path("short-burst") / "logfile003.kme40",
+        'file_type': kvmlib.FileType.KME40,
+    },
+    'KME50': {
+        'filename': Path("short-burst") / "logfile003.kme50",
+        'file_type': kvmlib.FileType.KME50,
+    },
+    'KME60': {
+        'filename': Path("short-burst") / "logfile003.kme60",
+        'file_type': kvmlib.FileType.KME60,
+    }
+}
+
+
+@pytest.mark.parametrize('stimuli', data_set.values(), ids=data_set.keys())
+def test_kme_file_type(datadir, stimuli):
+    filename = Path(datadir) / stimuli['filename']
     type = kvmlib.kme_file_type(filename)
-    assert type == kvmlib.kvmFILE_KME24
-    filename = os.path.join(datadir, "short-burst", "logfile003.kme25")
-    type = kvmlib.kme_file_type(filename)
-    assert type == kvmlib.kvmFILE_KME25
-    filename = os.path.join(datadir, "short-burst", "logfile003.kme40")
-    type = kvmlib.kme_file_type(filename)
-    assert type == kvmlib.kvmFILE_KME40
+    assert type == stimuli['file_type']
+
+
+def test_kme_file_type_empty_file(datadir):
+    filename = Path(datadir) / "empty.txt"
+    with pytest.raises(kvmlib.kvmError):
+        _ = kvmlib.kme_file_type(filename)
+
+
+def test_kme_file_type_filename_as_str(datadir):
+    # It should be possible to use strings as input as well
+    # We are also using the obsolete constant here...
     filename = os.path.join(datadir, "short-burst", "logfile003.kme50")
     type = kvmlib.kme_file_type(filename)
-    assert type == kvmlib.kvmFILE_KME50
-    filename = os.path.join(datadir, "empty.txt")
-    with pytest.raises(kvmlib.kvmError):
-        type = kvmlib.kme_file_type(filename)
+    assert type == kvmlib.FileType.KME50
 
 
 # Writing not supported for kme40, kme25, or kme
-def test_kme_rw(datadir, tmpdir):
-    src_name = os.path.join(datadir, "short-burst", "logfile003.kme50")
-    kme_type = kvmlib.kvmFILE_KME50
-    dest_name = str(tmpdir.join("test_kme_creation.kmeX"))
+data_set = {
+    'KME50': {
+        'filename': Path("short-burst") / "logfile003.kme50",
+        'kme_type': kvmlib.FileType.KME50,
+    },
+    'KME60': {
+        'filename': Path("short-burst") / "logfile003.kme60",
+        'kme_type': kvmlib.FileType.KME60,
+    },
+}
+
+
+@pytest.mark.parametrize('stimuli', data_set.values(), ids=data_set.keys())
+def test_kme_rw(datadir, tmpdir, stimuli):
+    src_name = Path(datadir) / stimuli['filename']
+    kme_type = stimuli['kme_type']
+    dest_name = str(tmpdir.join(f"test_kme_creation.{stimuli['kme_type'].name.lower()}"))
 
     with kvmlib.openKme(str(src_name), filetype=kme_type) as src:
         with kvmlib.createKme(dest_name, filetype=kme_type) as dest:

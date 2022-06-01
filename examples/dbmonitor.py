@@ -20,17 +20,9 @@ import argparse
 
 from canlib import canlib, kvadblib
 
-bitrates = {
-    '1M': canlib.Bitrate.BITRATE_1M,
-    '500K': canlib.Bitrate.BITRATE_500K,
-    '250K': canlib.Bitrate.BITRATE_250K,
-    '125K': canlib.Bitrate.BITRATE_125K,
-    '100K': canlib.Bitrate.BITRATE_100K,
-    '62K': canlib.Bitrate.BITRATE_62K,
-    '50K': canlib.Bitrate.BITRATE_50K,
-    '83K': canlib.Bitrate.BITRATE_83K,
-    '10K': canlib.Bitrate.BITRATE_10K,
-}
+# Create a dictionary of predefined CAN bitrates, using the name after
+# "BITRATE_" as key. E.g. "500K".
+bitrates = {x.name.replace("BITRATE_", ""): x for x in canlib.Bitrate}
 
 
 def printframe(db, frame):
@@ -62,12 +54,7 @@ def printframe(db, frame):
     print('┗')
 
 
-def monitor_channel(channel_number, db_name, bitrate, ticktime):
-    db = kvadblib.Dbc(filename=db_name)
-
-    ch = canlib.openChannel(channel_number, canlib.canOPEN_ACCEPT_LARGE_DLC, bitrate=bitrate)
-    ch.setBusOutputControl(canlib.canDRIVER_NORMAL)
-    ch.busOn()
+def monitor_channel(ch, db, ticktime):
 
     timeout = 0.5
     tick_countup = 0
@@ -92,7 +79,7 @@ def monitor_channel(channel_number, db_name, bitrate, ticktime):
             break
 
 
-if __name__ == '__main__':
+def parse_args(argv):
     parser = argparse.ArgumentParser(
         description="Listen on a CAN channel and print all signals received, as specified by a database."
     )
@@ -115,5 +102,18 @@ if __name__ == '__main__':
         help=("If greater than zero, display 'tick' every this many seconds"),
     )
     args = parser.parse_args()
+    return args
 
-    monitor_channel(args.channel, args.db, bitrates[args.bitrate.upper()], args.ticktime)
+
+def main(argv=None):
+    args = parse_args(argv)
+    db = kvadblib.Dbc(filename=args.db)
+    ch = canlib.openChannel(args.channel, canlib.canOPEN_ACCEPT_LARGE_DLC, bitrates[args.bitrate.upper()])
+    ch.setBusOutputControl(canlib.canDRIVER_NORMAL)
+    ch.busOn()
+
+    monitor_channel(ch, db, args.ticktime)
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

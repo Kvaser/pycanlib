@@ -74,15 +74,21 @@ class Message:
         )
 
     def asframe(self):
-        """Creates a Frame object with empty data matching this message"""
-        length = wrapper.dlc_to_bytes(
-            self.dlc,
-            self._db.protocol.value,
-        )
-        # convert flags from kvaDbLib format to CANlib format
-        can_flags = CanMessageFlag(0)
-        if self.flags & MessageFlag.EXT:
-            can_flags |= CanMessageFlag.EXT
+        """Returns a `~canlib.Frame` object with flags and empty data matching this message
+
+        .. versionchanged:: 1.21 Now includes support for CAN FD signals in dbc
+            file introduced in CANlib SDK v5.39 by using the `.canflags`
+            properties.
+
+        """
+        can_flags = self.canflags
+        if CanMessageFlag.FDF not in can_flags:
+            length = wrapper.dlc_to_bytes(
+                self.dlc,
+                self._db.protocol.value,
+            )
+        else:
+            length = self.dlc
         return Frame(id_=self.id, data=bytearray(length), flags=can_flags)
 
     def attributes(self):
@@ -263,8 +269,22 @@ class Message:
                 return
 
     @property
+    def canflags(self):
+        """`.canlib.MessageFlag`: Relevant message attributes expressed as `.canlib.MessageFlag`
+
+        Note that `.canlib.MessageFlag.BRS` will never be returned for non-CAN
+        FD frames, even though the CANFD_BRS attribute was set in the .dbc file.
+
+        .. versionadded:: 1.21
+
+        """
+        c_flags = ct.c_uint(0)
+        dll.kvaDbGetCanMsgFlags(self._handle, ct.byref(c_flags))
+        return CanMessageFlag(c_flags.value)
+
+    @property
     def comment(self):
-        """`str`: Comment message"""
+        """`str`: Message comment"""
         buf = ct.create_string_buffer(255)
         dll.kvaDbGetMsgComment(self._handle, buf, ct.sizeof(buf))
         try:

@@ -158,6 +158,7 @@ def test_supported_props(fmt_prop_supported):
         )
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("fmt_prop_support", format_prop_support, ids=lambda x: x[0].name)
 def test_split_in_empty_dir(datadir, tmp_path, fmt_prop_support):
     """Splitting in empty directory using Size, Time, and No limit"""
@@ -210,6 +211,7 @@ def test_split_in_empty_dir(datadir, tmp_path, fmt_prop_support):
             )
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("part", ["part0", "part1"], ids=lambda x: x)
 @pytest.mark.parametrize("fmt", fmt_list, ids=lambda x: x.name)
 def test_split_on_size_exists(datadir, tmp_path, fmt, part):
@@ -255,6 +257,7 @@ def test_split_on_size_exists(datadir, tmp_path, fmt, part):
         )
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("part", ["part0", "part1"], ids=lambda x: x)
 @pytest.mark.parametrize("fmt", fmt_list, ids=lambda x: x.name)
 def test_split_on_time_exists(datadir, tmp_path, fmt, part):

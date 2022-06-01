@@ -99,7 +99,7 @@ def openChannel(channel, flags=0, bitrate=None, data_bitrate=None):
     is_can_fd = ch.is_can_fd()
     if not is_can_fd and data_bitrate is not None:
         ch.close()
-        raise TypeError("data_bitrate requires CAN FD flag.")
+        raise TypeError("data_bitrate was given, but channel was not opened with CAN FD flag.")
 
     if bitrate is not None:
         if is_can_fd and data_bitrate is None:
@@ -1088,12 +1088,12 @@ class Channel:
         )
         return buf.value
 
-    @deprecation.deprecated.favour("'Channel.iocontrol.report_access_errors = on'")
+    @deprecation.deprecated.favour("'Channel.iocontrol.report_access_errors = True'")
     def ioCtl_set_report_access_errors(self, on=0):
         """Deprecated function
 
         .. deprecated:: 1.5
-           Use `IOControl`; ``Channel.iocontrol.report_access_errors = on``
+           Use `IOControl`; ``Channel.iocontrol.report_access_errors = True``
 
         """
         buf = ct.c_ubyte(on)

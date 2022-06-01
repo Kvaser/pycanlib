@@ -71,7 +71,6 @@ def test_notify_callback_errorstatus(channel_no):
 
 
 def test_notify_callback_rxtx(channel_no_pair):
-    CHANNEL, CHANNEL_TWO = channel_no_pair
     callback_rx_has_been_called = False
     callback_tx_has_been_called = False
 
@@ -87,11 +86,11 @@ def test_notify_callback_rxtx(channel_no_pair):
 
     callback = canlib.dll.KVCALLBACK_T(callback_func)
 
-    with canlib.openChannel(CHANNEL, bitrate=canlib.Bitrate.BITRATE_1M ) as ch:
+    with canlib.openChannel(channel_no_pair[0], bitrate=canlib.Bitrate.BITRATE_1M) as ch:
         ch.set_callback(callback, context=121, event=canlib.Notify.RX)
         ch.setBusOutputControl(canlib.Driver.NORMAL)
         ch.busOn()
-        with canlib.openChannel(CHANNEL_TWO, bitrate=canlib.Bitrate.BITRATE_1M) as ch2:
+        with canlib.openChannel(channel_no_pair[1], bitrate=canlib.Bitrate.BITRATE_1M) as ch2:
             ch2.setBusOutputControl(canlib.Driver.NORMAL)
             ch2.busOn()
             assert not callback_rx_has_been_called

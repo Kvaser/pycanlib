@@ -16,17 +16,9 @@ import time
 
 from canlib import canlib, kvadblib
 
-bitrates = {
-    '1M': canlib.Bitrate.BITRATE_1M,
-    '500K': canlib.Bitrate.BITRATE_500K,
-    '250K': canlib.Bitrate.BITRATE_250K,
-    '125K': canlib.Bitrate.BITRATE_125K,
-    '100K': canlib.Bitrate.BITRATE_100K,
-    '62K': canlib.Bitrate.BITRATE_62K,
-    '50K': canlib.Bitrate.BITRATE_50K,
-    '83K': canlib.Bitrate.BITRATE_83K,
-    '10K': canlib.Bitrate.BITRATE_10K,
-}
+# Create a dictionary of predefined CAN bitrates, using the name after
+# "BITRATE_" as key. E.g. "500K".
+bitrates = {x.name.replace("BITRATE_", ""): x for x in canlib.Bitrate}
 
 
 def set_random_framebox_signal(db, framebox, signals):
@@ -50,13 +42,15 @@ def get_random_value(db, sig):
     return value
 
 
-def ping_loop(channel_number, db_name, num_messages, quantity, interval, bitrate, seed=0):
-    db = kvadblib.Dbc(filename=db_name)
+def ping_loop(ch, db, num_messages, quantity, interval, seed=None):
 
-    ch = canlib.openChannel(channel_number, bitrate=bitrate)
-    ch.setBusOutputControl(canlib.canDRIVER_NORMAL)
-    ch.busOn()
-
+    if seed is None:
+        seed = 0
+    else:
+        try:
+            seed = int(seed)
+        except ValueError:
+            seed = seed
     random.seed(seed)
 
     if num_messages == -1:
@@ -78,6 +72,11 @@ def ping_loop(channel_number, db_name, num_messages, quantity, interval, bitrate
         # Add all messages to the framebox, as we may use send any signal from
         # any of them.
         for msg in db:
+            # If the channel is opened as CAN FD, we ignore messages in dbc
+            # that is not marked as CAN FD. Similarily, if the channel is
+            # opened as CAN, we inore messages in dbc that is marked as CAN FD.
+            if ch.is_can_fd() != (canlib.MessageFlag.FDF in msg.canflags):
+                continue
             framebox.add_message(msg.name)
 
         # Make a list of all signals (which framebox has found in all messages
@@ -97,8 +96,11 @@ def ping_loop(channel_number, db_name, num_messages, quantity, interval, bitrate
         time.sleep(interval)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Send random CAN message based on a database.")
+def parse_args(argv):
+    parser = argparse.ArgumentParser(
+        description="Send random CAN message based on a database.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parser.add_argument(
         'channel', type=int, default=0, nargs='?', help=("The channel to send messages on.")
     )
@@ -127,25 +129,31 @@ if __name__ == '__main__':
         nargs='?',
         default='0',
         help=(
-            "The seed used for choosing messages. If possible, will be converted to an int. If no argument is given, a random seed will be used."
+            "The seed used for choosing messages. If possible, will be converted to an int."
+            " If no argument is given, a random seed will be used."
         ),
     )
     args = parser.parse_args()
+    return args
 
-    if args.seed is None:
-        seed = None
-    else:
-        try:
-            seed = int(args.seed)
-        except ValueError:
-            seed = args.seed
+
+def main(argv=None):
+    args = parse_args(argv)
+    db = kvadblib.Dbc(filename=args.db)
+
+    ch = canlib.openChannel(args.channel, bitrate=bitrates[args.bitrate.upper()])
+    ch.setBusOutputControl(canlib.canDRIVER_NORMAL)
+    ch.busOn()
 
     ping_loop(
-        channel_number=args.channel,
-        db_name=args.db,
+        ch=ch,
+        db=db,
         num_messages=args.num_messages,
         quantity=args.quantity,
         interval=args.interval,
-        bitrate=bitrates[args.bitrate.upper()],
         seed=args.seed,
     )
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

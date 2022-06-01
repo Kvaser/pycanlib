@@ -64,14 +64,13 @@ class Open(CFlag):
     # canOpen_xxx
     NOFLAG = 0
     EXCLUSIVE = 0x0008  #: Don't allow sharing of this CANlib channel.
-    """Don't allow sharing of this CANlib channel between applications.
+    """Don't allow sharing between multiple `.Channel` objects.
 
-    Two or more applications can share the same CAN channel. You can, for
-    example, have one application send messages on the bus and another
-    application that just monitors the bus. If this is not desired (for
-    performance or other reasons) you can open an exclusive handle to a
-    channel. This means that no other application can open a handle to the same
-    channel.
+    Two or more threads or applications can share the same CAN channel by
+    opening the same CANlib channel multiple times. If this is not desired you
+    can open a CANlib channel exclusively once by passing the `.EXCLUSIVE`
+    flag. If the CANlib channel is aleady open, the call to
+    `.canlib.openChannel()` will fail.
 
     """
     REQUIRE_EXTENDED = 0x0010
@@ -184,8 +183,9 @@ class IOControlItem(CEnum):
     SET_THROTTLE_SCALED = 41  #: Windows only
     GET_THROTTLE_SCALED = 42  #: Windows only
     SET_BRLIMIT = 43  #: Max bitrate limit can be overridden with this IOCTL.
-    RESET_OVERRUN_COUNT = 44  #: Reset overrun count and flags
+    RESET_OVERRUN_COUNT = 44  #: Reset overrun count and flags.
     LIN_MODE = 45  #: For internal use only.
+    SET_LOCAL_TXACK = 46  #: Enable reception of canMSG_LOCAL_TXACK.
 
 
 # qqqmac In the returned type, document the function call to use
@@ -254,8 +254,8 @@ class Stat(CFlag):
 
         Usually both canSTAT_HW_OVERRUN and canSTAT_SW_OVERRUN are set when
         overrun has occurred. This is because the kernel driver can't see the
-        difference between a software overrun and a hardware overrun. So the
-        code should always test for both types of overrun using the flag.
+        difference between a software overrun and a hardware overrun, but the
+        code should always test for both types of overruns.
 
     """
 
@@ -270,7 +270,7 @@ class Stat(CFlag):
     RXERR = 0x00000100  #: There has been at least one RX error of some sort
     HW_OVERRUN = 0x00000200  #: There has been at least one HW buffer overflow
     SW_OVERRUN = 0x00000400  #: There has been at least one SW buffer overflow
-    OVERRUN = HW_OVERRUN | SW_OVERRUN  #: For convenience.
+    OVERRUN = HW_OVERRUN | SW_OVERRUN  #: Both `HW_OVERRUN` and `SW_OVERRUN` is active
 
 
 class MessageFlag(CFlag):
@@ -291,8 +291,7 @@ class MessageFlag(CFlag):
 
         Not all hardware platforms can detect the difference between hardware
         overruns and software overruns, so your application should test for
-        both conditions. You can use the symbol `OVERRUN` for this
-        purpose.
+        both conditions.
 
     """
 
@@ -306,6 +305,7 @@ class MessageFlag(CFlag):
     ERROR_FRAME = 0x0020  #: Message represents an error frame.
     TXACK = 0x0040  #: Message is a TX ACK (msg has really been sent)
     TXRQ = 0x0080  #: Message is a TX REQUEST (msg was transfered to the chip)
+    LOCAL_TXACK = 0x10000000  #: Message is a LOCAL TX ACK (was transmitted from another handle on the same channel)
 
     #
     SINGLE_SHOT = 0x1000000  #: Message is Single Shot, try to send once, no retransmission.
@@ -314,8 +314,8 @@ class MessageFlag(CFlag):
 
     # canFDMSG_xxx
     FDMSG_MASK = 0xFF0000  #: obsolete
-    EDL = 0x010000  #: obsolete
     FDF = 0x010000  #: Message is a CAN FD message.
+    EDL = FDF  #: obsolete
     BRS = 0x020000  #: Message is sent/received with bit rate switch (CAN FD)
     ESI = 0x040000  #: Sender of the message is in error passive mode (CAN FD)
 
@@ -328,9 +328,20 @@ class MessageFlag(CFlag):
     CRC = 0x2000  #: CRC error.
     BIT0 = 0x4000  #: Sent dominant bit, read recessive bit
     BIT1 = 0x8000  #: Sent recessive bit, read dominmant bit
-    OVERRUN = 0x0600  #: Any overrun condition.
-    BIT = 0xC000  #: Any bit error.
-    BUSERR = 0xF800  #: Any RX error.
+    OVERRUN = HW_OVERRUN | SW_OVERRUN  #: Both SW and HW overrun conditions
+    BIT = 0xC000  #: All bit error.
+    BUSERR = 0xF800  #: All RX error.
+
+    def __contains__(self, item):
+        # The correct test for overrun would be:
+        #   if Stat.HW_OVERRUN in frame.flags or Stat.SW_OVERRUN in frame.flags
+        # But the user will probably just write:
+        #   if Stat.OVERRUN in frame.flags
+        # So let us help the user if the check is against the OVERRUN flag
+        if item == self.OVERRUN:
+            return self & self.HW_OVERRUN or self & self.SW_OVERRUN
+        else:
+            return self & item
 
 
 class Driver(CEnum):
@@ -433,8 +444,10 @@ class BitrateFD(CEnum):
     BITRATE_500K_80P = -1000  #: Indicates a bitrate of 500 kbit/s and sampling point at 80%.
     BITRATE_1M_80P = -1001  #: Indicates a bitrate of 1 Mbit/s and sampling point at 80%.
     BITRATE_2M_80P = -1002  #: Indicates a bitrate of 2 Mbit/s and sampling point at 80%.
+    BITRATE_2M_60P = -1007  #: Indicates a bitrate of 2 Mbit/s and sampling point at 60%.
     BITRATE_4M_80P = -1003  #: Indicates a bitrate of 4 Mbit/s and sampling point at 80%.
     BITRATE_8M_60P = -1004  #: Indicates a bitrate of 8 Mbit/s and sampling point at 60%.
+    BITRATE_8M_70P = -1006  #: Indicates a bitrate of 8 Mbit/s and sampling point at 70%.
     BITRATE_8M_80P = -1005  #: Indicates a bitrate of 8 Mbit/s and sampling point at 80%.
 
 

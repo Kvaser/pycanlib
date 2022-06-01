@@ -59,6 +59,7 @@ class KvaDbDll(dllLoader.MyDll):
         'kvaDbGetAttributeValueFloat': [[ct.c_void_p, ct.POINTER(ct.c_float)]],
         'kvaDbGetAttributeValueInt': [[ct.c_void_p, ct.POINTER(ct.c_int)]],
         'kvaDbGetAttributeValueString': [[ct.c_void_p, ct.c_char_p, ct.c_size_t]],
+        'kvaDbGetCanMsgFlags': [[ct.c_void_p, ct.POINTER(ct.c_uint)]],
         'kvaDbGetDatabaseName': [[ct.c_void_p, ct.c_char_p, ct.c_size_t]],
         'kvaDbGetEnumValue': [[ct.c_void_p, ct.POINTER(ct.c_int), ct.c_char_p, ct.c_size_t]],
         'kvaDbGetErrorText': [[ct.c_int32, ct.c_char_p, ct.c_size_t]],

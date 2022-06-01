@@ -21,7 +21,7 @@ Open as CAN
 No special `~canlib.canlib.Open` modifier flag is needed in the flags argument to `~canlib.canlib.openChannel` when opening a channel in CAN mode.
 
     >>> from canlib import canlib
-    >>> canlib.openChannel(channel=0, flags=canlib.Open.EXCLUSIVE)
+    >>> canlib.openChannel(channel=0)
     <canlib.canlib.channel.Channel object at 0x0000015B787EDA90>
 
 .. _open_as_can_fd:
@@ -33,12 +33,12 @@ To open a channel in CAN FD mode, either `~canlib.canlib.Open.CAN_FD` or
 `~canlib.canlib.Open.CAN_FD_NONISO` needs to be given in the flags argument to
 `~canlib.canlib.openChannel`.
 
-This example opens channel 0 in CAN FD mode for exclusive usage by this application::
+This example opens channel 0 in CAN FD mode::
 
     >>> from canlib import canlib
     >>> ch = canlib.openChannel(
     ...     channel=0,
-    ...     flags=canlib.Open.CAN_FD | canlib.Open.EXCLUSIVE,
+    ...     flags=canlib.Open.CAN_FD,
     ... )
     >>> ch.close()
 
@@ -321,12 +321,21 @@ bit timing parameters have to be specified manually.
      - 1 Mbit/s
    * - `~canlib.canlib.BitrateFD.BITRATE_2M_80P`
      - 20
-     - 15
+     - 8
      - 4
      - 4
-     - 0
+     - 7
      - 2
      - 80%
+     - 2 Mbit/s
+   * - `~canlib.canlib.BitrateFD.BITRATE_2M_60P`
+     - 20
+     - 8
+     - 8
+     - 4
+     - 3
+     - 2
+     - 60%
      - 2 Mbit/s
    * - `~canlib.canlib.BitrateFD.BITRATE_4M_80P`
      - 10
@@ -337,6 +346,24 @@ bit timing parameters have to be specified manually.
      - 2
      - 80%
      - 4 Mbit/s
+   * - `~canlib.canlib.BitrateFD.BITRATE_8M_80P`
+     - 10
+     - 7
+     - 2
+     - 1
+     - 0
+     - 1
+     - 80%
+     - 8 Mbit/s
+   * - `~canlib.canlib.BitrateFD.BITRATE_8M_70P`
+     - 10
+     - 6
+     - 3
+     - 1
+     - 0
+     - 1
+     - 70%
+     - 8 Mbit/s
    * - `~canlib.canlib.BitrateFD.BITRATE_8M_60P`
      - 5
      - 2

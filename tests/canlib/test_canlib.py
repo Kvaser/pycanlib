@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 
 import pytest
-from conftest import winonly,linuxonly
+from conftest import winonly, linuxonly
 from kvprobe import features
 
 from canlib import EAN, CanlibException, Device, Frame, VersionNumber, canlib
@@ -65,6 +65,7 @@ def create_iocontrol_attribute_list():
         ('connect_to_virtual_bus', lambda: (1,)),  # test needs to find a virtual channel
         ('disconnect_from_virtual_bus', lambda: (1,)),
         ('reset_overrun_count', lambda: ()),
+        ('local_txack', (True, False)),
     ]
     # check that all attributes are represented in VALS
     val_keys = [x[0] for x in VALS]
@@ -376,10 +377,9 @@ def test_buson_time(chA, chB, auto_reset):
 
 
 def test_txecho_onoff(channel_no_pair):
-    CHANNEL, CHANNEL_TWO = channel_no_pair
-    ch0a = canlib.openChannel(CHANNEL)
-    ch0b = canlib.openChannel(CHANNEL)
-    chB = canlib.openChannel(CHANNEL_TWO)
+    ch0a = canlib.openChannel(channel_no_pair[0])
+    ch0b = canlib.openChannel(channel_no_pair[0])
+    chB = canlib.openChannel(channel_no_pair[1])
 
     # For some models, the following lines are required
     ch0a.setBusOutputControl(canlib.Driver.NORMAL)
@@ -408,6 +408,62 @@ def test_txecho_onoff(channel_no_pair):
     ch0a.close()
     ch0b.close()
     chB.close()
+
+
+def test_local_txack_off(channel_no_pair):
+    with canlib.openChannel(channel_no_pair[0]) as ch0_tx:
+        with canlib.openChannel(channel_no_pair[0]) as ch0_local_txack:
+            with canlib.openChannel(channel_no_pair[1]) as ch1_rx:
+                # For some models, the following lines are required
+                ch0_tx.setBusOutputControl(canlib.Driver.NORMAL)
+                ch0_tx.setBusParams(canlib.canBITRATE_1M)
+                ch1_rx.setBusOutputControl(canlib.Driver.NORMAL)
+                ch1_rx.setBusParams(canlib.canBITRATE_1M)
+
+                ch0_local_txack.iocontrol.local_txecho = True
+                ch0_local_txack.iocontrol.local_txack = False
+
+                ch0_tx.busOn()
+                ch0_local_txack.busOn()
+                ch1_rx.busOn()
+
+                ch0_tx.writeWait(Frame(id_=4, data=b''), timeout=1000)
+                msg = ch1_rx.read(timeout=1000)
+                assert canlib.MessageFlag.LOCAL_TXACK not in msg.flags
+
+                msg = ch0_local_txack.read(timeout=1000)
+                assert canlib.MessageFlag.LOCAL_TXACK not in msg.flags
+
+                with pytest.raises(canlib.CanNoMsg):
+                    ch0_tx.read(timeout=1000)
+
+
+def test_local_txack_on(channel_no_pair):
+    with canlib.openChannel(channel_no_pair[0]) as ch0_tx:
+        with canlib.openChannel(channel_no_pair[0]) as ch0_local_txack:
+            with canlib.openChannel(channel_no_pair[1]) as ch1_rx:
+                # For some models, the following lines are required
+                ch0_tx.setBusOutputControl(canlib.Driver.NORMAL)
+                ch0_tx.setBusParams(canlib.canBITRATE_1M)
+                ch1_rx.setBusOutputControl(canlib.Driver.NORMAL)
+                ch1_rx.setBusParams(canlib.canBITRATE_1M)
+
+                ch0_local_txack.iocontrol.local_txack = True
+                ch0_local_txack.iocontrol.local_txecho = True
+
+                ch0_tx.busOn()
+                ch0_local_txack.busOn()
+                ch1_rx.busOn()
+
+                ch0_tx.writeWait(Frame(id_=4, data=b''), timeout=1000)
+                msg = ch1_rx.read(timeout=1000)
+                assert canlib.MessageFlag.LOCAL_TXACK not in msg.flags
+
+                msg = ch0_local_txack.read(timeout=1000)
+                assert canlib.MessageFlag.LOCAL_TXACK in msg.flags
+
+                with pytest.raises(canlib.CanNoMsg):
+                    ch0_tx.read(timeout=1000)
 
 
 def test_can_channel_flags(channel_no):
@@ -605,7 +661,54 @@ def test_bus_statistics_CAN(chA, chB, min_num_msg):
     bus_statistics(chA, chB, min_num_msg)
 
 
-def test_read_error_counters(chA):
+def test_read_tx_error_counters(chA):
+    # Run busOn in order to clear error counters
+    chA.busOn()
+    error_counters = chA.read_error_counters()
+    assert error_counters.rx == 0
+    assert error_counters.tx == 0
+    assert error_counters.overrun == 0
+    with pytest.raises(canlib.CanTimeout):
+        chA.writeWait(Frame(id_=1, data=[]), 500)
+    error_counters = chA.read_error_counters()
+    assert error_counters.rx == 0
+    assert error_counters.tx > 0
+    # SWT did catch an overrun on 32-bit Ubuntu 16 here, and since verifying
+    # overrun is outside the scope of this test, we now silently ignore it.
+    # assert error_counters.overrun == 0
+    chA.busOff()
+    chA.busOn()
+    error_counters = chA.read_error_counters()
+    assert error_counters.rx == 0
+    assert error_counters.tx == 0
+    # If we catched and overrun above, it will not have been reset by now, and
+    # since verifying overrun is outside the scope of this test, we now
+    # silently ignore it.
+    # assert error_counters.overrun == 0
+
+
+def test_read_rx_error_counters(chA, chB):
+    # Run busOn in order to clear error counters
+    chA.busOn()
+    error_counters = chA.read_error_counters()
+    assert error_counters.rx == 0
+    assert error_counters.tx == 0
+    assert error_counters.overrun == 0
+    chB.busOn()
+    # chA is using 500K, let's set something different here in order to
+    # generate error frames.
+    chB.setBusParams(canlib.canBITRATE_250K)
+    with pytest.raises(canlib.CanTimeout):
+        chB.writeWait(Frame(id_=1, data=[]), 500)
+    error_counters = chA.read_error_counters()
+    assert error_counters.rx > 0
+    assert error_counters.tx == 0
+    assert error_counters.overrun == 0
+    chA.busOff()
+    # We need to go bus off with the sending channel in order to stop
+    # resending
+    chB.busOff()
+    chA.busOn()
     error_counters = chA.read_error_counters()
     assert error_counters.rx == 0
     assert error_counters.tx == 0

@@ -85,7 +85,7 @@ ATTRIBUTES = {
         setitem=IOControlItem.SET_REPORT_ACCESS_ERRORS,
         ctype=ct.c_uint32,
         ptype=bool,
-        __doc__="A `bool` for whether Access Reporting is turned on",
+        __doc__="A `bool` for whether Access Reporting is turned on. Default is `False` (off).",
     ),
     # 'user_ioport': Property(  # winonly
     #     getitem=IOControlItem.GET_USER_IOPORT,
@@ -169,6 +169,13 @@ ATTRIBUTES = {
         values=_tx_interval_range,
         __doc__="An `int` with the number of microseconds with the minimum CAN message transmit interval.",
     ),
+    'local_txack': Property(
+        setitem=IOControlItem.SET_LOCAL_TXACK,
+        ctype=ct.c_uint32,
+        ptype=bool,
+        __doc__="A `bool` for whether local transmit acknowledge is turned on. Write-only.",
+    ),
+
     # functions
     'prefer_ext': Function(
         IOControlItem.PREFER_EXT,

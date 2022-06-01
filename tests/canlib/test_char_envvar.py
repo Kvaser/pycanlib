@@ -116,6 +116,7 @@ def test_write_full_array_envvar(envvar_t, pycan_ch, char_text_1):
     assert list(msg) == data
 
 
+@pytest.mark.slow
 @winonly
 def test_write_read_full_array_envvar(envvar_t, pycan_ch, char_text_1):
     # Using an array

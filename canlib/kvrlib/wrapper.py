@@ -81,13 +81,12 @@ def hostname(ean, serial):
     """Generate a hostname from ean and serial number
 
     Args:
-        ean `EAN`: European Article Number
-        serial `int`: Serial number
+        ean (`.canlib.EAN`): European Article Number
+        serial (`int`): Serial number
 
     """
     buf = ct.create_string_buffer(HOST_NAME_MIN_SIZE)
     hi, lo = ean.hilo()
-    print(ean, hex(hi), hex(lo), serial, buf)
     dll.kvrHostName(hi, lo, serial, buf, ct.sizeof(buf))
     return buf.value.decode('utf-8')
 

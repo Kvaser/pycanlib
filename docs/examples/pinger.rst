@@ -1,5 +1,7 @@
-Send Random Messages on a Channel
-#################################
+.. _pinger_example:
+
+Send Random Messages on CAN Channel
+###################################
 
 .. literalinclude:: /../examples/pinger.py
 
@@ -52,3 +54,16 @@ Sample Output
   Sending frame Frame(id=100, data=bytearray(b'f\x07\n\x00\x00\x00\x00\x00'), dlc=8, flags=<MessageFlag.0: 0>, timestamp=None)
   Sending frame Frame(id=1020, data=bytearray(b'\x00'), dlc=1, flags=<MessageFlag.0: 0>, timestamp=None)
   Sending frame Frame(id=100, data=bytearray(b'\x0c\x15-\x00\x00\x00\x00\x00'), dlc=8, flags=<MessageFlag.0: 0>, timestamp=None)
+
+.. _pinger_fd_example:
+
+CAN FD version
+==============
+
+This example is basically the same as ``pinger.py`` above, except we are now using CAN FD.
+
+Note that you also need the ``pinger.py`` file, next to ``pingerfd.py`` below, since we are reusing the `ping_loop` function.
+
+.. highlight:: python
+
+.. literalinclude:: /../examples/pingerfd.py

@@ -23,6 +23,7 @@ from .enums import (AcceptFilterFlag, Bitrate, BitrateFD, BusTypeGroup,
 from .envvar import EnvVar  # for backwards-compatibility
 from .envvar import EnvVar as envvar
 from .exceptions import (CanError, CanNoMsg, CanNotFound, CanScriptFail,
+                         CanTimeout,
                          EnvvarException, EnvvarNameError, EnvvarValueError,
                          IoNoValidConfiguration,
                          IoPinConfigurationNotConfirmed, TxeFileIsEncrypted)

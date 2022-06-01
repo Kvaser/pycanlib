@@ -114,7 +114,10 @@ def channel_no_pair(request, kvprobe):
 
 @pytest.fixture
 def chA(channel_no_pair):
-    chA = canlib.openChannel(channel_no_pair[0], flags=canlib.Open.ACCEPT_VIRTUAL)
+    chA = canlib.openChannel(
+        channel_no_pair[0],
+        flags=canlib.Open.ACCEPT_VIRTUAL | canlib.Open.REQUIRE_INIT_ACCESS,
+    )
     chA.setBusParams(canlib.canBITRATE_500K)
     yield chA
     chA.busOff()
@@ -123,7 +126,10 @@ def chA(channel_no_pair):
 
 @pytest.fixture
 def chB(channel_no_pair):
-    chB = canlib.openChannel(channel_no_pair[1], flags=canlib.Open.ACCEPT_VIRTUAL)
+    chB = canlib.openChannel(
+        channel_no_pair[1],
+        flags=canlib.Open.ACCEPT_VIRTUAL | canlib.Open.REQUIRE_INIT_ACCESS,
+    )
     chB.setBusParams(canlib.canBITRATE_500K)
     yield chB
     chB.busOff()

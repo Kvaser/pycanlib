@@ -85,6 +85,7 @@ canIOCTL_GET_THROTTLE_SCALED = enums.IOControlItem.GET_THROTTLE_SCALED
 canIOCTL_SET_BRLIMIT = enums.IOControlItem.SET_BRLIMIT
 canIOCTL_RESET_OVERRUN_COUNT = enums.IOControlItem.RESET_OVERRUN_COUNT
 canIOCTL_LIN_MODE = enums.IOControlItem.LIN_MODE
+canIOCTL_SET_LOCAL_TXACK = enums.IOControlItem.SET_LOCAL_TXACK
 
 canCHANNELDATA_CHANNEL_CAP = enums.ChannelDataItem.CHANNEL_CAP
 canCHANNELDATA_TRANS_CAP = enums.ChannelDataItem.TRANS_CAP
@@ -140,6 +141,7 @@ canMSG_NERR = enums.MessageFlag.NERR
 canMSG_ERROR_FRAME = enums.MessageFlag.ERROR_FRAME
 canMSG_TXACK = enums.MessageFlag.TXACK
 canMSG_TXRQ = enums.MessageFlag.TXRQ
+canMSG_LOCAL_TXACK = enums.MessageFlag.LOCAL_TXACK
 
 canFDMSG_MASK = enums.MessageFlag.FDMSG_MASK
 canFDMSG_EDL = enums.MessageFlag.EDL
@@ -155,7 +157,6 @@ canMSGERR_FORM = enums.MessageFlag.FORM
 canMSGERR_CRC = enums.MessageFlag.CRC
 canMSGERR_BIT0 = enums.MessageFlag.BIT0
 canMSGERR_BIT1 = enums.MessageFlag.BIT1
-canMSGERR_OVERRUN = enums.MessageFlag.OVERRUN
 canMSGERR_BIT = enums.MessageFlag.BIT
 canMSGERR_BUSERR = enums.MessageFlag.BUSERR
 
@@ -209,4 +210,3 @@ canSTAT_TXERR = enums.Stat.TXERR
 canSTAT_RXERR = enums.Stat.RXERR
 canSTAT_HW_OVERRUN = enums.Stat.HW_OVERRUN
 canSTAT_SW_OVERRUN = enums.Stat.SW_OVERRUN
-canSTAT_OVERRUN = enums.Stat.OVERRUN

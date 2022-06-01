@@ -37,6 +37,13 @@ CanScriptFail
     :undoc-members:
     :show-inheritance:
 
+CanTimeout
+~~~~~~~~~~
+.. autoexception:: canlib.canlib.CanTimeout
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 EnvvarException
 ~~~~~~~~~~~~~~~~
 .. autoexception:: canlib.canlib.EnvvarException

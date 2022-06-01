@@ -4,7 +4,7 @@ from collections import OrderedDict, namedtuple
 
 import pytest
 
-from canlib import CanlibException, kvadblib
+from canlib import CanlibException, Frame, canlib, kvadblib
 
 DummyMessage = namedtuple('DummyMessage', 'name id flags dlc comment')
 
@@ -1166,6 +1166,46 @@ def test_framebox(datadir):
     print(frames)
     assert len(frames) == 1
     assert frames[0].data == b'\x00\x00\x00\x01\x00\x00d\x00'
+
+
+def test_framebox_canflags(datadir):
+    frames_in_dbc = {
+        "can_ext": Frame(
+            id_=0x12,
+            flags=canlib.MessageFlag.EXT,
+            data=b'\0' * 8,
+        ),
+        "can_fd_ext": Frame(
+            id_=0x2,
+            flags=canlib.MessageFlag.FDF | canlib.MessageFlag.EXT,
+            data=b'\0' * 64,
+        ),
+        "can_fd_ext_brs": Frame(
+            id_=0x3,
+            flags=canlib.MessageFlag.FDF | canlib.MessageFlag.EXT | canlib.MessageFlag.BRS,
+            data=b'\0' * 64,
+        ),
+        "can_fd_std": Frame(
+            id_=0x4,
+            flags=canlib.MessageFlag.STD | canlib.MessageFlag.FDF,
+            data=b'\0' * 64,
+        ),
+        "can_fd_std_brs": Frame(
+            id_=0x1,
+            flags=canlib.MessageFlag.STD | canlib.MessageFlag.FDF | canlib.MessageFlag.BRS,
+            data=b'\0' * 64,
+        ),
+        "can_std": Frame(
+            id_=0x11,
+            flags=canlib.MessageFlag.STD,
+            data=b'\0' * 8,
+        ),
+    }
+    db = kvadblib.Dbc(filename=os.path.join(datadir, "pingerfd.dbc"))
+    framebox = kvadblib.FrameBox(db, messages=frames_in_dbc.keys())
+    frames = list(framebox.frames())
+    for frame in frames_in_dbc.values():
+        assert frame in frames
 
 
 def test_version():

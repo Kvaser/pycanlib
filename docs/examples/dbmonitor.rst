@@ -1,4 +1,6 @@
-Monitor a Channel Using a Database
+.. _dbmonitor_example:
+
+Monitor Channel Using CAN Database
 ##################################
 
 .. literalinclude:: /../examples/dbmonitor.py
@@ -86,3 +88,18 @@ Sample Output
    ┃ ShiftRequest: 0.0
    ┃ Gear: 0.0
    ┗
+
+.. _dbmonitor_fd_example:
+
+CAN FD version
+==============
+
+This example is basically the same as ``dbmonitor.py`` above, except we are now using CAN FD.
+
+Note that you also need the ``dbmonitor.py`` file, next to ``dbmonitorfd.py`` below, since we are reusing the `monitor_channel` function.
+
+.. highlight:: python
+
+.. literalinclude:: /../examples/dbmonitorfd.py
+
+

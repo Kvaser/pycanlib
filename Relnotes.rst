@@ -7,6 +7,40 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.21.463  (29-MAY-2022)
+===========================================================================
+
+* General:
+
+  - Added CAN FD versions of examples:
+
+    - :ref:`pinger_example` (:ref:`pinger_fd_example`), and
+    - :ref:`dbmonitor_example` (:ref:`dbmonitor_fd_example`).
+
+* `.canlib`:
+
+  - Added exceptions `.canlib.CanTimeout` and `.canlib.CanOverflowError`.
+
+  - Added new bitrate constant `~.canlib.BitrateFD.BITRATE_2M_60P`.
+
+  - Added support for `.canlib.MessageFlag.LOCAL_TXACK`. This requires CANlib
+    SDK v5.39 or newer.
+
+  - Checking for `.canlib.MessageFlag.OVERRUN` using ``in`` will now return
+    ``True`` if either `~.canlib.MessageFlag.SW_OVERRUN` or
+    `~.canlib.MessageFlag.HW_OVERRUN` is set.
+
+* `.kvadblib`:
+
+  - Added read only property `.kvadblib.Message.canflags` which returns
+    relevant ``VFrameFormat`` attributes converted into `.canlib.MessageFlag`
+    (e.g. the J1939 ``VFrameFormat`` attribute does not have a corresponding
+    flag and is excluded).
+
+  - `.kvadblib.Message.asframe()` now include CAN FD flags on the returned
+    `~canlib.Frame`. Note that this requires CANlib SDK v5.39 or newer.
+
+
 New Features and Fixed Problems in V1.20.360  (15-FEB-2022)
 ===========================================================================
 * General:

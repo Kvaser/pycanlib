@@ -240,3 +240,9 @@ def kvBitrateToBusParamsFdTq(hnd, freqA, freqD, arbitration, data):
     raise NotYetSupportedError(
         "Translating canFD_BITRATE_xxx constants to corresponding bus parameter values requires CANlib SDK v5.35 or newer."
     )
+
+
+def kvaDbGetCanMsgFlags(hnd, flags):
+    raise NotYetSupportedError(
+        "Reading CAN message flags from kvadblib requires CANlib SDK v5.39 or newer."
+    )

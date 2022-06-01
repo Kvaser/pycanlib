@@ -1,4 +1,5 @@
 import os
+import pytest
 import time
 
 from tscript_wrap import ScriptRunner
@@ -9,6 +10,7 @@ BITRATE = canlib.canBITRATE_1M
 CHANNEL_FLAGS = 0
 
 
+@pytest.mark.slow
 def test_subscribe(script_no, datadir):
     tscript_path = os.path.join(datadir, "txe", "text_subscribe.txe")
     print(tscript_path)

@@ -82,6 +82,20 @@ class CanScriptFail(CanError):
 
 
 @_remember
+class CanTimeout(CanError):
+    """Raised when a timeout occured
+
+    Raised when an expected event did not happen within the expected time
+    frame, see e.g. `.canlib.Channel.writeWait()`.
+
+    .. versionadded:: 1.21
+
+    """
+
+    status = Error.TIMEOUT
+
+
+@_remember
 class CanNotFound(CanError):
     """Specified device or channel not found
 
@@ -138,6 +152,20 @@ class IoNoValidConfiguration(CanError):
     """
 
     status = Error.IO_NO_VALID_CONFIG
+
+
+@_remember
+class CanOverflowError(CanError):
+    """Transmit buffer overflow
+
+    While trying to send a CAN message, there was no room in the transmit
+    buffer so the frame was dropped.
+
+    .. versionadded:: 1.21
+
+    """
+
+    status = Error.TXBUFOFL
 
 
 class EnvvarException(CanlibException):

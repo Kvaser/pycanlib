@@ -256,21 +256,6 @@ class VersionEvent(LogEvent):
         text += f"LIO:v{self.lioMajor}.{self.lioMinor}"
         return text
 
-    # qqqmac remove!!!
-    def _asMemoLogVersionEx(self):
-        ver = memoLogVersionEx(
-            evType=memoLogEventEx.MEMOLOG_TYPE_VERSION,
-            lioMajor=self.lioMajor,
-            lioMinor=self.lioMinor,
-            fwMajor=self.fwMajor,
-            fwMinor=self.fwMinor,
-            fwBuild=self.fwBuild,
-            serialNumber=self.serialNumber,
-            eanHi=self.eanHi,
-            eanLo=self.eanLo,
-        )
-        return ver
-
     def _asMrtEvent(self):
         """Convert this event to a `canlib.events.memoLogMrtEx`
 

@@ -188,7 +188,7 @@ class IOControlItem(CEnum):
     SET_LOCAL_TXACK = 46  #: Enable reception of canMSG_LOCAL_TXACK.
 
 
-# qqqmac In the returned type, document the function call to use
+# In the returned type, document the function call to use
 class ChannelDataItem(CEnum):
     """Low level helper object representing ``canCHANNELDATA_xxx``.
 

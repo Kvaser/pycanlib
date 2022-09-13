@@ -136,17 +136,20 @@ How acceptance filters can be used in a smaller project::
   >>>     ...
   >>> ...
 
+.. _code_and_mask_format:
 
 Code and Mask Format
 ^^^^^^^^^^^^^^^^^^^^
-Explanation of the code and mask format used by the `~canlib.canlib.Channel.canAccept` function:
+
+Explanation of the code and mask format used by
+`~canlib.canlib.Channel.canAccept()` and `~canlib.canlib.objbuf.MessageFilter`:
 
     A binary 1 in a mask means "the corresponding bit in the code is relevant"
     A binary 0 in a mask means "the corresponding bit in the code is not relevant"
     A relevant binary 1 in a code means "the corresponding bit in the identifier must be 1"
     A relevant binary 0 in a code means "the corresponding bit in the identifier must be 0"
 
-In other words, the message is accepted if ((code XOR id) AND mask) == 0.
+In other words, the message is accepted if ``((code XOR id) AND mask) == 0``.
 
 .. :note:
 
@@ -199,4 +202,55 @@ the data bytes will be whatever the data array happens to contain::
 Object Buffers
 --------------
 
-Object buffers are currently not supported in the Python wrapper.
+Some of the Kvaser interfaces are equipped with hardware buffers for automatic
+sending and responding to messages. They can be used when the timing conditions
+are strict, and might not be possible to fulfill on the application level. The
+number of buffers are, depending on the device, typically limited to around 8
+buffers.
+
+There are two types of buffers, auto response and auto transmit.
+
+* **Auto response** sends a defined message immediately upon receiving a
+  message meeting some condition.
+
+* **Auto transmit** sends a message periodically, with higher timing accuracy
+  than can be achieved by an application working through driver and operating
+  system.
+
+
+The following example sets up an Auto response object buffer which responds
+with a CAN frame with CAN ID 200 when a CAN frame with CAN ID 100 is
+received.::
+
+    >>> from canlib import canlib, Frame
+    >>> ch = canlib.openChannel(0)
+    >>> msg_filter = canlib.objbuf.MessageFilter(code=100, mask=0xFFFF)
+    >>> frame = Frame(id_=200, data=[1, 2, 3, 4])
+    >>> response_buf = ch.allocate_response_objbuf(filter=msg_filter, frame=frame)
+    >>> response_buf.enable()
+
+When creating the `~.canlib.objbuf.MessageFilter`, you can use
+`~.canlib.objbuf.MessageFilter()` to verify that the correct CAN ID will be
+filtered::
+
+    >>> msg_filter = canlib.objbuf.MessageFilter(code=100, mask=0xFFFF)
+    >>> msg_filter(100)
+    True
+    >>> msg_filter(110)
+    False
+
+See also :ref:`code_and_mask_format` for an explanation of the *code and mask*
+format used by `~.canlib.objbuf.MessageFilter`.
+
+
+The following example sets up an Auto transmit buffer to periodically send a
+CAN frame with CAN ID 300 every second, for 5 seconds.::
+
+    >>> from canlib import canlib, Frame
+    >>> ch = canlib.openChannel(0)
+    >>> frame = Frame(id_=300, data=[1, 2, 3, 4])
+    >>> periodic_buffer = ch.allocate_periodic_objbuf(period_us=1_000_000, frame=frame)
+    >>> periodic_buffer.set_msg_count(5)
+    >>> periodic_buffer.enable()
+
+For more advanced usecases, see :ref:`t_programming`.

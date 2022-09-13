@@ -55,6 +55,17 @@ class CanlibDll(dllLoader.MyDll):
         'canGetVersionEx': [[ct.c_uint], ct.c_uint, _no_errcheck],  # Never fails
         'canInitializeLibrary': [[], None, _no_errcheck],  # Returns void, no errcheck function
         'canIoCtl': [[ct.c_int, ct.c_uint, ct.c_void_p, ct.c_uint]],
+        'canObjBufAllocate': [[ct.c_int, ct.c_int]],
+        'canObjBufDisable': [[ct.c_int, ct.c_int]],
+        'canObjBufEnable': [[ct.c_int, ct.c_int]],
+        'canObjBufFree': [[ct.c_int, ct.c_int]],
+        'canObjBufFreeAll': [[ct.c_int]],
+        'canObjBufSendBurst': [[ct.c_int, ct.c_int, ct.c_uint]],
+        'canObjBufSetFilter': [[ct.c_int, ct.c_int, ct.c_uint, ct.c_uint]],
+        'canObjBufSetFlags': [[ct.c_int, ct.c_int, ct.c_uint]],
+        'canObjBufSetMsgCount': [[ct.c_int, ct.c_int, ct.c_uint]],
+        'canObjBufSetPeriod': [[ct.c_int, ct.c_int, ct.c_uint]],
+        'canObjBufWrite': [[ct.c_int, ct.c_int, ct.c_int, ct.c_void_p, ct.c_uint, ct.c_uint]],
         'canOpenChannel': [[ct.c_int, ct.c_int]],
         'canReadErrorCounters': [
             [ct.c_int, ct.POINTER(ct.c_int), ct.POINTER(ct.c_int), ct.POINTER(ct.c_int)]

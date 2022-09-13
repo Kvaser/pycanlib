@@ -66,6 +66,19 @@ class CanNoMsg(CanError):
 
 
 @_remember
+class CanInvalidHandle(CanError):
+    """CANlib handle is invalid.
+
+    Raised e.g. when trying to access a CAN channel via a closed channel handle.
+
+    .. versionadded:: 1.22
+
+    """
+
+    status = Error.INVHANDLE
+
+
+@_remember
 class CanScriptFail(CanError):
     """Raised when a script call failed.
 
@@ -79,6 +92,20 @@ class CanScriptFail(CanError):
     """
 
     status = Error.SCRIPT_FAIL
+
+
+@_remember
+class CanOutOfMemory(CanError):
+    """A memory allocation failed.
+
+    Raised e.g. when trying to allocate an object buffer, when all available
+    object buffers have already been allocated.
+
+    .. versionadded:: 1.22
+
+    """
+
+    status = Error.NOMEM
 
 
 @_remember

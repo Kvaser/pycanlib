@@ -966,7 +966,7 @@ def test_db_attribute_integer(tmpdir):
 
 
 def test_empty_db(tmpdir):
-    # qqqmac test finding message from empty db
+    """Try finding message from an empty db."""
     filename = str(tmpdir / 'db_empty.dbc')
 
     with kvadblib.Dbc(name='Test-Db-6') as db:

@@ -396,7 +396,7 @@ def test_verify_xml(datadir):
 def test_connect_disconnect_remote_device():
     """https://www.kvaser.com/developer-blog/using-python-connect-remote-device-2-3/"""
 
-    # qqqmac would be nice to use kvdevice here
+    # qqqmac would be nice to use official canlib.Device here
     serialNo = 10545
     dev = kvDevice.kvDevice(ean='73-30130-00671-3', serial=serialNo)
     print(f"Connecting to device with serial number {serialNo}")

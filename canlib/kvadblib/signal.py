@@ -37,7 +37,7 @@ class Signal:
         self._handle = sh
         self.message = message  # Parent message
         # Any property that is set at creation time needs to be written to the signal object.
-        # qqqmac loop through attributes instead of this "list"?
+        # qqqmac loop through attributes instead of keeping this "manual list"?
         if byte_order is not None:
             self.byte_order = byte_order
         if mode is not None:

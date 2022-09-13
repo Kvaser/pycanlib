@@ -140,7 +140,10 @@ class Channel:
         """
         can_hnd = ct.c_uint()
         dll.linGetCanHandle(self.handle, ct.byref(can_hnd))
-        return canlib.Channel._from_handle(can_hnd.value)
+        # The returned Channel contains a copy of the CAN handle owned and used
+        # by linlib, so the user should not be allowed to close the underlying
+        # CAN handle.
+        return canlib.Channel._from_handle(can_hnd.value, allow_close=False)
 
     @deprecation.deprecated.favour("get_can_channel")
     def getCanHandle(self):

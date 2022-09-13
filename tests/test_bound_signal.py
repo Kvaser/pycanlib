@@ -119,7 +119,7 @@ def create_db(name, path):
     filename = path / f"{name}.dbc"
     filename_str = str(filename)
     print(f"Writing {filename_str}")
-    db.write_file(filename_str)  # qqqmac Dbc.write_file() and Dbc() should take pathlib objects
+    db.write_file(filename_str)  # SOF-3460 Dbc.write_file() and Dbc() should take pathlib objects
     db.close
     return signals, filename_str
 
@@ -144,7 +144,7 @@ def test_phys_exact_dlc_match(signal_db):
     # signals, filename = create_db("DbTestPhysSig", tmp_path)
     signals, filename = signal_db
     db = kvadblib.Dbc(filename=filename)
-    frame_fail = Frame(id_=40, data=[0x12, 0x34, 0x56], dlc=3)  # qqqmac move/delete?
+    frame_fail = Frame(id_=40, data=[0x12, 0x34, 0x56], dlc=3)
     # <<< No message found for frame with id 40 >>>
     print_frame(db, frame_fail)
 

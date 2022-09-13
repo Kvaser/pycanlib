@@ -60,6 +60,13 @@ def test_getChannelData(lin_no):
     assert all(isinstance(n, int) for n in ver_nums)
 
 
+def test_close_can_channel(master):
+    can_ch = master.get_can_channel()
+    assert can_ch.getBusOutputControl() == canlib.Driver.NORMAL
+    can_ch.close()
+    master.busOn()
+
+
 def test_can_channel_data(master):
     can_ch = master.get_can_channel()
     assert can_ch.getBusOutputControl() == canlib.Driver.NORMAL
@@ -170,6 +177,7 @@ def test_slave_response(master, slave):
     print("slave:", slave.read(timeout=100))
 
 
+# setupIllegalMessage is currently only supported by Pro devices
 def test_as_linlibtest(master, slave):
     ID = 0x17
     DATA = bytearray([1, 2, 3, 4])

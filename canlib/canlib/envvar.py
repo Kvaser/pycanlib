@@ -47,7 +47,7 @@ class DataEnvVar:
     def __getitem__(self, key):
         if isinstance(key, slice):
 
-            # qqqmac fb:25388, BLB-1104
+            # fb:25388, BLB-1104
             # size = key.stop - key.start
             # value = self._channel.script_envvar_get_data(self._handle, len=size, start=key.start)
             # Workaround:
@@ -57,7 +57,7 @@ class DataEnvVar:
             if key.step is not None:
                 raise NotImplementedError('step is not yet implemented in read')
         else:
-            # qqqmac fb:25388, BLB-1104
+            # fb:25388, BLB-1104
             # value = self._channel.script_envvar_get_data(self._handle, len=1, start=key)
             # Workaround:
             value = self._channel.script_envvar_get_data(self._handle, len=self._size, start=0)
@@ -68,7 +68,7 @@ class DataEnvVar:
     def __setitem__(self, key, value):
         if isinstance(key, slice):
 
-            # qqqmac fb:25388, BLB-1104
+            # fb:25388, BLB-1104
             # size = key.stop - key.start
             # self._channel.script_envvar_set_data(self._handle, value, len=size, start=key.start)
             # Workaround:
@@ -84,7 +84,7 @@ class DataEnvVar:
             if key.step is not None:
                 raise NotImplementedError('step is not yet implemented in set')
         else:
-            # qqqmac fb:25388, BLB-1104
+            # fb:25388, BLB-1104
             # self._channel.script_envvar_set_data(self._handle, value, len=1, start=key)
             data = self._channel.script_envvar_get_data(self._handle, len=self._size, start=0)
             data = data[:key] + value + data[key + 1:]
@@ -92,7 +92,7 @@ class DataEnvVar:
 
     def __str__(self):
         value = self._channel.script_envvar_get_data(self._handle, len=self._size, start=0)
-        return value.decode('utf-8')  # qqqmac should we have a proper decode method?
+        return value.decode('utf-8')
 
 
 class EnvVar:

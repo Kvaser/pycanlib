@@ -233,17 +233,17 @@ can_frames = [
         Frame(id_=0x499FEFE, data=some_data(length=8), flags=canlib.MessageFlag.EXT),
     ),
     (
-        ("CANEXT2", True, True, "CAN ext frame"),  # qqqmac new dbc: confused with TCFG2 by EXT flag -> No getMsgByPGN assumes pgn
+        ("CANEXT2", True, True, "CAN ext frame"),  # new dbc: confused with TCFG2 by EXT flag -> No getMsgByPGN assumes pgn
         Frame(id_=0x8FE4BFE, data=some_data(length=2), flags=canlib.MessageFlag.EXT),
     ),
     (
         # Old db cannot differentiate CAN ext from J1939 PG
-        ("CANEXT3", True, True, "CAN ext frame"),  # qqqmac new dbc: confused with pgn 0 by EXT flag
+        ("CANEXT3", True, True, "CAN ext frame"),  # new dbc: confused with pgn 0 by EXT flag
         Frame(id_=0x100, data=some_data(length=8), flags=canlib.MessageFlag.EXT),
     ),
     (
         # Old db cannot differentiate CAN ext from J1939 PG
-        ("CANEXT4", True, True, "CAN ext frame"),  # qqqmac new dbc: confused with pgn 0 by EXT flag
+        ("CANEXT4", True, True, "CAN ext frame"),  # new dbc: confused with pgn 0 by EXT flag
         Frame(id_=0xFE4B, data=some_data(length=2), flags=canlib.MessageFlag.EXT),
     ),
 ]

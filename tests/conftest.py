@@ -114,26 +114,22 @@ def channel_no_pair(request, kvprobe):
 
 @pytest.fixture
 def chA(channel_no_pair):
-    chA = canlib.openChannel(
+    with canlib.openChannel(
         channel_no_pair[0],
         flags=canlib.Open.ACCEPT_VIRTUAL | canlib.Open.REQUIRE_INIT_ACCESS,
-    )
-    chA.setBusParams(canlib.canBITRATE_500K)
-    yield chA
-    chA.busOff()
-    chA.close()
+    ) as chA:
+        chA.setBusParams(canlib.canBITRATE_500K)
+        yield chA
 
 
 @pytest.fixture
 def chB(channel_no_pair):
-    chB = canlib.openChannel(
+    with canlib.openChannel(
         channel_no_pair[1],
         flags=canlib.Open.ACCEPT_VIRTUAL | canlib.Open.REQUIRE_INIT_ACCESS,
-    )
-    chB.setBusParams(canlib.canBITRATE_500K)
-    yield chB
-    chB.busOff()
-    chB.close()
+    ) as chB:
+        chB.setBusParams(canlib.canBITRATE_500K)
+        yield chB
 
 
 @pytest.fixture(scope="session")
@@ -181,19 +177,14 @@ def lin_no_pair(kvprobe):
 @pytest.fixture
 def master(lin_no_pair):
     """Fixture for a LIN channel opened as a master"""
-    master = linlib.openMaster(lin_no_pair[0], bps=2 * 10 ** 4)
-    yield master
-    master.busOff()
-    master.close()
-
+    with linlib.openMaster(lin_no_pair[0], bps=2 * 10 ** 4) as master:
+        yield master
 
 @pytest.fixture
 def slave(lin_no_pair):
     """Fixture for a LIN channel opened as a slave"""
-    slave = linlib.openSlave(lin_no_pair[1], bps=2 * 10 ** 4)
-    yield slave
-    slave.busOff()
-    slave.close()
+    with linlib.openSlave(lin_no_pair[1], bps=2 * 10 ** 4) as slave:
+        yield slave
 
 
 @pytest.fixture(scope="session")

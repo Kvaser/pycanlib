@@ -1,3 +1,5 @@
+.. _t_programming:
+
 t Programming
 =============
 

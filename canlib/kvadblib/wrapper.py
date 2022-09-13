@@ -9,7 +9,7 @@ from .enums import ProtocolProperties
 from .exceptions import KvdBufferTooSmall
 
 
-# qqqmac replace with global version class
+# qqqmac replace with global VersionNumber class
 class kvadbVersion:
     """
     Class that holds kvadblib version number.

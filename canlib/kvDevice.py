@@ -171,7 +171,7 @@ class kvDevice:
         try:
             self.channel.close()
         except canlib.canError as e:
-            # qqqmac Turn this into a debugger warning
+            # qqqmac call warn() instead.
             print("WARNING: Failed to close, ", e)
             traceback.print_stack(limit=2)
         self.channel = None

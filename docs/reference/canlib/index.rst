@@ -13,4 +13,5 @@ canlib
    iocontrol
    iopin
    txe
+   objbuf
    wrapper

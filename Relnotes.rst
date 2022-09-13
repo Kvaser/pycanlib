@@ -7,6 +7,13 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.22.565  (08-SEP-2022)
+===========================================================================
+* `.canlib`:
+
+  - Added support for object buffers `.canlib.objbuf`.
+
+
 New Features and Fixed Problems in V1.21.463  (29-MAY-2022)
 ===========================================================================
 

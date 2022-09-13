@@ -9,6 +9,7 @@ from ..device import Device
 from ..frame import Frame
 from . import constants as const
 from . import iopin, wrapper
+from . import objbuf
 from .busparams import BusParamsTq
 from .channeldata import HandleData
 from .enums import (ChannelFlags, DeviceMode, Driver, MessageFlag,
@@ -168,13 +169,19 @@ class Channel:
     )
 
     @classmethod
-    def _from_handle(cls, handle):
+    def _from_handle(cls, handle, allow_close=True):
+        def _close(self):
+            self.handle = -1
+
         obj = cls.__new__(cls)
         super().__init__(obj)
         obj.index = None
         obj.handle = handle
         obj.envvar = EnvVar(obj)
         obj._device = None
+        # Replace close function with dummy function if not allowed to close
+        if not allow_close:
+            obj.close = _close.__get__(obj, cls)
         return obj
 
     def __init__(self, channel_number, flags=0):
@@ -264,6 +271,42 @@ class Channel:
             self._handledata_ref = weakref.ref(chd)
         return chd
 
+    def allocate_periodic_objbuf(self, period_us, frame):
+        """Allocate a periodic object buffer (a.k.a. auto transmit buffer).
+
+        Call `.objbuf.Periodic.enable()` in order to start the periodic
+        transmissions of the CAN frame.
+
+        Args:
+            period_us (`int`): Interval in microseconds between each sent CAN frame.
+            frame (`~canlib.Frame`): The CAN frame to send.
+
+
+        Returns:
+            `.objbuf.Periodic`: A periodic object buffer.
+
+        .. versionadded:: 1.22
+
+        """
+        return objbuf.Periodic(self, period_us, frame)
+
+    def allocate_response_objbuf(self, filter, frame, rtr_only=False):
+        """Allocate autoresponse object buffer.
+
+        Args:
+            frame (`~canlib.Frame`): The CAN frame to send.
+            filter (`.objbuf.MessageFilter`): Messages not matching the filter is ignored.
+            rtr_only (`bool`): If `True`, only trigger response on remote requests.
+
+
+        Returns:
+            `.objbuf.Response`: A response object buffer.
+
+        .. versionadded:: 1.22
+
+        """
+        return objbuf.Response(self, filter, frame, rtr_only)
+
     def close(self):
         """Close CANlib channel
 
@@ -340,6 +383,17 @@ class Channel:
             serial = chd.card_serial_no
             self._device = Device(ean=ean, serial=serial)
         return self._device
+
+    def free_objbuf(self):
+        """Free all allocated object buffers.
+
+        Free all object buffers allocated via `.allocate_periodic_objbuf()` or
+        `.allocate_response_objbuf()`.
+
+        .. versionadded:: 1.22
+
+        """
+        dll.canObjBufFreeAll(self.handle)
 
     def setBusParams(self, freq, tseg1=0, tseg2=0, sjw=0, noSamp=0, syncmode=0):
         """Set bus timing parameters for classic CAN

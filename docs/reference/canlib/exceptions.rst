@@ -16,6 +16,13 @@ CanGeneralError
     :undoc-members:
     :show-inheritance:
 
+CanInvalidHandle
+~~~~~~~~~~~~~~~~
+.. autoexception:: canlib.canlib.CanInvalidHandle
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CanNoMsg
 ~~~~~~~~
 .. autoexception:: canlib.canlib.CanNoMsg
@@ -26,6 +33,13 @@ CanNoMsg
 CanNotFound
 ~~~~~~~~~~~
 .. autoexception:: canlib.canlib.CanNotFound
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+CanOutOfMemory
+~~~~~~~~~~~~~~
+.. autoexception:: canlib.canlib.CanOutOfMemory
     :members:
     :undoc-members:
     :show-inheritance:

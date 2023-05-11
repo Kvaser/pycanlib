@@ -78,7 +78,8 @@ def test_j1939_dbc_to_signal_csv(dbcfile, expected_signals, outname):
         )
         rows[i]['Timestamp'] = round(rows[i]['Timestamp'] - time_offset)
         # qqqmac ignore wrong dlc for now (dlc mismatch is currently not ignored by kvlclib) BLA-2606
-        if len(item) > 1:
+        # qqqanfr the exp data lacks the signals that would be result of a dlc mismatch, these only have 2 columns with values: timestamp, Channel ID
+        if len(item) > 2:
             assert rows[i] == expected_signals[i]
         else:
             print(f"\tignoring {i} since dlc differ ()...")

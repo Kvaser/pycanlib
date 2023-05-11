@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from canlib import canlib, Frame
 from canlib.canlib.enums import LoggerType
-from canlib.canlib.exceptions import CanNotImplementedError
+from canlib.canlib.exceptions import CanNotImplementedError, CanNoMsg
 
 can = []
 canfd = []
@@ -73,11 +73,33 @@ for n in range(canlib.getNumberOfChannels()):
     with canlib.Channel(n, flags=canlib.Open.ACCEPT_VIRTUAL) as ch:
         try:
             buf = ch.allocate_periodic_objbuf(1000, Frame(100, b''))
+            # PciCan2HwIf implements only a subset of the objbuf API.
+            # Functions canObjBufSetMsgCount and canObjBufSendBurst is missing and
+            # returns canERR_NOMSG when invoked.
+            try:
+                buf.set_msg_count(1)
+                # buf.send_burst(1)
+                objbuf.append(n)
+            except CanNoMsg:
+                pass
             buf.free()
-            objbuf.append(n)
         except CanNotImplementedError:
             pass
-
+        except Exception as e:
+            import json
+            print(f"Unexpected exception when probing devices for objbuf API support: {type(e)}")
+            print("  {0}".format(
+                json.dumps({
+                    "Exception str" : f"{e}",
+                    "Channel information" : {
+                        "channel_name" : ch.channel_data.channel_name,
+                        "upc" : str(ch.channel_data.card_upc_no),
+                        "serial_no" : ch.channel_data.card_serial_no,
+                        "card_firmware_rev" : ch.channel_data.card_firmware_rev,
+                        "card_hardware_rev" : ch.channel_data.card_hardware_rev,
+                    }
+                }, indent=4))
+            )
 
 def generate_can_node_map():
     frame = Frame(100, data=b'0')

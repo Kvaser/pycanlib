@@ -40,7 +40,7 @@ from .wrapper import (  # deprecated
     getChannelData_Serial, getErrorText, getNumberOfChannels, getVersion,
     initializeLibrary, prodversion, reinitializeLibrary, translateBaud,
     unloadLibrary)
-
+from .timedomain import TimeDomain, TimeDomainData
 canError = CanError
 canNoMsg = CanNoMsg
 canScriptFail = CanScriptFail

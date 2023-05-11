@@ -19,3 +19,4 @@ programs on supported devices.
     usingthreads
     tprogramming
     iopinhandling
+    timedomain

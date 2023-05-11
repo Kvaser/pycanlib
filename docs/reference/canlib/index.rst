@@ -12,6 +12,7 @@ canlib
    enums
    iocontrol
    iopin
+   timedomain
    txe
    objbuf
    wrapper

@@ -93,3 +93,12 @@ class CanBusParamLimits(ct.Structure):
         ('data_min', CanBusParamsTq),
         ('data_max', CanBusParamsTq),
     ]
+
+
+class kvTimeDomainData(ct.Structure):
+    _fields_ = [
+        ('nMagiSyncGroups', ct.c_int),
+        ('nMagiSyncedMembers', ct.c_int),
+        ('nNonMagiSyncCards', ct.c_int),
+        ('nNonMagiSyncedMembers', ct.c_int),
+    ]

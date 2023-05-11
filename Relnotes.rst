@@ -7,6 +7,13 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.23.804  (05-MAY-2023)
+===========================================================================
+* `.canlib`:
+
+  - Added support for time domains `~canlib.canlib.TimeDomain`.
+
+
 New Features and Fixed Problems in V1.22.565  (08-SEP-2022)
 ===========================================================================
 * `.canlib`:

@@ -3,7 +3,7 @@ import sys
 
 from .. import dllLoader
 from .exceptions import can_error
-from .structures import CanBusParamsTq, CanBusStatistics
+from .structures import CanBusParamsTq, CanBusStatistics, kvTimeDomainData
 
 _no_errcheck = dllLoader.no_errcheck
 
@@ -173,6 +173,12 @@ class CanlibDll(dllLoader.MyDll):
         'kvScriptTxeGetData': [[ct.c_char_p, ct.c_int, ct.c_void_p, ct.POINTER(ct.c_uint)]],
         'kvScriptUnload': [[ct.c_int, ct.c_int]],
         'kvSetNotifyCallback': [[ct.c_int, KVCALLBACK_T, ct.c_void_p, ct.c_uint]],
+        'kvTimeDomainCreate': [[ct.POINTER(ct.c_void_p)]],
+        'kvTimeDomainDelete': [[ct.c_void_p]],
+        'kvTimeDomainAddHandle': [[ct.c_void_p, ct.c_int]],
+        'kvTimeDomainRemoveHandle': [[ct.c_void_p, ct.c_int]],
+        'kvTimeDomainGetData':[[ct.c_void_p, ct.POINTER(kvTimeDomainData), ct.c_size_t]],
+        'kvTimeDomainResetTime':[[ct.c_void_p]],
     }
 
     def __init__(self, ct_dll):

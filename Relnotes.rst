@@ -7,6 +7,11 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.24.935  (13-SEP-2023)
+===========================================================================
+* Minor changes.
+
+
 New Features and Fixed Problems in V1.23.804  (05-MAY-2023)
 ===========================================================================
 * `.canlib`:

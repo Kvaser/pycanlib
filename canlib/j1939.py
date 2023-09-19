@@ -73,7 +73,7 @@ class Pdu(BaseModel):
     pf: int  #: PDU format
     ps: int  #: PDU specific
     sa: int  #: source address
-    data: Optional[List[int]]  #: data field
+    data: Optional[List[int]] = None #: data field
 
     def __repr__(self):
         return (f"p={self.p}, edp={self.edp}, dp={self.dp},"
@@ -89,8 +89,8 @@ class Pdu1(Pdu):
     `pgn` = Extended Data Page + Data Page + PDU Format + "00"
 
     """
-    da: Optional[int]  #: destination address, `Pdu.ps`
-    pgn: Optional[int]  #: parameter group number
+    da: Optional[int] = None #: destination address, `Pdu.ps`
+    pgn: Optional[int] = None  #: parameter group number
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -109,8 +109,8 @@ class Pdu2(Pdu):
       `pgn` = Extended Data Page + Data Page + PDU Format + Group Extension
 
     """
-    ge: Optional[int]  #: group extension, equal to `Pdu.ps`
-    pgn: Optional[int]  #: parameter group number
+    ge: Optional[int] = None #: group extension, equal to `Pdu.ps`
+    pgn: Optional[int] = None #: parameter group number
 
     def __init__(self, **data: Any):
         super().__init__(**data)

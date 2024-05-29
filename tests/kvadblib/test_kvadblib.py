@@ -718,7 +718,7 @@ def test_db_load_bogus_file():
 
 def test_db_load_incorrect_dbc_file(datadir):
     with pytest.raises(kvadblib.KvdDbFileParse):
-        kvadblib.Dbc(filename=os.path.join(datadir, "attr_mismatch_1.dbc"))
+        kvadblib.Dbc(filename=os.path.join(datadir, "invalid.dbc"))
 
 
 def test_db_retrieve_parse_errors(datadir):
@@ -727,7 +727,7 @@ def test_db_retrieve_parse_errors(datadir):
     assert not errmsg1  # not null/empty
 
     with pytest.raises(kvadblib.KvdDbFileParse):
-        kvadblib.Dbc(filename=os.path.join(datadir, "attr_mismatch_1.dbc"))
+        kvadblib.Dbc(filename=os.path.join(datadir, "invalid.dbc"))
     errmsg2 = kvadblib.get_last_parse_error()
     assert errmsg2  # null/empty
 

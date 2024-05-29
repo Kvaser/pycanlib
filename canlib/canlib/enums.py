@@ -528,6 +528,7 @@ class TransceiverType(CEnum):
     KONE = 20
     CANFD = 22
     CANFD_LIN = 24  #: HYBRID CAN-FD/LIN
+    CANFD_SIC = 26  #: CAN-FD SIC transceiver
     LINX_LIN = 64
     LINX_J1708 = 66
     LINX_K = 68
@@ -623,10 +624,11 @@ class HardwareType(CEnum):
     PCIE_V2 = 76  #: Kvaser PCIEcan 4xHS and variants.
     MEMORATOR_PRO2 = 78  #: Kvaser Memorator Pro 5xHS and variants.
     LEAF2 = 80  #: Kvaser Leaf Pro HS v2 and variants.
-    MEMORATOR_V2 = 82  #: Kvaser Memorator (2nd generation)
+    MEMORATOR_V2 = 82  #: Kvaser Memorator (2nd generation).
     CANLINHYBRID = 84  #: Kvaser Hybrid CAN/LIN.
-    DINRAIL = 86  #: Kvaser DIN Rail SE400S and variants
-    U100 = 88  #: Kvaser U100 and variants
+    DINRAIL = 86  #: Kvaser DIN Rail SE400S and variants.
+    U100 = 88  #: Kvaser U100 and variants.
+    LEAF_V3 = 90 #: Kvaser Kvaser Leaf v3 and variants.
 
     # Obsolete
     CANPARI = 3  #: CANpari (obsolete).

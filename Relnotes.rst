@@ -7,6 +7,11 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.27.606  (18-SEP-2024)
+===========================================================================
+* Minor changes.
+
+
 New Features and Fixed Problems in V1.26.487  (22-MAY-2024)
 ===========================================================================
 * Added new enums to canlib.

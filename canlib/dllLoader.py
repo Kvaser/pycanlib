@@ -156,14 +156,18 @@ def load_dll(win_name=None, linux_name=None):
             else:
                 aKeyName = r"SOFTWARE\Wow6432Node\KVASER AB\CanlibSDK"
             aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-            aKey = winreg.OpenKey(aReg, aKeyName)
-            aValue = winreg.QueryValueEx(aKey, "")
-            baseDir = str(aValue[0])
-
-            if 8 * struct.calcsize("P") == 32:
-                installDir = os.path.join(baseDir, "Bin")
-            else:
-                installDir = os.path.join(baseDir, "bin_x64")
+            try:
+                aKey = winreg.OpenKey(aReg, aKeyName)
+                aValue = winreg.QueryValueEx(aKey, "")
+                baseDir = str(aValue[0])
+                if 8 * struct.calcsize("P") == 32:
+                    installDir = os.path.join(baseDir, "Bin")
+                else:
+                    installDir = os.path.join(baseDir, "bin_x64")                
+            except FileNotFoundError:
+                aKey = winreg.OpenKey(aReg, r"SOFTWARE\Wow6432Node\KVASER AB\CANLIB32")
+                aValue = winreg.QueryValueEx(aKey, "InstallDir")
+                installDir = str(aValue[0])        
             installDir = os.path.realpath(installDir)
 
     if installDir:

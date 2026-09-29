@@ -1,0 +1,23 @@
+*~
+build/
+dist/
+stage/
+htmlcov/*
+canlib.egg-info
+docs/build/
+/Relnotes.rst
+docs/Relnotes.rst
+/ReleaseNotes.txt
+.coverage
+venv
+.venv/
+*_flymake.py
+*.zip
+*.pyc
+*.orig
+*.tar.gz
+.pytest_cache/
+
+# Test output artifacts written into the repo root by the test suite
+/tmp/
+myresult_*

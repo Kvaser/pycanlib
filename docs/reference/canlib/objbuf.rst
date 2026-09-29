@@ -1,7 +1,6 @@
 Object Buffers
 --------------
 
-.. automodule:: canlib.canlib.TimeDomain
+.. automodule:: canlib.canlib.objbuf
    :members:
-   :inherited-members:
    :exclude-members:

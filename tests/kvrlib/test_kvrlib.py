@@ -228,7 +228,7 @@ def test_discovery():
 
 
 @winonly
-def test_info_set():
+def test_info_set(kvaser_driver):
     orig = kvrlib.stored_info_set()
 
     try:
@@ -281,7 +281,7 @@ def test_discover_info_set():
 
 
 @winonly
-def test_info_set_context():
+def test_info_set_context(kvaser_driver):
     with kvrlib.stored_info_set():
         with kvrlib.empty_info_set() as empty:
             info = empty.new_info(ean='01234-5', serial=42, connect=True)

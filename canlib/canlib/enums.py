@@ -628,7 +628,8 @@ class HardwareType(CEnum):
     CANLINHYBRID = 84  #: Kvaser Hybrid CAN/LIN.
     DINRAIL = 86  #: Kvaser DIN Rail SE400S and variants.
     U100 = 88  #: Kvaser U100 and variants.
-    LEAF_V3 = 90 #: Kvaser Kvaser Leaf v3 and variants.
+    LEAF_V3 = 90  #: Kvaser Leaf v3 and variants.
+    EDGE = 92  #: Kvaser Edge family.
 
     # Obsolete
     CANPARI = 3  #: CANpari (obsolete).

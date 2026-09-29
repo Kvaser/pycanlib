@@ -7,6 +7,21 @@ This is the release notes for the pycanlib module.
     :depth: 2
 
 
+New Features and Fixed Problems in V1.34.0  (21-SEP-2026)
+===========================================================================
+* General:
+
+  - Modernized the build system to use ``uv`` and hatchling (PEP 517). The
+    legacy build scripts have been removed.
+  - The package version is now single-sourced from ``pyproject.toml`` and read
+    via `importlib.metadata`.
+  - Fixed the ``convert_kme_asc.py`` example so it uses the input format
+    configured in the "set up formats" section instead of a hardcoded format,
+    so changing `in_fmt` there now correctly affects the conversion.
+  - Fallback to SysWOW64 or System32 if registry key for CanlibSDK install
+    path is not set, which allows for using pycanlib with only drivers
+    installed (Canlib SDK NOT installed)
+
 New Features and Fixed Problems in V1.33.358  (31-MAY-2026)
 ===========================================================================
 * Minor changes.

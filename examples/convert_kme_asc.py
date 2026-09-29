@@ -72,7 +72,7 @@ if __name__ == '__main__':
     cnv = kvlclib.Converter(out_file, out_fmt)
 
     # Set input file and format
-    cnv.setInputFile(in_file, kvlclib.FileFormat.KME50)
+    cnv.setInputFile(in_file, in_fmt)
 
     # split output files into max 100 MB files
     # The name of the resulting files will now end in '-partX.txt',

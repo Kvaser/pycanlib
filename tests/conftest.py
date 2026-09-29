@@ -48,17 +48,56 @@ def pytest_addoption(parser):
     )
 
 
-def pytest_report_header(config, startdir):
+def pytest_report_header(config, start_path):
     if config.getoption('--kvprobe'):
         import kvprobe
 
         return kvprobe.header()
 
 
+# Test files that run without the native library (pure-Python logic only). In
+# READTHEDOCS mock mode `dllLoader` returns a MagicMock, so every *other* test is
+# skipped: anything that calls the library misbehaves against the mock — e.g.
+# device.connected_devices() loops forever because the mock never raises. This is
+# an explicit allowlist (default-deny) so a new test can never hang the mock run.
+_MOCK_SAFE_FILES = frozenset({
+    "test_Frame.py",
+    "test_ean.py",
+    "test_versionnumber.py",
+    "test_bound_signal.py",
+    "test_kvDevice.py",
+})
+
+
+def pytest_collection_modifyitems(config, items):
+    """In READTHEDOCS mock mode, keep only the pure-Python (`_MOCK_SAFE_FILES`) tests."""
+    if os.environ.get("READTHEDOCS") != "True":
+        return
+    skip_mock = pytest.mark.skip(
+        reason="needs the native library; skipped in READTHEDOCS mock mode"
+    )
+    for item in items:
+        if os.path.basename(str(item.fspath)) not in _MOCK_SAFE_FILES:
+            item.add_marker(skip_mock)
+
+
 @pytest.fixture
 def datadir():
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
     return path
+
+
+@pytest.fixture
+def kvaser_driver():
+    """Skip when the Kvaser driver is not installed.
+
+    Some `@winonly` kvrlib tests round-trip the driver-backed "info set" storage,
+    which needs no hardware but does need the driver. The driver also provides the
+    virtual CAN channels, so a channel count of zero is a reliable "no driver"
+    signal (`getNumberOfChannels` counts virtual channels).
+    """
+    if canlib.getNumberOfChannels() == 0:
+        pytest.skip("requires the Kvaser driver (no CAN channels available)")
 
 
 @pytest.fixture(scope="session")

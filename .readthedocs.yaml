@@ -1,0 +1,15 @@
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+version: 2
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.11"
+  # Full build override: use uv so the docs build matches local development
+  # exactly (uv installs the project + the `docs` dependency group, then runs
+  # the same sphinx-build invocation). RTD sets READTHEDOCS=True itself, which
+  # triggers the native-library mock in dllLoader.load_dll().
+  commands:
+    - pip install uv
+    - uv run --group docs sphinx-build -b html docs "$READTHEDOCS_OUTPUT/html"

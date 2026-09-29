@@ -155,15 +155,25 @@ def load_dll(win_name=None, linux_name=None):
                 aKeyName = r"SOFTWARE\KVASER AB\CanlibSDK"
             else:
                 aKeyName = r"SOFTWARE\Wow6432Node\KVASER AB\CanlibSDK"
-            aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-            aKey = winreg.OpenKey(aReg, aKeyName)
-            aValue = winreg.QueryValueEx(aKey, "")
-            baseDir = str(aValue[0])
 
-            if 8 * struct.calcsize("P") == 32:
-                installDir = os.path.join(baseDir, "Bin")
-            else:
-                installDir = os.path.join(baseDir, "bin_x64")
+            is_32bit = 8 * struct.calcsize("P") == 32
+            try:
+                aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+                aKey = winreg.OpenKey(aReg, aKeyName)
+                aValue = winreg.QueryValueEx(aKey, "")
+                baseDir = str(aValue[0])
+                installDir = os.path.join(
+                    baseDir, "Bin" if is_32bit else "bin_x64"
+                )
+            except OSError:
+                # Fallback to C:\Windows\System32 (64bit) or SysWOW64 (32bit)
+                # since users might have installed drivers, but not the
+                # Canlib SDK
+                windir = os.environ['SystemRoot']
+                installDir = os.path.join(
+                    windir, 'SysWOW64' if is_32bit else "System32"
+                )
+
             installDir = os.path.realpath(installDir)
 
     if installDir:

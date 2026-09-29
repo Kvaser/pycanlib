@@ -10,7 +10,7 @@
      hgid=6cf9c08cdb11 tip
 
 
-.. include:: ../README.rst
+.. include:: _readme_intro.rst
 
 
 Wrapped libraries
